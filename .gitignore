@@ -1,3 +1,16 @@
+#to diko mou gitignore
+*.exe
+*.vcxproj
+*.vcxproj.user
+*.sdf
+*.sln
+*.txt
+*.png
+*.jpg
+bin/
+docs/
+temp/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
