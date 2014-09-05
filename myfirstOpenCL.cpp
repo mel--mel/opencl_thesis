@@ -51,18 +51,15 @@ std::string LoadKernel (const char* name)
 	return result;
 }
 
-int main()
+cl_platform_id ChoosePlatform()
 {
-	//error variable
-	cl_int status;
-
 	//opencl platforms available?
 	cl_uint platformIdCount = 0;
 	clGetPlatformIDs (0, NULL, &platformIdCount);
 
 	if (platformIdCount == 0) {
 			std::cerr << "No OpenCL platform found" << std::endl;
-			return 1;
+			return NULL;
 	} else {
 			std::cout << "Found " << platformIdCount << " platform(s)" << std::endl;
 	}
@@ -82,9 +79,16 @@ int main()
 	std::cout << std::endl << "I choose platform 1" << std::endl;
 	free(platforms);
 
+	return(platform);
+}
+
+cl_device_id* GetDevices(cl_platform_id platform, cl_uint& numDevices)
+{
+	cl_int status;
+
+	cl_device_id *devices;
+
 	//search for GPU in chosen platform
-	cl_uint				numDevices = 0;
-	cl_device_id        *devices;
 	clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices); //briskw poses devices (numdevices) yparxoyn sthn 
 	                                                                             //platforma poy symfwnoyn me to cl_device_type
 	if (numDevices == 0)	//no GPU available. 
@@ -95,6 +99,7 @@ int main()
 		CheckError(status);
 		devices = (cl_device_id*)malloc(numDevices * sizeof(cl_device_id)); //kanw xwro gia ta id toys
 		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, numDevices, devices, NULL); //briskw ta id toys
+		return(devices);
 	}
 	else //GPU is available
 	{
@@ -102,21 +107,17 @@ int main()
 		devices = (cl_device_id*)malloc(numDevices * sizeof(cl_device_id)); //kanw xwro gia ta id twn GPU poy brhka parapanw
 		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices, NULL); //briskw ta id toys
 		CheckError(status);
+		return(devices);
 	}
 
-	//create context (first initialize context properties)
-	const cl_context_properties contextProperties [] ={CL_CONTEXT_PLATFORM, reinterpret_cast<cl_context_properties> (platform), 0, 0};
-	cl_context context = clCreateContext(contextProperties, numDevices, devices, NULL, NULL, &status);
-	CheckError(status);
+}
 
-	//create command queue
-	cl_command_queue commandQueue = clCreateCommandQueue(context, devices[0], 0, &status);
-	CheckError(status);
-
-	//DO YOUR MAGIC =)
+cl_program CreateBuildProgram(const char* program_name, int numDevices, cl_device_id* devices, cl_context context)
+{
+	cl_int status;
 
 	//create program: takes .cl file, reads it into a string, and makes a program with it using the previously created context
-	std::string kernelString = LoadKernel ("HelloWorld_Kernel.cl");
+	std::string kernelString = LoadKernel (program_name);
 	const char* sources [1] = { kernelString.data () };//allocate array of constant size 1 - giati h createprogrwithsource zhtaei array
 	size_t lengths [1] = { kernelString.size () };
 	cl_program program = clCreateProgramWithSource (context, 1, sources, lengths, &status);
@@ -125,11 +126,56 @@ int main()
 	//build (compile and link) program
 	CheckError(clBuildProgram (program, numDevices, devices, "-D FILTER_SIZE=1", NULL, NULL));
 
+	return(program);
+}
+
+void InitializeOpenCL(cl_context& context, cl_command_queue& command_queue, cl_program& program)
+{
+	//error variable
+	cl_int status;
+
+	//choose platform
+	cl_platform_id platform = ChoosePlatform();
+	if (platform == NULL) 
+	{
+		status = FAILURE;
+		return;
+	}
+
+	//get device list
+	cl_uint	numDevices = 0;
+	cl_device_id* devices = GetDevices(platform, numDevices);
+
+	//create context (first initialize context properties)
+	const cl_context_properties contextProperties [] ={CL_CONTEXT_PLATFORM, reinterpret_cast<cl_context_properties> (platform), 0, 0};
+	context = clCreateContext(contextProperties, numDevices, devices, NULL, NULL, &status);
+	CheckError(status);
+
+	//create command queue
+	command_queue = clCreateCommandQueue(context, devices[0], 0, &status);
+	CheckError(status);
+
+	//create and build the program
+	program = CreateBuildProgram("HelloWorld_Kernel.cl", numDevices, devices, context);
+}
+
+int main()
+{
+	//error variable
+	cl_int status;
+	
+	cl_context context;
+	cl_command_queue command_queue;
+	cl_program program;
+	InitializeOpenCL(context, command_queue, program);
+
 	/*create kernel (o kernel me onoma "Filter" brisketai sto arxeio poy molis kaname build)
 	cl_kernel kernel = clCreateKernel (program, "Filter", &status);
 	CheckError (status);*/
 	cl_kernel kernel = clCreateKernel (program, "CopyImage", &status);
 	CheckError (status);
+
+	//DO YOUR MAGIC =)
 
 	//open image using openCV and load into Mat
 	cv::Mat ImgIn = cv::imread("img.png",-1);
@@ -170,10 +216,10 @@ int main()
 	//execute kernel EPI TELOUS
 	cl_uint work_dim = 2; //work_dim -> o arithmos diastasewn stis opoies tha doylepsoyme
 	std::size_t size [3] = { ImgIn.rows, ImgIn.cols, 1 }; //size -> o arithmos twn twork items pou tha xrhsimopoihsoyme
-	CheckError (clEnqueueNDRangeKernel (commandQueue, kernel, work_dim, NULL, size, NULL, 0, NULL, NULL));
+	CheckError (clEnqueueNDRangeKernel (command_queue, kernel, work_dim, NULL, size, NULL, 0, NULL, NULL));
 	
 	std::size_t origin [3] = { 0 };
-	clEnqueueReadImage (commandQueue, outputImage, CL_TRUE, origin, size, 0, 0, ImgOut.data, 0, nullptr, nullptr);
+	clEnqueueReadImage (command_queue, outputImage, CL_TRUE, origin, size, 0, 0, ImgOut.data, 0, nullptr, nullptr);
 
 	 cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
      cv::imshow( "Display window", ImgOut );        
@@ -182,7 +228,7 @@ int main()
 	 cv::imwrite( "blured.png", ImgOut);
 
 	//cleanup
-	status = clReleaseCommandQueue(commandQueue);
+	status = clReleaseCommandQueue(command_queue);
 	status = clReleaseContext(context);
 	status = clReleaseProgram (program);
 	//status = clReleaseMemObject(filterWeightsBuffer);

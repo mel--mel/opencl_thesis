@@ -7,6 +7,8 @@
 *.txt
 *.png
 *.jpg
+*.suo
+*.opensdf
 bin/
 docs/
 temp/
