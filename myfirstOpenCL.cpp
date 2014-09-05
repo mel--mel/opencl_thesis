@@ -59,7 +59,7 @@ cl_platform_id ChoosePlatform()
 
 	if (platformIdCount == 0) {
 			std::cerr << "No OpenCL platform found" << std::endl;
-			return NULL;
+			std::exit(1);
 	} else {
 			std::cout << "Found " << platformIdCount << " platform(s)" << std::endl;
 	}
@@ -136,11 +136,6 @@ void InitializeOpenCL(cl_context& context, cl_command_queue& command_queue, cl_p
 
 	//choose platform
 	cl_platform_id platform = ChoosePlatform();
-	if (platform == NULL) 
-	{
-		status = FAILURE;
-		return;
-	}
 
 	//get device list
 	cl_uint	numDevices = 0;
@@ -159,6 +154,50 @@ void InitializeOpenCL(cl_context& context, cl_command_queue& command_queue, cl_p
 	program = CreateBuildProgram("HelloWorld_Kernel.cl", numDevices, devices, context);
 }
 
+void clImageInOutInitialize(cl_context context, cv::Mat img_in, cv::Mat img_out, cl_mem& input_image, cl_mem& output_image)
+{
+	cl_int status;
+
+	//apo to mat sto opoio exoyme ta data ths eikonas mas ftiaxnoume mia 2d image poy mporei na perasei ston kernel
+	static const cl_image_format format = { CL_RGBA, CL_UNORM_INT8 };
+	input_image = clCreateImage2D (context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, &format,
+		img_in.rows, img_in.cols, 0, img_in.data, &status);
+	CheckError (status);
+	//kai kanoume xwro antistoixa gia to apotelesma
+	output_image = clCreateImage2D (context, CL_MEM_WRITE_ONLY, &format, img_in.rows, img_in.cols, 0, NULL, &status);
+	CheckError (status);
+
+}
+
+void RunKernelOnImage(cl_kernel& kernel, cl_mem input_image, cl_mem output_image, cv::Mat img_in, cv::Mat img_out, cl_command_queue& command_queue)
+{
+	/*set kernel args - defined above
+	clSetKernelArg (kernel, 0, sizeof (cl_mem), &inputImage);
+	clSetKernelArg (kernel, 1, sizeof (cl_mem), &filterWeightsBuffer);
+	clSetKernelArg (kernel, 2, sizeof (cl_mem), &outputImage);*/
+	clSetKernelArg (kernel, 0, sizeof (cl_mem), &input_image);
+	clSetKernelArg (kernel, 1, sizeof (cl_mem), &output_image);
+
+	//execute kernel EPI TELOUS
+	cl_uint work_dim = 2; //work_dim -> o arithmos diastasewn stis opoies tha doylepsoyme
+	std::size_t size [3] = { img_in.rows, img_in.cols, 1 }; //size -> o arithmos twn twork items pou tha xrhsimopoihsoyme
+	CheckError (clEnqueueNDRangeKernel (command_queue, kernel, work_dim, NULL, size, NULL, 0, NULL, NULL));
+
+	//antegrapse thn eikona eksodou sto Mat
+	std::size_t origin [3] = { 0 };
+	clEnqueueReadImage (command_queue, output_image, CL_TRUE, origin, size, 0, 0, img_out.data, 0, nullptr, nullptr);
+
+}
+
+void DisplaySaveImage(cv::Mat img)
+{
+	cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+    cv::imshow( "Display window", img);        
+	cv::waitKey(0);            
+
+	cv::imwrite( "result.png", img);
+}
+
 int main()
 {
 	//error variable
@@ -169,26 +208,21 @@ int main()
 	cl_program program;
 	InitializeOpenCL(context, command_queue, program);
 
-	/*create kernel (o kernel me onoma "Filter" brisketai sto arxeio poy molis kaname build)
-	cl_kernel kernel = clCreateKernel (program, "Filter", &status);
-	CheckError (status);*/
-	cl_kernel kernel = clCreateKernel (program, "CopyImage", &status);
-	CheckError (status);
-
 	//DO YOUR MAGIC =)
 
 	//open image using openCV and load into Mat
-	cv::Mat ImgIn = cv::imread("img.png",-1);
-	cv::Mat ImgOut = cv::imread("img.png",-1);
+	cv::Mat img1_in = cv::imread("img.png",-1);
+	cv::Mat img1_out = cv::imread("img.png",-1);
+	cv::Mat img2_in = cv::imread("img.png",-1);
+	cv::Mat img2_out = cv::imread("img.png",-1);
 
-	//apo to mat sto opoio exoyme ta data ths eikonas mas ftiaxnoume mia 2d image poy mporei na perasei ston kernel
-	static const cl_image_format format = { CL_RGBA, CL_UNORM_INT8 };
-	cl_mem inputImage = clCreateImage2D (context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, &format,
-		ImgIn.rows, ImgIn.cols, 0, ImgIn.data, &status);
-	CheckError (status);
-	//kai kanoume xwro antistoixa gia to apotelesma
-	cl_mem outputImage = clCreateImage2D (context, CL_MEM_WRITE_ONLY, &format, ImgIn.rows, ImgIn.cols, 0, NULL, &status);
-	CheckError (status);
+	cl_mem input_image1;
+	cl_mem output_image1;
+	clImageInOutInitialize(context, img1_in, img1_out, input_image1, output_image1);
+
+	cl_mem input_image2;
+	cl_mem output_image2;
+	clImageInOutInitialize(context, img2_in, img2_out, input_image2, output_image2);
 
 	/* Simple Gaussian blur filter
 	float filter [] = {
@@ -206,34 +240,25 @@ int main()
 	cl_mem filterWeightsBuffer = clCreateBuffer (context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof (float) * 9, filter, &status);
 	CheckError (status);*/
 
-	/*set kernel args - defined above
-	clSetKernelArg (kernel, 0, sizeof (cl_mem), &inputImage);
-	clSetKernelArg (kernel, 1, sizeof (cl_mem), &filterWeightsBuffer);
-	clSetKernelArg (kernel, 2, sizeof (cl_mem), &outputImage);*/
-	clSetKernelArg (kernel, 0, sizeof (cl_mem), &inputImage);
-	clSetKernelArg (kernel, 1, sizeof (cl_mem), &outputImage);
+	//create kernel (o kernel me onoma "Filter" brisketai sto arxeio poy molis kaname build)
+	cl_kernel kernel = clCreateKernel (program, "CopyImage", &status);
+	CheckError (status);
 
-	//execute kernel EPI TELOUS
-	cl_uint work_dim = 2; //work_dim -> o arithmos diastasewn stis opoies tha doylepsoyme
-	std::size_t size [3] = { ImgIn.rows, ImgIn.cols, 1 }; //size -> o arithmos twn twork items pou tha xrhsimopoihsoyme
-	CheckError (clEnqueueNDRangeKernel (command_queue, kernel, work_dim, NULL, size, NULL, 0, NULL, NULL));
+	RunKernelOnImage(kernel, input_image1, output_image1, img1_in, img1_out, command_queue);
+	RunKernelOnImage(kernel, input_image2, output_image2, img2_in, img2_out, command_queue);
 	
-	std::size_t origin [3] = { 0 };
-	clEnqueueReadImage (command_queue, outputImage, CL_TRUE, origin, size, 0, 0, ImgOut.data, 0, nullptr, nullptr);
-
-	 cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
-     cv::imshow( "Display window", ImgOut );        
-	 cv::waitKey(0);            
-
-	 cv::imwrite( "blured.png", ImgOut);
-
+	DisplaySaveImage(img1_out);
+	DisplaySaveImage(img2_out);
+	 
 	//cleanup
 	status = clReleaseCommandQueue(command_queue);
 	status = clReleaseContext(context);
 	status = clReleaseProgram (program);
 	//status = clReleaseMemObject(filterWeightsBuffer);
-	status = clReleaseMemObject(inputImage);
-	status = clReleaseMemObject(outputImage);
+	status = clReleaseMemObject(input_image1);
+	status = clReleaseMemObject(output_image1);
+	status = clReleaseMemObject(input_image2);
+	status = clReleaseMemObject(output_image2);
 	CheckError (status);
 
 }
