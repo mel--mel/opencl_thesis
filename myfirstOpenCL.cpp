@@ -185,17 +185,17 @@ void RunKernelOnImage(cl_kernel& kernel, cl_mem input_image, cl_mem output_image
 
 	//antegrapse thn eikona eksodou sto Mat
 	std::size_t origin [3] = { 0 };
-	clEnqueueReadImage (command_queue, output_image, CL_TRUE, origin, size, 0, 0, img_out.data, 0, nullptr, nullptr);
+	clEnqueueReadImage (command_queue, output_image, CL_TRUE, origin, size, 0, 0, img_out.data, 0, NULL, NULL);
 
 }
 
-void DisplaySaveImage(cv::Mat img)
+void DisplaySaveImage(cv::Mat img, std::string name)
 {
-	cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
-    cv::imshow( "Display window", img);        
+	cv::namedWindow(name, cv::WINDOW_AUTOSIZE );// Create a window for display.
+    cv::imshow(name, img);        
 	cv::waitKey(0);            
-
-	cv::imwrite( "result.png", img);
+	
+	cv::imwrite(name, img);	
 }
 
 int main()
@@ -211,10 +211,15 @@ int main()
 	//DO YOUR MAGIC =)
 
 	//open image using openCV and load into Mat
-	cv::Mat img1_in = cv::imread("img.png",-1);
+	cv::Mat img1_in = cv::imread("diplo000000-L.png",-1);
+	cv::Mat img1_out = cv::imread("diplo000000-L.png",-1);
+	cv::Mat img2_in = cv::imread("diplo000000-R.png",-1);
+	cv::Mat img2_out = cv::imread("diplo000000-R.png",-1);
+
+	/*cv::Mat img1_in = cv::imread("img.png",-1);
 	cv::Mat img1_out = cv::imread("img.png",-1);
 	cv::Mat img2_in = cv::imread("img.png",-1);
-	cv::Mat img2_out = cv::imread("img.png",-1);
+	cv::Mat img2_out = cv::imread("img.png",-1);*/
 
 	cl_mem input_image1;
 	cl_mem output_image1;
@@ -247,8 +252,8 @@ int main()
 	RunKernelOnImage(kernel, input_image1, output_image1, img1_in, img1_out, command_queue);
 	RunKernelOnImage(kernel, input_image2, output_image2, img2_in, img2_out, command_queue);
 	
-	DisplaySaveImage(img1_out);
-	DisplaySaveImage(img2_out);
+	DisplaySaveImage(img1_out, "Result1.png");
+	DisplaySaveImage(img2_out, "Result2.png");
 	 
 	//cleanup
 	status = clReleaseCommandQueue(command_queue);
