@@ -75,7 +75,7 @@ SimpleImage::readInputImage(std::string inputImageName)
 	CHECK_ALLOCATION(pixelStructArray,
                      "Failed to allocate memory! (pixelStructArray)");
 
-    // initializa the Image data to NULL
+    // initialize the Image data to NULL
     memset(outputImageData2D, 0, width * height * pixelSize);
     memset(outputImageData3D, 0, width * height * pixelSize);
 
@@ -252,7 +252,11 @@ SimpleImage::setupCL()
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage3D)");
 
 	//Create pixel struct buffer
-	cl_mem pixelStructBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE, width * height * sizeof(pixelStruct), NULL, NULL);
+	pixelStructBuffer = clCreateBuffer(context, 
+		                               CL_MEM_READ_WRITE, 
+									   width * height * sizeof(pixelStruct), 
+									   NULL, 
+									   NULL);
 
     // create a CL program using the kernel source
     buildProgramData buildData;

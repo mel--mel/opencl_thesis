@@ -62,6 +62,7 @@ class SimpleImage
         cl_mem inputImage3D;                /**< CL image buffer for input Image*/
         cl_mem outputImage2D;               /**< CL image buffer for Output Image*/
         cl_mem outputImage3D;               /**< CL image buffer for Output Image*/
+		cl_mem pixelStructBuffer;           /**< CL image buffer for pixelStructArray*/
 
         cl_uchar* verificationOutput;       /**< Output array for reference implementation */
         cl_command_queue commandQueue;      /**< CL command queue */
