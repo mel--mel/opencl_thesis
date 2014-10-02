@@ -14,10 +14,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************/
 
+typedef struct pixelStruct{
+    int pxl_value;
+    float mo;
+    int trsfrm;
+    unsigned row;
+    unsigned col;
+} pixelStruct;
+
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
 
 /* Copy input 2D image to output 2D image */
-__kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t output, __global void* bucket)
+__kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t output, __global pixelStruct* bucket)
 {
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
 
@@ -30,7 +38,7 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	uint4 temp3 = read_imageui(input, imageSampler, coord3);
 	uint4 temp4 = read_imageui(input, imageSampler, coord4);
 	uint4 temp = (temp1 + temp2 + temp3 + temp4) / 4;
-	
+
 	write_imageui(output, coord, temp);
 }
 
