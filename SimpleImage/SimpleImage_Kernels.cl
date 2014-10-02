@@ -18,8 +18,8 @@ typedef struct pixelStruct{
     int pxl_value;
     float mo;
     int trsfrm;
-    unsigned row;
-    unsigned col;
+    int row;
+    int col;
 } pixelStruct;
 
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
@@ -38,6 +38,14 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	uint4 temp3 = read_imageui(input, imageSampler, coord3);
 	uint4 temp4 = read_imageui(input, imageSampler, coord4);
 	uint4 temp = (temp1 + temp2 + temp3 + temp4) / 4;
+
+	int2 dim = get_image_dim(input);
+	int index = (coord.y)*(dim.x) + coord.x; 
+	bucket[index].pxl_value = 1;
+	bucket[index].mo = 1;
+	bucket[index].trsfrm = 0;
+	bucket[index].row = coord.y;
+	bucket[index].col = coord.x;
 
 	write_imageui(output, coord, temp);
 }

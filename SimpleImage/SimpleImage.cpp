@@ -431,6 +431,16 @@ SimpleImage::runCLKernels()
                                 0, 0, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
 
+	// Read from buffer to pixelStructArray
+	status = clEnqueueReadBuffer(commandQueue,
+ 								 pixelStructBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 pixelStructArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
+
     // Wait for the read buffer to finish execution
     status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
@@ -521,6 +531,13 @@ SimpleImage::run()
     // write the output image to bitmap file
     status = writeOutputImage(OUTPUT_IMAGE);
     CHECK_ERROR(status, SDK_SUCCESS, "write Output Image Failed");
+
+	//TEST print
+	std::cout << "pxl_value = " << pixelStructArray[1025].pxl_value << std::endl;
+	std::cout << "mo = " << pixelStructArray[1025].mo << std::endl;
+	std::cout << "trsfrm = " << pixelStructArray[1025].trsfrm << std::endl;
+	std::cout << "row = " << pixelStructArray[1025].row << std::endl;
+	std::cout << "col = " << pixelStructArray[1025].col << std::endl << std::endl;
 
     return SDK_SUCCESS;
 }
