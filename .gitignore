@@ -1,7 +1,5 @@
 #to diko mou gitignore
 *.exe
-*.vcxproj
-*.vcxproj.user
 *.sdf
 *.sln
 *.txt
@@ -12,6 +10,7 @@
 bin/
 docs/
 temp/
+HelloDisaster/
 
 # Windows image file caches
 Thumbs.db
