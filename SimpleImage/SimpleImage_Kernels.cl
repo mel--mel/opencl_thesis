@@ -15,11 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ********************************************************************/
 
 typedef struct pixelStruct{
-    int pxl_value;
-    float mo;
-    int trsfrm;
-    int row;
-    int col;
+    uint pxl_value;
+    uint mo;
+    int4 trsfrm;
+    uint row;
+    uint col;
 } pixelStruct;
 
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
@@ -27,9 +27,20 @@ __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CL
 /* Copy input 2D image to output 2D image */
 __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t output, __global pixelStruct* bucket)
 {
+	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
+	
+	//get image dimensions
+	int2 dim = get_image_dim(input);
+	
+	//calculate buffer index
+	int index = (coord.y)*(dim.x) + coord.x; 
+	
+	//fill struct
+	//bucket[index].pxl_value = read_imageui(input, imageSampler, coord);
 
-	int2 coord1 = (int2)(coord.x + 1, coord.y);
+
+	/*int2 coord1 = (int2)(coord.x + 1, coord.y);
 	int2 coord2 = (int2)(coord.x - 1, coord.y);
 	int2 coord3 = (int2)(coord.x, coord.y + 1);
 	int2 coord4 = (int2)(coord.x, coord.y - 1);
@@ -37,16 +48,13 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	uint4 temp2 = read_imageui(input, imageSampler, coord2);
 	uint4 temp3 = read_imageui(input, imageSampler, coord3);
 	uint4 temp4 = read_imageui(input, imageSampler, coord4);
-	uint4 temp = (temp1 + temp2 + temp3 + temp4) / 4;
+	bucket[index].mo = (temp1 + temp2 + temp3 + temp4) / 4;*/
 
-	int2 dim = get_image_dim(input);
-	int index = (coord.y)*(dim.x) + coord.x; 
-	bucket[index].pxl_value = 1;
-	bucket[index].mo = 1;
-	bucket[index].trsfrm = 0;
+	//bucket[index].trsfrm = (int4)(0);
 	bucket[index].row = coord.y;
 	bucket[index].col = coord.x;
 
+	uint4 temp = read_imageui(input, imageSampler, coord);
 	write_imageui(output, coord, temp);
 }
 

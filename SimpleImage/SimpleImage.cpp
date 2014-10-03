@@ -533,11 +533,11 @@ SimpleImage::run()
     CHECK_ERROR(status, SDK_SUCCESS, "write Output Image Failed");
 
 	//TEST print
-	std::cout << "pxl_value = " << pixelStructArray[1025].pxl_value << std::endl;
+	/*std::cout << "pxl_value = " << pixelStructArray[1025].pxl_value << std::endl;
 	std::cout << "mo = " << pixelStructArray[1025].mo << std::endl;
 	std::cout << "trsfrm = " << pixelStructArray[1025].trsfrm << std::endl;
 	std::cout << "row = " << pixelStructArray[1025].row << std::endl;
-	std::cout << "col = " << pixelStructArray[1025].col << std::endl << std::endl;
+	std::cout << "col = " << pixelStructArray[1025].col << std::endl << std::endl;*/
 
     return SDK_SUCCESS;
 }
