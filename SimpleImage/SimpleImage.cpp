@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "SimpleImage.hpp"
 #include <cmath>
+#include <vector>
 
 #define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
@@ -550,10 +551,11 @@ SimpleImage::run()
 	std::cout << "width*height*sizeof(pixelStruct) = " << width * height * sizeof(pixelStruct) << std::endl;
 	std::cout << "sizeof(pixelStruct) = " << sizeof(pixelStruct) << std::endl;*/
 	//std::cout << "pixelValue = " << pixelStructArray[1025].pxlValue << std::endl;
-	//std::cout << "mo = " << pixelStructArray[1025].mo << std::endl;
-	//std::cout << "trsfrm = " << pixelStructArray[1025].trsfrm << std::endl;
-	std::cout << "row = " << pixelStructArray[1025].row << std::endl;
-	std::cout << "col = " << pixelStructArray[1025].col << std::endl << std::endl;
+	printf("pxlValue = %d %d %d %d \n", pixelStructArray[5345].pxlValue);
+	printf("mo = %d %d %d %d \n", pixelStructArray[5345].mo);
+	printf("trsfrm = %d %d %d %d \n", pixelStructArray[5345].trsfrm);
+	std::cout << "row = " << pixelStructArray[5345].row << std::endl;
+	std::cout << "col = " << pixelStructArray[5345].col << std::endl << std::endl;
 
     return SDK_SUCCESS;
 }

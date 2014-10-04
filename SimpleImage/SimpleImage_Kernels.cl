@@ -41,7 +41,7 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	bucket[index].pxlValue = read_imageui(input, imageSampler, coord);
 
 
-	/*int2 coord1 = (int2)(coord.x + 1, coord.y);
+	int2 coord1 = (int2)(coord.x + 1, coord.y);
 	int2 coord2 = (int2)(coord.x - 1, coord.y);
 	int2 coord3 = (int2)(coord.x, coord.y + 1);
 	int2 coord4 = (int2)(coord.x, coord.y - 1);
@@ -49,8 +49,9 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	uint4 temp2 = read_imageui(input, imageSampler, coord2);
 	uint4 temp3 = read_imageui(input, imageSampler, coord3);
 	uint4 temp4 = read_imageui(input, imageSampler, coord4);
-	bucket[index].mo = (temp1 + temp2 + temp3 + temp4) / 4;*/
+	bucket[index].mo = (temp1 + temp2 + temp3 + temp4) / 4;
 
+	bucket[index].trsfrm = 0;
 	bucket[index].row = coord.y;
 	bucket[index].col = coord.x;
 
