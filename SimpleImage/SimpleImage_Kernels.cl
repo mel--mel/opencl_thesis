@@ -13,10 +13,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************/
+#pragma OPENCL EXTENSION cl_amd_printf : enable
 
-typedef struct pixelStruct{
-    uint pxl_value;
-    uint mo;
+typedef struct __attribute__((packed)) pixelStruct{
+    uint4 pxlValue;
+    uint4 mo;
     int4 trsfrm;
     uint row;
     uint col;
@@ -37,7 +38,7 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	int index = (coord.y)*(dim.x) + coord.x; 
 	
 	//fill struct
-	//bucket[index].pxl_value = read_imageui(input, imageSampler, coord);
+	bucket[index].pxlValue = read_imageui(input, imageSampler, coord);
 
 
 	/*int2 coord1 = (int2)(coord.x + 1, coord.y);
@@ -50,7 +51,6 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	uint4 temp4 = read_imageui(input, imageSampler, coord4);
 	bucket[index].mo = (temp1 + temp2 + temp3 + temp4) / 4;*/
 
-	//bucket[index].trsfrm = (int4)(0);
 	bucket[index].row = coord.y;
 	bucket[index].col = coord.x;
 

@@ -35,10 +35,10 @@ using namespace appsdk;
 #endif
 
 typedef struct pixelStruct{
-    cl_uint pxl_value;
-    cl_uint mo;
+    cl_uint4 pxlValue;
+    cl_uint4 mo;
     cl_int4 trsfrm;
-    cl_uint row;
+    cl_int row;
     cl_uint col;
 } pixelStruct;
 

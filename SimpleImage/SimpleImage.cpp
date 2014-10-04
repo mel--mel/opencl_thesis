@@ -75,6 +75,8 @@ SimpleImage::readInputImage(std::string inputImageName)
 	CHECK_ALLOCATION(pixelStructArray,
                      "Failed to allocate memory! (pixelStructArray)");
 
+	memset(pixelStructArray, 0, width * height * sizeof(pixelStruct));
+
     // initialize the Image data to NULL
     memset(outputImageData2D, 0, width * height * pixelSize);
     memset(outputImageData3D, 0, width * height * pixelSize);
@@ -257,6 +259,15 @@ SimpleImage::setupCL()
 									   width * height * sizeof(pixelStruct), 
 									   NULL, 
 									   NULL);
+
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 pixelStructBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 pixelStructArray,
+ 								 0, 0, 0);
+
 
     // create a CL program using the kernel source
     buildProgramData buildData;
@@ -533,11 +544,16 @@ SimpleImage::run()
     CHECK_ERROR(status, SDK_SUCCESS, "write Output Image Failed");
 
 	//TEST print
-	/*std::cout << "pxl_value = " << pixelStructArray[1025].pxl_value << std::endl;
-	std::cout << "mo = " << pixelStructArray[1025].mo << std::endl;
-	std::cout << "trsfrm = " << pixelStructArray[1025].trsfrm << std::endl;
+	/*cl_ulong size;
+	clGetDeviceInfo(devices[sampleArgs->deviceId], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &size, 0);
+	std::cout << "cl device local memory size in bytes = " << size << std::endl;
+	std::cout << "width*height*sizeof(pixelStruct) = " << width * height * sizeof(pixelStruct) << std::endl;
+	std::cout << "sizeof(pixelStruct) = " << sizeof(pixelStruct) << std::endl;*/
+	//std::cout << "pixelValue = " << pixelStructArray[1025].pxlValue << std::endl;
+	//std::cout << "mo = " << pixelStructArray[1025].mo << std::endl;
+	//std::cout << "trsfrm = " << pixelStructArray[1025].trsfrm << std::endl;
 	std::cout << "row = " << pixelStructArray[1025].row << std::endl;
-	std::cout << "col = " << pixelStructArray[1025].col << std::endl << std::endl;*/
+	std::cout << "col = " << pixelStructArray[1025].col << std::endl << std::endl;
 
     return SDK_SUCCESS;
 }
