@@ -73,6 +73,7 @@ class SimpleImage
 
         cl_kernel kernel2D;                 /**< CL kernel */
         cl_kernel kernel3D;                 /**< CL kernel */
+		cl_kernel colorArraysKernel;
 
         SDKBitMap inputBitmap;   /**< Bitmap class object */
         uchar4* pixelData;       /**< Pointer to image data */
@@ -85,6 +86,7 @@ class SimpleImage
 		pixelStruct* greenArray; /**< 1D Struct to help equalization */
 		pixelStruct* blueArray; /**< 1D Struct to help equalization */
 
+		size_t colorArraysKernelWorkGroupSize;
         size_t kernel2DWorkGroupSize;         /**< Group Size returned by kernel */
         size_t kernel3DWorkGroupSize;         /**< Group Size returned by kernel */
 

@@ -350,18 +350,18 @@ SimpleImage::setupCL()
     CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
 
     // get a kernel object handle for a kernel with the given name
-    kernel2D = clCreateKernel(program, "image2dCopy", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel2D)");
+    colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
 
     kernel3D = clCreateKernel(program, "image3dCopy", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel3D)");
 
     // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(kernel2D,
+    status = clGetKernelWorkGroupInfo(colorArraysKernel,
                                       devices[sampleArgs->deviceId],
                                       CL_KERNEL_WORK_GROUP_SIZE,
                                       sizeof(size_t),
-                                      &kernel2DWorkGroupSize,
+                                      &colorArraysKernelWorkGroupSize,
                                       0);
     CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
 
@@ -374,7 +374,7 @@ SimpleImage::setupCL()
                                       0);
     CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
 
-    cl_uint temp = (cl_uint)min(kernel2DWorkGroupSize, kernel3DWorkGroupSize);
+    cl_uint temp = (cl_uint)min(colorArraysKernelWorkGroupSize, kernel3DWorkGroupSize);
 
     if((blockSizeX * blockSizeY) > temp)
     {
@@ -402,11 +402,11 @@ SimpleImage::runCLKernels()
 {
     cl_int status;
 
-    // Set appropriate arguments to the kernel2D
+    // Set appropriate arguments to the colorArraysKernel
 
     // input buffer image
     status = clSetKernelArg(
-                 kernel2D,
+                 colorArraysKernel,
                  0,
                  sizeof(cl_mem),
                  &inputImage2D);
@@ -414,28 +414,28 @@ SimpleImage::runCLKernels()
 
     // outBuffer image
     status = clSetKernelArg(
-                 kernel2D,
+                 colorArraysKernel,
                  1,
                  sizeof(cl_mem),
                  &outputImage2D);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (outputImage2D)");
 
 	status = clSetKernelArg(
-                 kernel2D,
+                 colorArraysKernel,
                  2,
                  sizeof(cl_mem),
                  &redBuffer);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
 
 	status = clSetKernelArg(
-                 kernel2D,
+                 colorArraysKernel,
                  3,
                  sizeof(cl_mem),
                  &greenBuffer);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
 
 	status = clSetKernelArg(
-                 kernel2D,
+                 colorArraysKernel,
                  4,
                  sizeof(cl_mem),
                  &blueBuffer);
@@ -464,7 +464,7 @@ SimpleImage::runCLKernels()
 
     status = clEnqueueNDRangeKernel(
                  commandQueue,
-                 kernel2D,
+                 colorArraysKernel,
                  2,
                  NULL,
                  globalThreads,
@@ -667,8 +667,8 @@ SimpleImage::cleanup()
     // Releases OpenCL resources (Context, Memory etc.)
     cl_int status;
 
-    status = clReleaseKernel(kernel2D);
-    CHECK_OPENCL_ERROR(status,"clReleaseKernel failed.(kernel2D)");
+    status = clReleaseKernel(colorArraysKernel);
+    CHECK_OPENCL_ERROR(status,"clReleaseKernel failed.(colorArraysKernel)");
 
     status = clReleaseKernel(kernel3D);
     CHECK_OPENCL_ERROR(status,"clReleaseKernel failed.(kernel3D)");
