@@ -35,10 +35,10 @@ using namespace appsdk;
 #endif
 
 typedef struct pixelStruct{
-    cl_uint4 pxlValue;
-    cl_uint4 mo;
-    cl_int4 trsfrm;
-    cl_int row;
+    cl_uint pxlValue;
+    cl_float mo;
+    cl_int trsfrm;
+    cl_uint row;
     cl_uint col;
 } pixelStruct;
 
@@ -63,6 +63,9 @@ class SimpleImage
         cl_mem outputImage2D;               /**< CL image buffer for Output Image*/
         cl_mem outputImage3D;               /**< CL image buffer for Output Image*/
 		cl_mem pixelStructBuffer;           /**< CL image buffer for pixelStructArray*/
+		cl_mem redBuffer;           /**< CL image buffer for pixelStructArray*/
+		cl_mem greenBuffer;           /**< CL image buffer for pixelStructArray*/
+		cl_mem blueBuffer;           /**< CL image buffer for pixelStructArray*/
 
         cl_uchar* verificationOutput;       /**< Output array for reference implementation */
         cl_command_queue commandQueue;      /**< CL command queue */
@@ -78,6 +81,9 @@ class SimpleImage
         cl_uint height;                     /**< Height of image */
         cl_bool byteRWSupport;
 		pixelStruct* pixelStructArray; /**< 1D Struct to help equalization */
+		pixelStruct* redArray; /**< 1D Struct to help equalization */
+		pixelStruct* greenArray; /**< 1D Struct to help equalization */
+		pixelStruct* blueArray; /**< 1D Struct to help equalization */
 
         size_t kernel2DWorkGroupSize;         /**< Group Size returned by kernel */
         size_t kernel3DWorkGroupSize;         /**< Group Size returned by kernel */

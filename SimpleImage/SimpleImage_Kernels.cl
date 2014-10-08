@@ -16,9 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #pragma OPENCL EXTENSION cl_amd_printf : enable
 
 typedef struct __attribute__((packed)) pixelStruct{
-    uint4 pxlValue;
-    uint4 mo;
-    int4 trsfrm;
+    uint pxlValue;
+    float mo;
+    int trsfrm;
     uint row;
     uint col;
 } pixelStruct;
@@ -26,7 +26,8 @@ typedef struct __attribute__((packed)) pixelStruct{
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
 
 /* Copy input 2D image to output 2D image */
-__kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t output, __global pixelStruct* bucket)
+__kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t output, __global pixelStruct* red, 
+                         __global pixelStruct* green, __global pixelStruct* blue)
 {
 	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
@@ -38,22 +39,35 @@ __kernel void image2dCopy(__read_only image2d_t input, __write_only image2d_t ou
 	int index = (coord.y)*(dim.x) + coord.x; 
 	
 	//fill struct
-	bucket[index].pxlValue = read_imageui(input, imageSampler, coord);
+	uint4 pxlValue = read_imageui(input, imageSampler, coord);
+	red[index].pxlValue = pxlValue.x;
+	green[index].pxlValue = pxlValue.y;
+	blue[index].pxlValue = pxlValue.z;
 
 
 	int2 coord1 = (int2)(coord.x + 1, coord.y);
 	int2 coord2 = (int2)(coord.x - 1, coord.y);
 	int2 coord3 = (int2)(coord.x, coord.y + 1);
 	int2 coord4 = (int2)(coord.x, coord.y - 1);
-	uint4 temp1 = read_imageui(input, imageSampler, coord1);
-	uint4 temp2 = read_imageui(input, imageSampler, coord2);
-	uint4 temp3 = read_imageui(input, imageSampler, coord3);
-	uint4 temp4 = read_imageui(input, imageSampler, coord4);
-	bucket[index].mo = (temp1 + temp2 + temp3 + temp4) / 4;
+	float4 temp1 = convert_float4(read_imageui(input, imageSampler, coord1));
+	float4 temp2 = convert_float4(read_imageui(input, imageSampler, coord2));
+	float4 temp3 = convert_float4(read_imageui(input, imageSampler, coord3));
+	float4 temp4 = convert_float4(read_imageui(input, imageSampler, coord4));
+	float4 mo = (float4)(temp1 + temp2 + temp3 + temp4) / 4;
+	red[index].mo = mo.x;
+	green[index].mo = mo.y;
+	blue[index].mo = mo.z;
 
-	bucket[index].trsfrm = 0;
-	bucket[index].row = coord.y;
-	bucket[index].col = coord.x;
+	red[index].trsfrm = 0;
+	green[index].trsfrm = 0;
+	blue[index].trsfrm = 0;
+
+	red[index].row = coord.y;
+	red[index].col = coord.x;
+	green[index].row = coord.y;
+	green[index].col = coord.x;
+	blue[index].row = coord.y;
+	blue[index].col = coord.x;
 
 	uint4 temp = read_imageui(input, imageSampler, coord);
 	write_imageui(output, coord, temp);

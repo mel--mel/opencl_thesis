@@ -22,6 +22,25 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
 
+/*int compfunc(const void *pa, const void *pb){
+
+    pixelStruct a, b;
+
+    a = *(const pixelStruct*)pa;
+    b = *(const pixelStruct*)pb;
+
+	cl_uint4 m = a.pxlValue;
+	m.s[0] = 25;
+
+    if (a.pxlValue.s[0] == b.pxlValue.s[0] && a.mo.s[0] == b.mo.s[0]){
+        return 0;
+    } else if ((all(a.pxlValue) < all(b.pxlValue)) || (all(a.pxlValue) == all(b.pxlValue) && all(a.mo) < all(b.mo)) ){
+        return -1;
+    } else {
+        return 1;
+    }
+}*/
+
 int 
 SimpleImage::setupSimpleImage()
 {
@@ -72,11 +91,19 @@ SimpleImage::readInputImage(std::string inputImageName)
                      "Failed to allocate memory! (outputImageData)");
 
 	// allocate memory for 1D pixel struct array
-	pixelStructArray = (pixelStruct*)malloc(width * height * sizeof(pixelStruct));
-	CHECK_ALLOCATION(pixelStructArray,
-                     "Failed to allocate memory! (pixelStructArray)");
+	redArray = (pixelStruct*)malloc(width * height * sizeof(pixelStruct));
+	CHECK_ALLOCATION(redArray,
+                     "Failed to allocate memory! (redArray)");
+	greenArray = (pixelStruct*)malloc(width * height * sizeof(pixelStruct));
+	CHECK_ALLOCATION(greenArray,
+                     "Failed to allocate memory! (greenArray)");
+	blueArray = (pixelStruct*)malloc(width * height * sizeof(pixelStruct));
+	CHECK_ALLOCATION(blueArray,
+                     "Failed to allocate memory! (blueArray)");
 
-	memset(pixelStructArray, 0, width * height * sizeof(pixelStruct));
+	memset(redArray, 0, width * height * sizeof(pixelStruct));
+	memset(greenArray, 0, width * height * sizeof(pixelStruct));
+	memset(blueArray, 0, width * height * sizeof(pixelStruct));
 
     // initialize the Image data to NULL
     memset(outputImageData2D, 0, width * height * pixelSize);
@@ -254,21 +281,54 @@ SimpleImage::setupCL()
                                  &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage3D)");
 
-	//Create pixel struct buffer
-	pixelStructBuffer = clCreateBuffer(context, 
-		                               CL_MEM_READ_WRITE, 
-									   width * height * sizeof(pixelStruct), 
-									   NULL, 
-									   NULL);
+	//Create color buffers
+	redBuffer = clCreateBuffer(context, 
+		                       CL_MEM_READ_WRITE, 
+							   width * height * sizeof(pixelStruct), 
+							   NULL, 
+							   &status);
+	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (redBuffer)");
+
+	greenBuffer = clCreateBuffer(context, 
+		                       CL_MEM_READ_WRITE, 
+							   width * height * sizeof(pixelStruct), 
+							   NULL, 
+							   &status);
+	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (greenBuffer)");
+
+	blueBuffer = clCreateBuffer(context, 
+		                       CL_MEM_READ_WRITE, 
+							   width * height * sizeof(pixelStruct), 
+							   NULL, 
+							   &status);
+	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (blueBuffer)");
 
 	status = clEnqueueWriteBuffer(commandQueue,
- 								 pixelStructBuffer,
+ 								 redBuffer,
  								 1,
  								 0,
  								 width * height * sizeof(pixelStruct),
-								 pixelStructArray,
+								 redArray,
  								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
 
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 greenBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 greenArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (greenBuffer)");
+
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 blueBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 blueArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (blueBuffer)");
 
     // create a CL program using the kernel source
     buildProgramData buildData;
@@ -364,7 +424,21 @@ SimpleImage::runCLKernels()
                  kernel2D,
                  2,
                  sizeof(cl_mem),
-                 &pixelStructBuffer);
+                 &redBuffer);
+    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
+
+	status = clSetKernelArg(
+                 kernel2D,
+                 3,
+                 sizeof(cl_mem),
+                 &greenBuffer);
+    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
+
+	status = clSetKernelArg(
+                 kernel2D,
+                 4,
+                 sizeof(cl_mem),
+                 &blueBuffer);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
 
     // Set appropriate arguments to the kernel3D
@@ -445,11 +519,29 @@ SimpleImage::runCLKernels()
 
 	// Read from buffer to pixelStructArray
 	status = clEnqueueReadBuffer(commandQueue,
- 								 pixelStructBuffer,
+ 								 redBuffer,
  								 1,
  								 0,
  								 width * height * sizeof(pixelStruct),
-								 pixelStructArray,
+								 redArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
+
+	status = clEnqueueReadBuffer(commandQueue,
+ 								 greenBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 greenArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
+
+	status = clEnqueueReadBuffer(commandQueue,
+ 								 blueBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 blueArray,
  								 0, 0, 0);
 	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
 
@@ -540,6 +632,9 @@ SimpleImage::run()
     // Compute kernel time
     kernelTime = (double)(sampleTimer->readTimer(timer)) / iterations;
 
+	//sort pixel struct array
+    //qsort(pixelStructArray, (width * height), sizeof(pixelStruct), compfunc);
+
     // write the output image to bitmap file
     status = writeOutputImage(OUTPUT_IMAGE);
     CHECK_ERROR(status, SDK_SUCCESS, "write Output Image Failed");
@@ -550,12 +645,13 @@ SimpleImage::run()
 	std::cout << "cl device local memory size in bytes = " << size << std::endl;
 	std::cout << "width*height*sizeof(pixelStruct) = " << width * height * sizeof(pixelStruct) << std::endl;
 	std::cout << "sizeof(pixelStruct) = " << sizeof(pixelStruct) << std::endl;*/
-	//std::cout << "pixelValue = " << pixelStructArray[1025].pxlValue << std::endl;
-	printf("pxlValue = %d %d %d %d \n", pixelStructArray[5345].pxlValue);
+	std::cout << "redValue = " << redArray[1025].pxlValue << std::endl;
+	std::cout << "mo = " << redArray[1025].mo << std::endl;
+	/*printf("pxlValue = %d %d %d %d \n", pixelStructArray[5345].pxlValue);
 	printf("mo = %d %d %d %d \n", pixelStructArray[5345].mo);
-	printf("trsfrm = %d %d %d %d \n", pixelStructArray[5345].trsfrm);
-	std::cout << "row = " << pixelStructArray[5345].row << std::endl;
-	std::cout << "col = " << pixelStructArray[5345].col << std::endl << std::endl;
+	printf("trsfrm = %d %d %d %d \n", pixelStructArray[5345].trsfrm);*/
+	std::cout << "row = " << redArray[5345].row << std::endl;
+	std::cout << "col = " << redArray[5345].col << std::endl << std::endl;
 
     return SDK_SUCCESS;
 }
