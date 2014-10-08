@@ -353,6 +353,9 @@ SimpleImage::setupCL()
     colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
 
+	outputImageKernel = clCreateKernel(program, "createOutputImage", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(outputImageKernel)");
+
     kernel3D = clCreateKernel(program, "image3dCopy", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel3D)");
 
@@ -362,6 +365,15 @@ SimpleImage::setupCL()
                                       CL_KERNEL_WORK_GROUP_SIZE,
                                       sizeof(size_t),
                                       &colorArraysKernelWorkGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+	 // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(outputImageKernel,
+                                      devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &outputImageKernelWorkGroupSize,
                                       0);
     CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
 
@@ -375,7 +387,7 @@ SimpleImage::setupCL()
     CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
 
     cl_uint temp = (cl_uint)min(colorArraysKernelWorkGroupSize, kernel3DWorkGroupSize);
-
+	temp = (cl_uint)min(outputImageKernelWorkGroupSize, temp);
     if((blockSizeX * blockSizeY) > temp)
     {
         if(!sampleArgs->quiet)
@@ -420,6 +432,7 @@ SimpleImage::runCLKernels()
                  &outputImage2D);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (outputImage2D)");
 
+	//redBuffer
 	status = clSetKernelArg(
                  colorArraysKernel,
                  2,
@@ -427,6 +440,7 @@ SimpleImage::runCLKernels()
                  &redBuffer);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
 
+	//greenBuffer
 	status = clSetKernelArg(
                  colorArraysKernel,
                  3,
@@ -434,9 +448,41 @@ SimpleImage::runCLKernels()
                  &greenBuffer);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
 
+	//blueBuffer
 	status = clSetKernelArg(
                  colorArraysKernel,
                  4,
+                 sizeof(cl_mem),
+                 &blueBuffer);
+    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
+
+	 // Set appropriate arguments to the outputImageKernel
+
+    // outBuffer image
+    status = clSetKernelArg(
+                 outputImageKernel,
+                 0,
+                 sizeof(cl_mem),
+                 &outputImage2D);
+    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (outputImage2D)");
+
+	status = clSetKernelArg(
+                 outputImageKernel,
+                 1,
+                 sizeof(cl_mem),
+                 &redBuffer);
+    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
+
+	status = clSetKernelArg(
+                 outputImageKernel,
+                 2,
+                 sizeof(cl_mem),
+                 &greenBuffer);
+    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
+
+	status = clSetKernelArg(
+                 outputImageKernel,
+                 3,
                  sizeof(cl_mem),
                  &blueBuffer);
     CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
@@ -465,6 +511,18 @@ SimpleImage::runCLKernels()
     status = clEnqueueNDRangeKernel(
                  commandQueue,
                  colorArraysKernel,
+                 2,
+                 NULL,
+                 globalThreads,
+                 localThreads,
+                 0,
+                 NULL,
+                 0);
+    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
+
+	status = clEnqueueNDRangeKernel(
+                 commandQueue,
+                 outputImageKernel,
                  2,
                  NULL,
                  globalThreads,

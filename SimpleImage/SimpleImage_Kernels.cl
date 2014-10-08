@@ -69,7 +69,25 @@ __kernel void createColorArrays(__read_only image2d_t input, __write_only image2
 	blue[index].row = coord.y;
 	blue[index].col = coord.x;
 
-	uint4 temp = read_imageui(input, imageSampler, coord);
+	/*uint4 temp = read_imageui(input, imageSampler, coord);
+	write_imageui(output, coord, temp);*/
+}
+
+/*create 2D output image according to color buffers)*/
+__kernel void createOutputImage(__write_only image2d_t output, __global pixelStruct* red, 
+                         __global pixelStruct* green, __global pixelStruct* blue)
+{
+	//get image coordinates
+	int2 coord = (int2)(get_global_id(0), get_global_id(1));
+
+	//get image dimensions
+	int2 dim = get_image_dim(output);
+	
+	//calculate buffer index
+	int index = (coord.y)*(dim.x) + coord.x; 
+
+	uint4 temp = (uint4)(red[index].pxlValue, green[index].pxlValue, blue[index].pxlValue, 255);
+	
 	write_imageui(output, coord, temp);
 }
 
