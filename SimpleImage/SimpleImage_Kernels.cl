@@ -21,12 +21,13 @@ typedef struct __attribute__((packed)) pixelStruct{
     int trsfrm;
     uint row;
     uint col;
+	int indx;
 } pixelStruct;
 
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
 
 /* Copy input 2D image to output 2D image */
-__kernel void createColorArrays(__read_only image2d_t input, __write_only image2d_t output, __global pixelStruct* red, 
+__kernel void createColorArrays(__read_only image2d_t input, __global pixelStruct* red, 
                          __global pixelStruct* green, __global pixelStruct* blue)
 {
 	//get image coordinates
@@ -62,10 +63,13 @@ __kernel void createColorArrays(__read_only image2d_t input, __write_only image2
 	green[index].trsfrm = 0;
 	blue[index].trsfrm = 0;
 
+	red[index].indx = index;
 	red[index].row = coord.y;
 	red[index].col = coord.x;
+	green[index].indx = index;
 	green[index].row = coord.y;
 	green[index].col = coord.x;
+	blue[index].indx = index;
 	blue[index].row = coord.y;
 	blue[index].col = coord.x;
 
@@ -73,9 +77,28 @@ __kernel void createColorArrays(__read_only image2d_t input, __write_only image2
 	write_imageui(output, coord, temp);*/
 }
 
+/*create pixel array according to color buffers)*/
+__kernel void createPixelArray(__global pixelStruct* red, __global pixelStruct* green, 
+                               __global pixelStruct* blue, __global uint4* pixel, uint width)
+{
+	//get image coordinates
+	int2 coord = (int2)(get_global_id(0), get_global_id(1));
+
+	//calculate buffer index
+	int index = (coord.y)*width + coord.x; 
+
+	int indexRed = red[index].indx;
+	int indexGreen = green[index].indx;
+	int indexBlue = blue[index].indx;
+
+	pixel[indexRed].x = red[index].pxlValue;
+	pixel[indexGreen].y = green[index].pxlValue;
+	pixel[indexBlue].z = blue[index].pxlValue;
+	pixel[index].w = 255;
+}
+
 /*create 2D output image according to color buffers)*/
-__kernel void createOutputImage(__write_only image2d_t output, __global pixelStruct* red, 
-                         __global pixelStruct* green, __global pixelStruct* blue)
+__kernel void createOutputImage(__write_only image2d_t output, __global uint4* pixel)
 {
 	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
@@ -85,10 +108,8 @@ __kernel void createOutputImage(__write_only image2d_t output, __global pixelStr
 	
 	//calculate buffer index
 	int index = (coord.y)*(dim.x) + coord.x; 
-
-	uint4 temp = (uint4)(red[index].pxlValue, green[index].pxlValue, blue[index].pxlValue, 255);
 	
-	write_imageui(output, coord, temp);
+	write_imageui(output, coord, pixel[index]);
 }
 
 /* Copy input 3D image to 2D image */

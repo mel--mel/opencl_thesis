@@ -40,8 +40,8 @@ typedef struct pixelStruct{
     cl_int trsfrm;
     cl_uint row;
     cl_uint col;
+	cl_int indx;
 } pixelStruct;
-
 
 /**
 * SimpleImage
@@ -66,6 +66,7 @@ class SimpleImage
 		cl_mem redBuffer;           /**< CL image buffer for pixelStructArray*/
 		cl_mem greenBuffer;           /**< CL image buffer for pixelStructArray*/
 		cl_mem blueBuffer;           /**< CL image buffer for pixelStructArray*/
+		cl_mem pixelBuffer;
 
         cl_uchar* verificationOutput;       /**< Output array for reference implementation */
         cl_command_queue commandQueue;      /**< CL command queue */
@@ -75,6 +76,7 @@ class SimpleImage
         cl_kernel kernel3D;                 /**< CL kernel */
 		cl_kernel colorArraysKernel;
 		cl_kernel outputImageKernel;
+		cl_kernel pixelArrayKernel;
 
         SDKBitMap inputBitmap;   /**< Bitmap class object */
         uchar4* pixelData;       /**< Pointer to image data */
@@ -82,7 +84,7 @@ class SimpleImage
         cl_uint width;                      /**< Width of image */
         cl_uint height;                     /**< Height of image */
         cl_bool byteRWSupport;
-		pixelStruct* pixelStructArray; /**< 1D Struct to help equalization */
+		cl_uint4* pixelArray; /**< 1D Array to help image reconstruction */
 		pixelStruct* redArray; /**< 1D Struct to help equalization */
 		pixelStruct* greenArray; /**< 1D Struct to help equalization */
 		pixelStruct* blueArray; /**< 1D Struct to help equalization */
@@ -91,6 +93,7 @@ class SimpleImage
         size_t kernel3DWorkGroupSize;         /**< Group Size returned by kernel */
 		size_t colorArraysKernelWorkGroupSize;
 		size_t outputImageKernelWorkGroupSize;
+		size_t pixelArrayKernelWorkGroupSize;
 
         size_t blockSizeX;                  /**< Work-group size in x-direction */
         size_t blockSizeY;                  /**< Work-group size in y-direction */
@@ -144,7 +147,7 @@ class SimpleImage
             iterations = 1;
             imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
             imageFormat.image_channel_order = CL_RGBA;
-			pixelStructArray = NULL;
+			pixelArray = NULL;
         }
 
         ~SimpleImage()
