@@ -22,24 +22,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
 
-/*int compfunc(const void *pa, const void *pb){
+int compfunc(const void *pa, const void *pb){
 
     pixelStruct a, b;
 
     a = *(const pixelStruct*)pa;
     b = *(const pixelStruct*)pb;
 
-	cl_uint4 m = a.pxlValue;
-	m.s[0] = 25;
-
-    if (a.pxlValue.s[0] == b.pxlValue.s[0] && a.mo.s[0] == b.mo.s[0]){
+    if (a.pxlValue == b.pxlValue && a.mo == b.mo){
         return 0;
-    } else if ((all(a.pxlValue) < all(b.pxlValue)) || (all(a.pxlValue) == all(b.pxlValue) && all(a.mo) < all(b.mo)) ){
+    } else if ((a.pxlValue < b.pxlValue) || (a.pxlValue == b.pxlValue && a.mo < b.mo) ){
         return -1;
     } else {
         return 1;
     }
-}*/
+}
 
 int 
 SimpleImage::setupSimpleImage()
@@ -771,8 +768,9 @@ SimpleImage::run()
     // Compute kernel time
     kernelTime = (double)(sampleTimer->readTimer(timer)) / iterations;
 
-	//sort pixel struct array
-    //qsort(pixelStructArray, (width * height), sizeof(pixelStruct), compfunc);
+	qsort(redArray, (width * height), sizeof(pixelStruct), compfunc);
+	qsort(greenArray, (width * height), sizeof(pixelStruct), compfunc);
+	qsort(blueArray, (width * height), sizeof(pixelStruct), compfunc);
 
     // write the output image to bitmap file
     status = writeOutputImage(OUTPUT_IMAGE);
