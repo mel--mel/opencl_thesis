@@ -38,6 +38,48 @@ int compfunc(const void *pa, const void *pb){
     }
 }
 
+void histogramEqualization(pixelStruct *colorArray, cl_uint height, cl_uint width){
+
+    cl_uint i, j; 
+	int value, count, acc255;
+    float mo;
+    double acc;
+
+    //equalize
+    acc = 0;
+    count = 1;
+    value = colorArray[0].pxlValue;
+    mo = colorArray[0].mo;
+    for (i = 1; i < (width * height); i++){
+        if ((colorArray[i].pxlValue == value) && (colorArray[i].mo == mo)){
+            //count how many values are the same
+            count++;
+        }
+        else {
+            //find equalized value
+            acc += (double)count/((double)(width * height));
+            acc255 = (int)(acc*255);
+
+            //for every same pixel
+            //save transformation + change pixel to equalized value
+            for (j = (i - count); j < i; j++){
+                colorArray[j].trsfrm = acc255 - colorArray[j].pxlValue;
+                if (acc255 < 255){
+                    colorArray[j].pxlValue = acc255;
+                }else{
+                    colorArray[j].pxlValue = 255;
+                }
+            }
+
+            //start counting again
+            count = 1;
+            value = colorArray[i].pxlValue;
+            mo = colorArray[i].mo;
+        }
+
+    }
+}
+
 int 
 SimpleImage::setupSimpleImage()
 {
@@ -771,6 +813,10 @@ SimpleImage::run()
 	qsort(redArray, (width * height), sizeof(pixelStruct), compfunc);
 	qsort(greenArray, (width * height), sizeof(pixelStruct), compfunc);
 	qsort(blueArray, (width * height), sizeof(pixelStruct), compfunc);
+
+	histogramEqualization(redArray, height, width);
+	histogramEqualization(greenArray, height, width);
+	histogramEqualization(blueArray, height, width);
 
     // write the output image to bitmap file
     status = writeOutputImage(OUTPUT_IMAGE);
