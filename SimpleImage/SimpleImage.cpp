@@ -625,6 +625,71 @@ SimpleImage::runCLKernels()
                  0);
     CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
+	// Read from buffers to color arrays
+	status = clEnqueueReadBuffer(commandQueue,
+ 								 redBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 redArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
+
+	status = clEnqueueReadBuffer(commandQueue,
+ 								 greenBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 greenArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
+
+	status = clEnqueueReadBuffer(commandQueue,
+ 								 blueBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 blueArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
+
+	qsort(redArray, (width * height), sizeof(pixelStruct), compfunc);
+	qsort(greenArray, (width * height), sizeof(pixelStruct), compfunc);
+	qsort(blueArray, (width * height), sizeof(pixelStruct), compfunc);
+
+	histogramEqualization(redArray, height, width);
+	histogramEqualization(greenArray, height, width);
+	histogramEqualization(blueArray, height, width);
+
+	//write from equalized arrays back to buffers
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 redBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 redArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
+
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 greenBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 greenArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (greenBuffer)");
+
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 blueBuffer,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 blueArray,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (blueBuffer)");
+
+
 	status = clEnqueueNDRangeKernel(
                  commandQueue,
                  pixelArrayKernel,
@@ -692,34 +757,7 @@ SimpleImage::runCLKernels()
                                 0, 0, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
 
-	// Read from buffers to color arrays
-	status = clEnqueueReadBuffer(commandQueue,
- 								 redBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 redArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
-
-	status = clEnqueueReadBuffer(commandQueue,
- 								 greenBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 greenArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
-
-	status = clEnqueueReadBuffer(commandQueue,
- 								 blueBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 blueArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
-
+	
 	
 	// Read from buffer to pixel array
 	status = clEnqueueReadBuffer(commandQueue,
@@ -735,6 +773,8 @@ SimpleImage::runCLKernels()
     status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
 
+	
+	
     return SDK_SUCCESS;
 }
 
@@ -817,14 +857,6 @@ SimpleImage::run()
     sampleTimer->stopTimer(timer);
     // Compute kernel time
     kernelTime = (double)(sampleTimer->readTimer(timer)) / iterations;
-
-	qsort(redArray, (width * height), sizeof(pixelStruct), compfunc);
-	qsort(greenArray, (width * height), sizeof(pixelStruct), compfunc);
-	qsort(blueArray, (width * height), sizeof(pixelStruct), compfunc);
-
-	histogramEqualization(redArray, height, width);
-	histogramEqualization(greenArray, height, width);
-	histogramEqualization(blueArray, height, width);
 
     // write the output image to bitmap file
     status = writeOutputImage(OUTPUT_IMAGE);
