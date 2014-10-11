@@ -119,7 +119,31 @@ SimpleImage::readInputImage(std::string inputImageName)
     inputImageData = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
     CHECK_ALLOCATION(inputImageData,"Failed to allocate memory! (inputImageData)");
 
-    // allocate memory for 2D-copy output image data
+   
+
+    // get the pointer to pixel data
+    pixelData = inputBitmap.getPixels();
+    CHECK_ALLOCATION(pixelData,"Failed to read pixel Data!");
+
+    // Copy pixel data into inputImageData
+    memcpy(inputImageData, pixelData, width * height * pixelSize);
+
+    // allocate memory for verification output
+    verificationOutput = (cl_uchar*)malloc(width * height * pixelSize);
+    CHECK_ALLOCATION(pixelData,"verificationOutput heap allocation failed!");
+
+    // initialize the data to NULL
+    //memset(verificationOutput, 0, width * height * pixelSize);
+    memcpy(verificationOutput, inputImageData, width * height * pixelSize);
+
+    return SDK_SUCCESS;
+
+}
+
+int
+SimpleImage::setupBuffers()
+{
+	 // allocate memory for 2D-copy output image data
     outputImageData2D = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
     CHECK_ALLOCATION(outputImageData2D,
                      "Failed to allocate memory! (outputImageData)");
@@ -153,23 +177,7 @@ SimpleImage::readInputImage(std::string inputImageName)
     memset(outputImageData2D, 255, width * height * pixelSize);
     memset(outputImageData3D, 255, width * height * pixelSize);
 
-    // get the pointer to pixel data
-    pixelData = inputBitmap.getPixels();
-    CHECK_ALLOCATION(pixelData,"Failed to read pixel Data!");
-
-    // Copy pixel data into inputImageData
-    memcpy(inputImageData, pixelData, width * height * pixelSize);
-
-    // allocate memory for verification output
-    verificationOutput = (cl_uchar*)malloc(width * height * pixelSize);
-    CHECK_ALLOCATION(pixelData,"verificationOutput heap allocation failed!");
-
-    // initialize the data to NULL
-    //memset(verificationOutput, 0, width * height * pixelSize);
-    memcpy(verificationOutput, inputImageData, width * height * pixelSize);
-
-    return SDK_SUCCESS;
-
+	return SDK_SUCCESS;
 }
 
 
@@ -965,6 +973,12 @@ main(int argc, char * argv[])
     SimpleImage clSimpleImage;
 
 	status = clSimpleImage.setupSimpleImage();
+    if(status != SDK_SUCCESS)
+    {
+        return status;
+    }
+
+	status = clSimpleImage.setupBuffers();
     if(status != SDK_SUCCESS)
     {
         return status;
