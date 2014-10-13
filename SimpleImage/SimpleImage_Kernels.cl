@@ -54,7 +54,7 @@ __kernel void createColorArrays(__read_only image2d_t input, __global pixelStruc
 	float4 temp2 = convert_float4(read_imageui(input, imageSampler, coord2));
 	float4 temp3 = convert_float4(read_imageui(input, imageSampler, coord3));
 	float4 temp4 = convert_float4(read_imageui(input, imageSampler, coord4));
-	float4 mo = (float4)(temp1 + temp2 + temp3 + temp4) / 4;
+	float4 mo = (float4)(temp1 + temp2 + temp3 + temp4) / 4.0;
 	red[index].mo = mo.x;
 	green[index].mo = mo.y;
 	blue[index].mo = mo.z;
@@ -78,8 +78,9 @@ __kernel void createColorArrays(__read_only image2d_t input, __global pixelStruc
 }
 
 /*create pixel array according to color buffers)*/
-__kernel void createPixelArray(__global pixelStruct* red, __global pixelStruct* green, 
-                               __global pixelStruct* blue, __global uint4* pixel, uint width)
+__kernel void createPixelArray(__global pixelStruct* redIn, __global pixelStruct* greenIn, __global pixelStruct* blueIn, 
+                               __global pixelStruct* redOut, __global pixelStruct* greenOut, __global pixelStruct* blueOut, 
+							   uint width)
 {
 	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
@@ -87,18 +88,18 @@ __kernel void createPixelArray(__global pixelStruct* red, __global pixelStruct* 
 	//calculate buffer index
 	int index = (coord.y)*width + coord.x; 
 
-	int indexRed = red[index].indx;
-	int indexGreen = green[index].indx;
-	int indexBlue = blue[index].indx;
+	int indexRed = redIn[index].indx;
+	int indexGreen = greenIn[index].indx;
+	int indexBlue = blueIn[index].indx;
 
-	pixel[indexRed].x = red[index].pxlValue;
-	pixel[indexGreen].y = green[index].pxlValue;
-	pixel[indexBlue].z = blue[index].pxlValue;
-	pixel[index].w = 255;
+	redOut[indexRed].pxlValue = redIn[index].pxlValue;
+	greenOut[indexGreen].pxlValue = greenIn[index].pxlValue;
+	blueOut[indexBlue].pxlValue = blueIn[index].pxlValue;
 }
 
 /*create 2D output image according to color buffers)*/
-__kernel void createOutputImage(__write_only image2d_t output, __global uint4* pixel)
+__kernel void createOutputImage(__write_only image2d_t output, 
+                                __global pixelStruct* redOut, __global pixelStruct* greenOut, __global pixelStruct* blueOut)
 {
 	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
@@ -109,7 +110,13 @@ __kernel void createOutputImage(__write_only image2d_t output, __global uint4* p
 	//calculate buffer index
 	int index = (coord.y)*(dim.x) + coord.x; 
 	
-	write_imageui(output, coord, pixel[index]);
+	uint4 pixel;
+	pixel.x = redOut[index].pxlValue;
+	pixel.y = greenOut[index].pxlValue;
+	pixel.z = blueOut[index].pxlValue;
+	pixel.w = 255;
+
+	write_imageui(output, coord, pixel);
 }
 
 /* Copy input 3D image to 2D image */
