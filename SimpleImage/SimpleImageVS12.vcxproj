@@ -220,6 +220,7 @@ copy SimpleImage_Input.bmp "$(OutDir)SimpleImage_Input.bmp" /Y
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HelpingFunctions.cpp" />
     <ClCompile Include="SimpleImage.cpp" />
   </ItemGroup>
   <ItemGroup>

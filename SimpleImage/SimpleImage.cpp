@@ -16,11 +16,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 #include "SimpleImage.hpp"
+#include "HelpingFunctions.cpp"
 #include <cmath>
 #include <vector>
 
 #define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
+
+
 
 int compfunc(const void *pa, const void *pb){
 
@@ -530,148 +533,17 @@ SimpleImage::runCLKernels()
     cl_int status;
 
     // Set appropriate arguments to the colorArraysKernel
-
-    // input buffer image
-    status = clSetKernelArg(
-                 colorArraysKernel,
-                 0,
-                 sizeof(cl_mem),
-                 &inputImage2D);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (inputImage2D)");
-
-	//redBuffer
-	status = clSetKernelArg(
-                 colorArraysKernel,
-                 1,
-                 sizeof(cl_mem),
-                 &redBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
-
-	//greenBuffer
-	status = clSetKernelArg(
-                 colorArraysKernel,
-                 2,
-                 sizeof(cl_mem),
-                 &greenBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
-
-	//blueBuffer
-	status = clSetKernelArg(
-                 colorArraysKernel,
-                 3,
-                 sizeof(cl_mem),
-                 &blueBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (pixelStructBuffer)");
+	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
 
 	// Set appropriate arguments to the pixelArrayKernel
-
-	//redBuffer
-	status = clSetKernelArg(
-                 pixelArrayKernel,
-                 0,
-                 sizeof(cl_mem),
-                 &redBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (redBuffer)");
-
-	//greenBuffer
-	status = clSetKernelArg(
-                 pixelArrayKernel,
-                 1,
-                 sizeof(cl_mem),
-                 &greenBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (greenBuffer)");
-
-	//blueBuffer
-	status = clSetKernelArg(
-                 pixelArrayKernel,
-                 2,
-                 sizeof(cl_mem),
-                 &blueBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (blueBuffer)");
-
-	//redBuffer
-	status = clSetKernelArg(
-                 pixelArrayKernel,
-                 3,
-                 sizeof(cl_mem),
-                 &redSortedBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (redBuffer)");
-
-	//greenBuffer
-	status = clSetKernelArg(
-                 pixelArrayKernel,
-                 4,
-                 sizeof(cl_mem),
-                 &greenSortedBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (greenBuffer)");
-
-	//blueBuffer
-	status = clSetKernelArg(
-                 pixelArrayKernel,
-                 5,
-                 sizeof(cl_mem),
-                 &blueSortedBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (blueBuffer)");
-
-	// width
-    status = clSetKernelArg(
-                 pixelArrayKernel,
-                 6,
-                 sizeof(cl_uint),
-                 &width);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (outputImage2D)");
-
-	 // Set appropriate arguments to the outputImageKernel
-
-    // outBuffer image
-    status = clSetKernelArg(
-                 outputImageKernel,
-                 0,
-                 sizeof(cl_mem),
-                 &outputImage2D);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (outputImage2D)");
-
-	//redBuffer
-	status = clSetKernelArg(
-                 outputImageKernel,
-                 1,
-                 sizeof(cl_mem),
-                 &redSortedBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (redBuffer)");
-
-	//greenBuffer
-	status = clSetKernelArg(
-                 outputImageKernel,
-                 2,
-                 sizeof(cl_mem),
-                 &greenSortedBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (greenBuffer)");
-
-	//blueBuffer
-	status = clSetKernelArg(
-                 outputImageKernel,
-                 3,
-                 sizeof(cl_mem),
-                 &blueSortedBuffer);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (blueBuffer)");
-
+	pushArguments(pixelArrayKernel, &redBuffer, &greenBuffer, &blueBuffer, 
+				&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer, &width);
+	
+	// Set appropriate arguments to the outputImageKernel
+	pushArguments(outputImageKernel, &outputImage2D, &redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer);
 
     // Set appropriate arguments to the kernel3D
-
-    // input buffer image
-    status = clSetKernelArg(kernel3D,
-                            0,
-                            sizeof(cl_mem),
-                            &inputImage3D);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (inputImage3D)");
-
-    // outBuffer image
-    status = clSetKernelArg(
-                 kernel3D,
-                 1,
-                 sizeof(cl_mem),
-                 &outputImage3D);
-    CHECK_OPENCL_ERROR(status,"clSetKernelArg failed. (outputImage3D)");
+	pushArguments(kernel3D, &inputImage3D, &outputImage3D);
 
     // Enqueue a kernel run call.
     size_t globalThreads[] = {width, height};
@@ -958,6 +830,9 @@ SimpleImage::run()
 	printf("trsfrm = %d %d %d %d \n", pixelStructArray[5345].trsfrm);*/
 	/*std::cout << "row = " << redArray[5345].row << std::endl;
 	std::cout << "col = " << redArray[5345].col << std::endl << std::endl;*/
+
+	int x = 10;
+	//pushArgs(1, &x, &x, NULL);
 
     return SDK_SUCCESS;
 }

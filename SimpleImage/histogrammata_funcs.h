@@ -1,4 +1,5 @@
 #ifndef HISTOGRAMMATA_FUNCS
+#define HISTOGRAMMATA_FUNCS
 
 typedef struct pixel_struct{
     unsigned pxl_value;
