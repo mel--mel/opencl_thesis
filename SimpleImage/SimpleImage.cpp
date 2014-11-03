@@ -780,6 +780,8 @@ int SimpleImage::setup()
         return status;
     }
 
+	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
+
 	status = dump();
 	if(status != SDK_SUCCESS)
     {
@@ -965,9 +967,9 @@ int main(int argc, char * argv[])
 
 	CHECK_OPENCL_ERROR(clSimpleImage.setupSimpleImage(), "setupSimpleImage() failed");
 
-    CHECK_OPENCL_ERROR(clSimpleImage.setupBuffers(), "setupBuffers() failed");
+	//CHECK_OPENCL_ERROR(clSimpleImage.setupBuffers(), "setupBuffers() failed");
 
-    CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
+	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
 	CHECK_OPENCL_ERROR(clSimpleImage.run(), "run() failed");
 
