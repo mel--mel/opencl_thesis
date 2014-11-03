@@ -230,11 +230,11 @@ int SimpleImage::setupCL()
     cl_platform_id platform = NULL;
     int retValue = getPlatform(platform, sampleArgs->platformId,
                                sampleArgs->isPlatformEnabled());
-    CHECK_ERROR(retValue, SDK_SUCCESS, "getPlatform() failed");
+    CHECK_OPENCL_ERROR(retValue, "getPlatform() failed");
 
     // Display available devices.
     retValue = displayDevices(platform, dType);
-    CHECK_ERROR(retValue, SDK_SUCCESS, "displayDevices() failed");
+    CHECK_OPENCL_ERROR(retValue, "displayDevices() failed");
 
     // If we could find our platform, use it. Otherwise use just available platform.
     cl_context_properties cps[3] =
@@ -260,7 +260,7 @@ int SimpleImage::setupCL()
     */
 	status = getDevices(context, &devices, sampleArgs->deviceId,
                         sampleArgs->isDeviceIdEnabled());
-    CHECK_ERROR(status, SDK_SUCCESS, "getDevices() failed");
+    CHECK_OPENCL_ERROR(status, "getDevices() failed");
 
     status = deviceInfo.setDeviceInfo(devices[sampleArgs->deviceId]);
     CHECK_OPENCL_ERROR(status, "deviceInfo.setDeviceInfo failed");
@@ -305,7 +305,6 @@ int SimpleImage::setupCL()
 
 	return SDK_SUCCESS;
 }
-
 	
 int SimpleImage::dump(){
 
@@ -536,9 +535,6 @@ int SimpleImage::dump(){
     }
     return SDK_SUCCESS;
 }
-
-
-
 
 int SimpleImage::runCLKernels()
 {
@@ -967,40 +963,19 @@ int main(int argc, char * argv[])
     int status = 0;
     SimpleImage clSimpleImage;
 
-	status = clSimpleImage.setupSimpleImage();
-    if(status != SDK_SUCCESS)
-    {
-        return status;
-    }
+	CHECK_OPENCL_ERROR(clSimpleImage.setupSimpleImage(), "setupSimpleImage() failed");
 
-	status = clSimpleImage.setupBuffers();
-    if(status != SDK_SUCCESS)
-    {
-        return status;
-    }
+    CHECK_OPENCL_ERROR(clSimpleImage.setupBuffers(), "setupBuffers() failed");
 
-
-    status = clSimpleImage.setup();
-    if(status != SDK_SUCCESS)
-    {
-        return status;
-    }
+    CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
-    if (clSimpleImage.run() !=SDK_SUCCESS)
-    {
-        return SDK_FAILURE;
-    }
+	CHECK_OPENCL_ERROR(clSimpleImage.run(), "run() failed");
 
-    if (clSimpleImage.verifyResults() != SDK_SUCCESS)
-    {
-        return SDK_FAILURE;
-    }
-	
-    if (clSimpleImage.cleanup() != SDK_SUCCESS)
-    {
-        return SDK_FAILURE;
-    }
+	CHECK_OPENCL_ERROR(clSimpleImage.verifyResults(), "verifyResults() failed");
+
+	CHECK_OPENCL_ERROR(clSimpleImage.cleanup(), "cleanup() failed");
 	
     clSimpleImage.printStats();
+
     return SDK_SUCCESS;
 }
