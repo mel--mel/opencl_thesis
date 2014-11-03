@@ -774,19 +774,13 @@ int SimpleImage::setup()
     sampleTimer->resetTimer(timer);
     sampleTimer->startTimer(timer);
 
-    status = setupCL();
-    if(status != SDK_SUCCESS)
-    {
-        return status;
-    }
+	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
+
+	CHECK_OPENCL_ERROR(setupSimpleImage(), "setupSimpleImage() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 
-	status = dump();
-	if(status != SDK_SUCCESS)
-    {
-        return status;
-    }
+	CHECK_OPENCL_ERROR(dump(), "dump() failed");
 
     sampleTimer->stopTimer(timer);
     // Compute setup time
@@ -965,9 +959,6 @@ int main(int argc, char * argv[])
     int status = 0;
     SimpleImage clSimpleImage;
 
-	CHECK_OPENCL_ERROR(clSimpleImage.setupSimpleImage(), "setupSimpleImage() failed");
-
-	//CHECK_OPENCL_ERROR(clSimpleImage.setupBuffers(), "setupBuffers() failed");
 
 	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
