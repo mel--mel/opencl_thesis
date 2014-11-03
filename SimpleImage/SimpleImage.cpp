@@ -271,6 +271,28 @@ int SimpleImage::setupCL()
                        &status);
     CHECK_OPENCL_ERROR(status,"clCreateCommandQueue failed.");
 
+	
+    // create a CL program using the kernel source
+    buildProgramData buildData;
+    buildData.kernelName = std::string("SimpleImage_Kernels.cl");
+    buildData.devices = devices;
+    buildData.deviceId = sampleArgs->deviceId;
+    buildData.flagsStr = std::string("");
+    if(sampleArgs->isLoadBinaryEnabled())
+    {
+        buildData.binaryName = std::string(sampleArgs->loadBinary.c_str());
+    }
+
+    if(sampleArgs->isComplierFlagsSpecified())
+    {
+        buildData.flagsFileName = std::string(sampleArgs->flags.c_str());
+    }
+
+    retValue = buildOpenCLProgram(program, context, buildData);
+    CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+
     // Create and initialize image objects
     cl_image_desc imageDesc;
     memset(&imageDesc, '\0', sizeof(cl_image_desc));
@@ -419,24 +441,10 @@ int SimpleImage::setupCL()
  								 0, 0, 0);
 	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (blueBuffer)");
 
-    // create a CL program using the kernel source
-    buildProgramData buildData;
-    buildData.kernelName = std::string("SimpleImage_Kernels.cl");
-    buildData.devices = devices;
-    buildData.deviceId = sampleArgs->deviceId;
-    buildData.flagsStr = std::string("");
-    if(sampleArgs->isLoadBinaryEnabled())
-    {
-        buildData.binaryName = std::string(sampleArgs->loadBinary.c_str());
-    }
+	////////////////////////////////////////////////////////////////////////////////
 
-    if(sampleArgs->isComplierFlagsSpecified())
-    {
-        buildData.flagsFileName = std::string(sampleArgs->flags.c_str());
-    }
 
-    retValue = buildOpenCLProgram(program, context, buildData);
-    CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // get a kernel object handle for a kernel with the given name
     colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
