@@ -206,6 +206,9 @@ int SimpleImage::setupCL()
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
 
+	/*
+	*find which device type is available
+	*/
     if(sampleArgs->deviceType.compare("cpu") == 0)
     {
         dType = CL_DEVICE_TYPE_CPU;
@@ -241,6 +244,9 @@ int SimpleImage::setupCL()
         0
     };
 
+	/*
+	*create context analoga me deviceType kai platform
+	*/
     context = clCreateContextFromType(
                   cps,
                   dType,
@@ -249,8 +255,10 @@ int SimpleImage::setupCL()
                   &status);
     CHECK_OPENCL_ERROR(status, "clCreateContextFromType failed.");
 
-    // getting device on which to run the sample
-    status = getDevices(context, &devices, sampleArgs->deviceId,
+    /*
+	*get device on which to run the sample
+    */
+	status = getDevices(context, &devices, sampleArgs->deviceId,
                         sampleArgs->isDeviceIdEnabled());
     CHECK_ERROR(status, SDK_SUCCESS, "getDevices() failed");
 
@@ -262,8 +270,10 @@ int SimpleImage::setupCL()
         OPENCL_EXPECTED_ERROR(" Expected Error: Device does not support Images");
     }
 
-    // Create command queue
-    cl_command_queue_properties prop = 0;
+    /*
+	*Create command queue
+    */
+	cl_command_queue_properties prop = 0;
     commandQueue = clCreateCommandQueue(
                        context,
                        devices[sampleArgs->deviceId],
@@ -272,8 +282,10 @@ int SimpleImage::setupCL()
     CHECK_OPENCL_ERROR(status,"clCreateCommandQueue failed.");
 
 	
-    // create a CL program using the kernel source
-    buildProgramData buildData;
+    /* 
+	*create a CL program using the kernel source
+    */
+	buildProgramData buildData;
     buildData.kernelName = std::string("SimpleImage_Kernels.cl");
     buildData.devices = devices;
     buildData.deviceId = sampleArgs->deviceId;
@@ -291,7 +303,13 @@ int SimpleImage::setupCL()
     retValue = buildOpenCLProgram(program, context, buildData);
     CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
 
-	//////////////////////////////////////////////////////////////////////////////////////////////
+	return SDK_SUCCESS;
+}
+
+	
+int SimpleImage::dump(){
+
+	int status;
 
     // Create and initialize image objects
     cl_image_desc imageDesc;
@@ -518,6 +536,9 @@ int SimpleImage::setupCL()
     }
     return SDK_SUCCESS;
 }
+
+
+
 
 int SimpleImage::runCLKernels()
 {
@@ -759,6 +780,12 @@ int SimpleImage::setup()
 
     status = setupCL();
     if(status != SDK_SUCCESS)
+    {
+        return status;
+    }
+
+	status = dump();
+	if(status != SDK_SUCCESS)
     {
         return status;
     }
