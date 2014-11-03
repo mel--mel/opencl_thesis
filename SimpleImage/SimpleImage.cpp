@@ -803,43 +803,19 @@ int SimpleImage::run()
     sampleTimer->resetTimer(timer);
     sampleTimer->startTimer(timer);
 
-    std::cout << "Executing kernel for " << iterations <<
-              " iterations" <<std::endl;
-    std::cout << "-------------------------------------------" << std::endl;
+    // Set kernel arguments and run kernel
+    status = runCLKernels();
+    CHECK_OPENCL_ERROR(runCLKernels(), "OpenCL run Kernel failed");
 
-    for(int i = 0; i < iterations; i++)
-    {
-        // Set kernel arguments and run kernel
-        status = runCLKernels();
-        CHECK_ERROR(status, SDK_SUCCESS, "OpenCL run Kernel failed");
-    }
-
+	// Compute kernel time
     sampleTimer->stopTimer(timer);
-    // Compute kernel time
     kernelTime = (double)(sampleTimer->readTimer(timer)) / iterations;
 
     // write the output image to bitmap file
-    status = writeOutputImage(OUTPUT_IMAGE);
-    CHECK_ERROR(status, SDK_SUCCESS, "write Output Image Failed");
+    CHECK_OPENCL_ERROR(writeOutputImage(OUTPUT_IMAGE), "write Output Image Failed");
 
 	//TEST print
-	/*cl_ulong size;
-	clGetDeviceInfo(devices[sampleArgs->deviceId], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &size, 0);
-	std::cout << "cl device local memory size in bytes = " << size << std::endl;
-	std::cout << "width*height*sizeof(pixelStruct) = " << width * height * sizeof(pixelStruct) << std::endl;
-	std::cout << "sizeof(pixelStruct) = " << sizeof(pixelStruct) << std::endl;*/
-	/*std::cout << "redValue = " << redArray[5345].pxlValue << std::endl;
-	std::cout << "greenValue = " << greenArray[5345].pxlValue << std::endl;
-	std::cout << "blueValue = " << blueArray[5345].pxlValue << std::endl;
-	std::cout << "mo = " << redArray[5345].mo << std::endl;
-	printf("pxlValue = %d %d %d %d \n", pixelArray[redArray[5345].indx]);*/
-	/*printf("mo = %d %d %d %d \n", pixelStructArray[5345].mo);
-	printf("trsfrm = %d %d %d %d \n", pixelStructArray[5345].trsfrm);*/
-	/*std::cout << "row = " << redArray[5345].row << std::endl;
-	std::cout << "col = " << redArray[5345].col << std::endl << std::endl;*/
-
-	int x = 10;
-	//pushArgs(1, &x, &x, NULL);
+	//o,ti thelw
 
     return SDK_SUCCESS;
 }
@@ -958,7 +934,6 @@ int main(int argc, char * argv[])
 {
     int status = 0;
     SimpleImage clSimpleImage;
-
 
 	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
