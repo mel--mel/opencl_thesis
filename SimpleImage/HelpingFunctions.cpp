@@ -16,7 +16,6 @@ inline int pushArgument(cl_kernel kernel, T* a, cl_uint id)
 
 	return SDK_SUCCESS;
 }
-
 template <typename T1> 
 inline void pushArguments(cl_kernel kernel, T1* a1)
 {

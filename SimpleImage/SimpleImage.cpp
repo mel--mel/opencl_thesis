@@ -23,8 +23,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
 
-
-
 int compfunc(const void *pa, const void *pb){
 
     pixelStruct a, b;
@@ -90,8 +88,8 @@ void setZero(pixelStruct *array, cl_uint height, cl_uint width)
 			array[i*width + j].mo = 0;
 			array[i*width + j].pxlValue = 0;}}
 }
-int 
-SimpleImage::setupSimpleImage()
+
+int SimpleImage::setupSimpleImage()
 {
 	int status = 0;
 
@@ -106,9 +104,7 @@ SimpleImage::setupSimpleImage()
 	return status;
 }
 
-
-int
-SimpleImage::readInputImage(std::string inputImageName)
+int SimpleImage::readInputImage(std::string inputImageName)
 {
 
     // load input bitmap image
@@ -150,16 +146,15 @@ SimpleImage::readInputImage(std::string inputImageName)
 
 }
 
-int
-SimpleImage::setupBuffers()
+int SimpleImage::setupBuffers()
 {
 	 // allocate memory for 2D-copy output image data
-    outputImageData2D = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
+    outputImageData2D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
     CHECK_ALLOCATION(outputImageData2D,
                      "Failed to allocate memory! (outputImageData)");
 
     // allocate memory for 3D-copy output image data
-    outputImageData3D = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
+    outputImageData3D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
     CHECK_ALLOCATION(outputImageData3D,
                      "Failed to allocate memory! (outputImageData)");
 
@@ -174,18 +169,10 @@ SimpleImage::setupBuffers()
 	CHECK_ALLOCATION(blueArray,
                      "Failed to allocate memory! (blueArray)");
 
-	
-
-    // initialize the Image data to NULL
-    memset(outputImageData2D, 255, width * height * pixelSize);
-    memset(outputImageData3D, 255, width * height * pixelSize);
-
 	return SDK_SUCCESS;
 }
 
-
-int
-SimpleImage::writeOutputImage(std::string outputImageName)
+int SimpleImage::writeOutputImage(std::string outputImageName)
 {
     // copy output image data back to original pixel data
     memcpy(pixelData, outputImageData2D, width * height * pixelSize);
@@ -199,8 +186,7 @@ SimpleImage::writeOutputImage(std::string outputImageName)
     return SDK_SUCCESS;
 }
 
-int
-SimpleImage::genBinaryImage()
+int SimpleImage::genBinaryImage()
 {
     bifData binaryData;
     binaryData.kernelName = std::string("SimpleImage_Kernels.cl");
@@ -215,9 +201,7 @@ SimpleImage::genBinaryImage()
     return status;
 }
 
-
-int
-SimpleImage::setupCL()
+int SimpleImage::setupCL()
 {
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
@@ -527,8 +511,7 @@ SimpleImage::setupCL()
     return SDK_SUCCESS;
 }
 
-int
-SimpleImage::runCLKernels()
+int SimpleImage::runCLKernels()
 {
     cl_int status;
 
@@ -731,8 +714,7 @@ SimpleImage::runCLKernels()
     return SDK_SUCCESS;
 }
 
-int
-SimpleImage::initialize()
+int SimpleImage::initialize()
 {
 
     // Call base class Initialize to get default configuration
@@ -758,8 +740,7 @@ SimpleImage::initialize()
     return SDK_SUCCESS;
 }
 
-int
-SimpleImage::setup()
+int SimpleImage::setup()
 {
     int status = 0;
 
@@ -782,8 +763,7 @@ SimpleImage::setup()
 
 }
 
-int
-SimpleImage::run()
+int SimpleImage::run()
 {
     int status;
     if(!byteRWSupport)
@@ -837,8 +817,7 @@ SimpleImage::run()
     return SDK_SUCCESS;
 }
 
-int
-SimpleImage::cleanup()
+int SimpleImage::cleanup()
 {
     if(!byteRWSupport)
     {
@@ -886,16 +865,12 @@ SimpleImage::cleanup()
     return SDK_SUCCESS;
 }
 
-
-void
-SimpleImage::simpleImageCPUReference()
+void SimpleImage::simpleImageCPUReference()
 {
 
 }
 
-
-int
-SimpleImage::verifyResults()
+int SimpleImage::verifyResults()
 {
     if(sampleArgs->verify)
     {
@@ -928,8 +903,7 @@ SimpleImage::verifyResults()
     return SDK_SUCCESS;
 }
 
-void
-SimpleImage::printStats()
+void SimpleImage::printStats()
 {
 	if(sampleArgs->timing)
     {
@@ -953,9 +927,7 @@ SimpleImage::printStats()
     }
 }
 
-
-int
-main(int argc, char * argv[])
+int main(int argc, char * argv[])
 {
     int status = 0;
     SimpleImage clSimpleImage;

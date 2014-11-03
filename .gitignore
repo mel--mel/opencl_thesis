@@ -11,6 +11,7 @@ bin/
 docs/
 temp/
 HelloDisaster/
+latex-sample/
 
 # Windows image file caches
 Thumbs.db
