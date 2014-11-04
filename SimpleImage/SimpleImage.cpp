@@ -792,7 +792,6 @@ int SimpleImage::setup()
 
 int SimpleImage::run()
 {
-    int status;
     if(!byteRWSupport)
     {
         return SDK_SUCCESS;
@@ -804,7 +803,6 @@ int SimpleImage::run()
     sampleTimer->startTimer(timer);
 
     // Set kernel arguments and run kernel
-    status = runCLKernels();
     CHECK_OPENCL_ERROR(runCLKernels(), "OpenCL run Kernel failed");
 
 	// Compute kernel time
@@ -828,37 +826,17 @@ int SimpleImage::cleanup()
     }
 
     // Releases OpenCL resources (Context, Memory etc.)
-    cl_int status;
-
-    status = clReleaseKernel(colorArraysKernel);
-    CHECK_OPENCL_ERROR(status,"clReleaseKernel failed.(colorArraysKernel)");
-
-    status = clReleaseKernel(kernel3D);
-    CHECK_OPENCL_ERROR(status,"clReleaseKernel failed.(kernel3D)");
-
-    status = clReleaseProgram(program);
-    CHECK_OPENCL_ERROR(status,"clReleaseProgram failed.(program)");
-
-    status = clReleaseMemObject(inputImage2D);
-    CHECK_OPENCL_ERROR(status,"clReleaseMemObject failed.(inputImage2D)");
-
-    status = clReleaseMemObject(outputImage2D);
-    CHECK_OPENCL_ERROR(status,"clReleaseMemObject failed.(outputImage2D)");
-
-    status = clReleaseMemObject(inputImage3D);
-    CHECK_OPENCL_ERROR(status,"clReleaseMemObject failed.(inputImage3D)");
-
-    status = clReleaseMemObject(outputImage3D);
-    CHECK_OPENCL_ERROR(status,"clReleaseMemObject failed.(outputImage3D)");
-
-    status = clReleaseCommandQueue(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clReleaseCommandQueue failed.(commandQueue)");
-
-    status = clReleaseContext(context);
-    CHECK_OPENCL_ERROR(status,"clReleaseContext failed.(context)");
+    CHECK_OPENCL_ERROR(clReleaseKernel(colorArraysKernel),"clReleaseKernel failed.(colorArraysKernel)");
+	CHECK_OPENCL_ERROR(clReleaseKernel(kernel3D),"clReleaseKernel failed.(kernel3D)");
+    CHECK_OPENCL_ERROR(clReleaseProgram(program),"clReleaseProgram failed.(program)");
+    CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage2D),"clReleaseMemObject failed.(inputImage2D)");
+    CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage2D),"clReleaseMemObject failed.(outputImage2D)");
+    CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage3D),"clReleaseMemObject failed.(inputImage3D)");
+    CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage3D),"clReleaseMemObject failed.(outputImage3D)");
+    CHECK_OPENCL_ERROR(clReleaseCommandQueue(commandQueue),"clReleaseCommandQueue failed.(commandQueue)");
+    CHECK_OPENCL_ERROR(clReleaseContext(context),"clReleaseContext failed.(context)");
 
     // release program resources (input memory etc.)
-
     FREE(inputImageData);
     FREE(outputImageData2D);
     FREE(outputImageData3D);
