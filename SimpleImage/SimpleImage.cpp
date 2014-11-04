@@ -45,6 +45,9 @@ void histogramEqualization(pixelStruct *colorArray, cl_uint height, cl_uint widt
 	int value, count, acc255;
     float mo;
     double acc;
+	
+	//sort
+	qsort(colorArray, (width * height), sizeof(pixelStruct), compfunc);
 
     //equalize
     acc = 0;
@@ -540,24 +543,14 @@ int SimpleImage::runCLKernels()
 {
     cl_int status;
 
-    // Set appropriate arguments to the colorArraysKernel
-	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
-
-	// Set appropriate arguments to the pixelArrayKernel
-	pushArguments(pixelArrayKernel, &redBuffer, &greenBuffer, &blueBuffer, 
-				&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer, &width);
-	
-	// Set appropriate arguments to the outputImageKernel
-	pushArguments(outputImageKernel, &outputImage2D, &redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer);
-
-    // Set appropriate arguments to the kernel3D
-	pushArguments(kernel3D, &inputImage3D, &outputImage3D);
-
-    // Enqueue a kernel run call.
+	// Enqueue a kernel run call.
     size_t globalThreads[] = {width, height};
     size_t localThreads[] = {blockSizeX, blockSizeY};
 
-	
+	/////////////////////////////////////////////////////////////////////////////////////////////
+
+	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
+
     status = clEnqueueNDRangeKernel(
                  commandQueue,
                  colorArraysKernel,
@@ -570,9 +563,6 @@ int SimpleImage::runCLKernels()
                  0);
     CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-
 	// Read from buffers to color arrays
 	status = clEnqueueReadBuffer(commandQueue,
  								 redBuffer,
@@ -583,9 +573,6 @@ int SimpleImage::runCLKernels()
  								 0, 0, 0);
 	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
 
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-
 	status = clEnqueueReadBuffer(commandQueue,
  								 greenBuffer,
  								 1,
@@ -594,9 +581,6 @@ int SimpleImage::runCLKernels()
 								 greenArray,
  								 0, 0, 0);
 	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
-
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
 
 	status = clEnqueueReadBuffer(commandQueue,
  								 blueBuffer,
@@ -610,13 +594,14 @@ int SimpleImage::runCLKernels()
 	status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.");
 
-	qsort(redArray, (width * height), sizeof(pixelStruct), compfunc);
-	qsort(greenArray, (width * height), sizeof(pixelStruct), compfunc);
-	qsort(blueArray, (width * height), sizeof(pixelStruct), compfunc);
-
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//equalize color arrays
 	histogramEqualization(redArray, height, width);
 	histogramEqualization(greenArray, height, width);
 	histogramEqualization(blueArray, height, width);
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//write from equalized arrays back to buffers
 	status = clEnqueueWriteBuffer(commandQueue,
@@ -628,9 +613,6 @@ int SimpleImage::runCLKernels()
  								 0, 0, 0);
 	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
 
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-
 	status = clEnqueueWriteBuffer(commandQueue,
  								 greenBuffer,
  								 1,
@@ -639,9 +621,6 @@ int SimpleImage::runCLKernels()
 								 greenArray,
  								 0, 0, 0);
 	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (greenBuffer)");
-
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
 
 	status = clEnqueueWriteBuffer(commandQueue,
  								 blueBuffer,
@@ -655,6 +634,11 @@ int SimpleImage::runCLKernels()
 	status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
 
+	///////////////////////////////////////////////////////////////////////////////////////
+
+	pushArguments(pixelArrayKernel, &redBuffer, &greenBuffer, &blueBuffer, 
+				&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer, &width);
+
 	status = clEnqueueNDRangeKernel(
                  commandQueue,
                  pixelArrayKernel,
@@ -667,8 +651,9 @@ int SimpleImage::runCLKernels()
                  0);
     CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	pushArguments(outputImageKernel, &outputImage2D, &redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer);
 
 	status = clEnqueueNDRangeKernel(
                  commandQueue,
@@ -682,8 +667,9 @@ int SimpleImage::runCLKernels()
                  0);
     CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
+	/////////////////////////////////////////////////////////////////////
+
+	pushArguments(kernel3D, &inputImage3D, &outputImage3D);
 
     status = clEnqueueNDRangeKernel(
                  commandQueue,
@@ -700,11 +686,13 @@ int SimpleImage::runCLKernels()
     status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.");
 
-    // Enqueue Read Image
+	///////////////////////////////////////////////////////////////////////////////////////
+
+    // Enqueue Read Output Image
     size_t origin[] = {0, 0, 0};
     size_t region[] = {width, height, 1};
 
-    // Read output of 2D copy
+	//2D output
     status = clEnqueueReadImage(commandQueue,
                                 outputImage2D,
                                 1,
@@ -716,10 +704,7 @@ int SimpleImage::runCLKernels()
                                 0, 0, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
 
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-
-    // Read output of 3D copy
+    //3D output
     status = clEnqueueReadImage(commandQueue,
                                 outputImage3D,
                                 1,
@@ -733,7 +718,6 @@ int SimpleImage::runCLKernels()
 
 	status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-
 	
 	
     return SDK_SUCCESS;
