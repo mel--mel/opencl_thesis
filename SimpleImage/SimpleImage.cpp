@@ -338,18 +338,28 @@ int SimpleImage::setupCL()
 	return SDK_SUCCESS;
 }
 
+int SimpleImage::getKernelWorkGroupSize(cl_kernel kernelName, size_t workGroupSize){
+
+	int status = 0;
+
+	    // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(kernelName,
+                                      devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &workGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+	return CL_SUCCESS;
+}
+
 int SimpleImage::checkResources(){
 
 	int status = 0;
 
 	    // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(colorArraysKernel,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &colorArraysKernelWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+	getKernelWorkGroupSize(colorArraysKernel, colorArraysKernelWorkGroupSize);
 
 	 // Check group size against group size returned by kernel
     status = clGetKernelWorkGroupInfo(pixelArrayKernel,
@@ -465,12 +475,7 @@ int SimpleImage::dump(){
 	createBuffer(greenSortedBuffer, greenArray);
 	createBuffer(blueSortedBuffer, blueArray);
 
-	
-
 	////////////////////////////////////////////////////////////////////////////////
-
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // get a kernel object handle for a kernel with the given name
     colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
@@ -485,11 +490,8 @@ int SimpleImage::dump(){
     kernel3D = clCreateKernel(program, "image3dCopy", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel3D)");
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	/////// CHECK FOR RESOURCES /////////////
 	checkResources();
 
-	////////////////////////////////////////////////////////////////////////////////////////
     return SDK_SUCCESS;
 }
 

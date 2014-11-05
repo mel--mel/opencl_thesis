@@ -197,6 +197,7 @@ class SimpleImage
 		/**
 		* Check if we get out of resources
 		*/
+		int getKernelWorkGroupSize(cl_kernel kernelName, size_t workGrouSize);
 		int checkResources();
 
         /**
