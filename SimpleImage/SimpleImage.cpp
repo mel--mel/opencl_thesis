@@ -337,7 +337,72 @@ int SimpleImage::setupCL()
 
 	return SDK_SUCCESS;
 }
-	
+
+int SimpleImage::checkResources(){
+
+	int status = 0;
+
+	    // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(colorArraysKernel,
+                                      devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &colorArraysKernelWorkGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+	 // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(pixelArrayKernel,
+                                      devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &pixelArrayKernelWorkGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+	 // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(outputImageKernel,
+                                      devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &outputImageKernelWorkGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+    // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(kernel3D,
+                                      devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &kernel3DWorkGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+    cl_uint temp = (cl_uint)min(colorArraysKernelWorkGroupSize, kernel3DWorkGroupSize);
+	temp = (cl_uint)min(outputImageKernelWorkGroupSize, temp);
+	temp = (cl_uint)min(pixelArrayKernelWorkGroupSize, temp);
+    if((blockSizeX * blockSizeY) > temp)
+    {
+        if(!sampleArgs->quiet)
+        {
+            std::cout << "Out of Resources!" << std::endl;
+            std::cout << "Group Size specified : "
+                      << blockSizeX * blockSizeY << std::endl;
+            std::cout << "Max Group Size supported on the kernel(s) : "
+                      << temp << std::endl;
+            std::cout << "Falling back to " << temp << std::endl;
+        }
+
+        if(blockSizeX > temp)
+        {
+            blockSizeX = temp;
+            blockSizeY = 1;
+        }
+    }
+
+	return CL_SUCCESS;
+}
+
 int SimpleImage::dump(){
 
 	int status;
@@ -420,63 +485,11 @@ int SimpleImage::dump(){
     kernel3D = clCreateKernel(program, "image3dCopy", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel3D)");
 
-    // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(colorArraysKernel,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &colorArraysKernelWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	/////// CHECK FOR RESOURCES /////////////
+	checkResources();
 
-	 // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(pixelArrayKernel,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &pixelArrayKernelWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-	 // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(outputImageKernel,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &outputImageKernelWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-    // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(kernel3D,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &kernel3DWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-    cl_uint temp = (cl_uint)min(colorArraysKernelWorkGroupSize, kernel3DWorkGroupSize);
-	temp = (cl_uint)min(outputImageKernelWorkGroupSize, temp);
-	temp = (cl_uint)min(pixelArrayKernelWorkGroupSize, temp);
-    if((blockSizeX * blockSizeY) > temp)
-    {
-        if(!sampleArgs->quiet)
-        {
-            std::cout << "Out of Resources!" << std::endl;
-            std::cout << "Group Size specified : "
-                      << blockSizeX * blockSizeY << std::endl;
-            std::cout << "Max Group Size supported on the kernel(s) : "
-                      << temp << std::endl;
-            std::cout << "Falling back to " << temp << std::endl;
-        }
-
-        if(blockSizeX > temp)
-        {
-            blockSizeX = temp;
-            blockSizeY = 1;
-        }
-    }
+	////////////////////////////////////////////////////////////////////////////////////////
     return SDK_SUCCESS;
 }
 

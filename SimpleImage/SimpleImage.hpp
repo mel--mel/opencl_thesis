@@ -194,6 +194,11 @@ class SimpleImage
         */
         int setupCL();
 
+		/**
+		* Check if we get out of resources
+		*/
+		int checkResources();
+
         /**
         * Set values for kernels' arguments, enqueue calls to the kernels
         * on to the command queue, wait till end of kernel execution.
