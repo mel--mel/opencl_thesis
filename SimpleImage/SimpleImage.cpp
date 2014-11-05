@@ -92,6 +92,34 @@ void setZero(pixelStruct *array, cl_uint height, cl_uint width)
 			array[i*width + j].pxlValue = 0;}}
 }
 
+int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
+
+	int status = 0;
+
+	/*arrayName = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
+	CHECK_ALLOCATION(arrayName,
+                     "Failed to allocate memory!");
+	*/
+	
+	bufferName = clCreateBuffer(context, 
+		                       CL_MEM_READ_WRITE, 
+							   width * height * sizeof(pixelStruct), 
+							   NULL, 
+							   &status);
+	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (redBuffer)");
+
+	status = clEnqueueWriteBuffer(commandQueue,
+ 								 bufferName,
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 arrayName,
+ 								 0, 0, 0);
+	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
+
+	return CL_SUCCESS;
+}
+
 int SimpleImage::setupSimpleImage()
 {
 	int status = 0;
@@ -165,6 +193,7 @@ int SimpleImage::setupBuffers()
 	redArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
 	CHECK_ALLOCATION(redArray,
                      "Failed to allocate memory! (redArray)");
+
 	greenArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
 	CHECK_ALLOCATION(greenArray,
                      "Failed to allocate memory! (greenArray)");
@@ -362,104 +391,16 @@ int SimpleImage::dump(){
                                  &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage3D)");
 
-	//Create color buffers
-	redBuffer = clCreateBuffer(context, 
-		                       CL_MEM_READ_WRITE, 
-							   width * height * sizeof(pixelStruct), 
-							   NULL, 
-							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (redBuffer)");
+	//Create + initialize color buffers
+	createBuffer(redBuffer, redArray);
+	createBuffer(greenBuffer, greenArray);
+	createBuffer(blueBuffer, blueArray);
 
-	greenBuffer = clCreateBuffer(context, 
-		                       CL_MEM_READ_WRITE, 
-							   width * height * sizeof(pixelStruct), 
-							   NULL, 
-							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (greenBuffer)");
+	createBuffer(redSortedBuffer, redArray);
+	createBuffer(greenSortedBuffer, greenArray);
+	createBuffer(blueSortedBuffer, blueArray);
 
-	blueBuffer = clCreateBuffer(context, 
-		                       CL_MEM_READ_WRITE, 
-							   width * height * sizeof(pixelStruct), 
-							   NULL, 
-							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (blueBuffer)");
-
-	//Create sorted color buffers
-	redSortedBuffer = clCreateBuffer(context, 
-		                       CL_MEM_READ_WRITE, 
-							   width * height * sizeof(pixelStruct), 
-							   NULL, 
-							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (redBuffer)");
-
-	greenSortedBuffer = clCreateBuffer(context, 
-		                       CL_MEM_READ_WRITE, 
-							   width * height * sizeof(pixelStruct), 
-							   NULL, 
-							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (greenBuffer)");
-
-	blueSortedBuffer = clCreateBuffer(context, 
-		                       CL_MEM_READ_WRITE, 
-							   width * height * sizeof(pixelStruct), 
-							   NULL, 
-							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (blueBuffer)");
-
-	//initialize buffers
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 redBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 redArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 greenBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 greenArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (greenBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 blueBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 blueArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (blueBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 redSortedBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 redArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 greenSortedBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 greenArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (greenBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 blueSortedBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 blueArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (blueBuffer)");
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 

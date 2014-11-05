@@ -167,9 +167,15 @@ class SimpleImage
         */
         int setupSimpleImage();
 
+		/**
+		*Create opencl buffer
+		* - allocate & initialize
+		*/
+		int createBuffer(cl_mem &bufferName, pixelStruct *arrayName);//(cl_mem bufferName, pixelStruct *arrayName);
+
 
 		/**
-		*Allocate buffer memory
+		*Allocate array memory
 		* @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
 		int setupBuffers();
