@@ -16,27 +16,41 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 #include "SimpleImage.hpp"
-#include "HelpingFunctions.cpp"
+#include "HelpingFunctions.h"
+#include "Templates.cpp"
 #include <cmath>
 #include <vector>
 
 #define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
 
-int compfunc(const void *pa, const void *pb){
+/////////////         PROTOTYPES          //////////////////////////////
 
-    pixelStruct a, b;
+int getKernelWorkGroupSize(cl_device_id devId, cl_kernel kernelName, size_t workGroupSize);
 
-    a = *(const pixelStruct*)pa;
-    b = *(const pixelStruct*)pb;
+void histogramEqualization(pixelStruct *colorArray, cl_uint height, cl_uint width);
 
-    if (a.pxlValue == b.pxlValue && a.mo == b.mo){
-        return 0;
-    } else if ((a.pxlValue < b.pxlValue) || (a.pxlValue == b.pxlValue && a.mo < b.mo) ){
-        return -1;
-    } else {
-        return 1;
-    }
+void setZero(pixelStruct *array, cl_uint height, cl_uint width);
+
+/////////////////////////////////////////////////////////////////////////
+
+
+
+int getKernelWorkGroupSize(cl_device_id devId, cl_kernel kernelName, size_t workGroupSize){
+
+	int status = 0;
+
+	    // Check group size against group size returned by kernel
+    status = clGetKernelWorkGroupInfo(kernelName,
+                                      devId,
+								      //devices[sampleArgs->deviceId],
+                                      CL_KERNEL_WORK_GROUP_SIZE,
+                                      sizeof(size_t),
+                                      &workGroupSize,
+                                      0);
+    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
+
+	return CL_SUCCESS;
 }
 
 void histogramEqualization(pixelStruct *colorArray, cl_uint height, cl_uint width){
@@ -336,22 +350,7 @@ int SimpleImage::setupCL()
     CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
 
 	return SDK_SUCCESS;
-}
 
-int SimpleImage::getKernelWorkGroupSize(cl_kernel kernelName, size_t workGroupSize){
-
-	int status = 0;
-
-	    // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(kernelName,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &workGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-	return CL_SUCCESS;
 }
 
 int SimpleImage::checkResources(){
@@ -359,7 +358,7 @@ int SimpleImage::checkResources(){
 	int status = 0;
 
 	    // Check group size against group size returned by kernel
-	getKernelWorkGroupSize(colorArraysKernel, colorArraysKernelWorkGroupSize);
+	getKernelWorkGroupSize(devices[sampleArgs->deviceId], colorArraysKernel, colorArraysKernelWorkGroupSize);
 
 	 // Check group size against group size returned by kernel
     status = clGetKernelWorkGroupInfo(pixelArrayKernel,
