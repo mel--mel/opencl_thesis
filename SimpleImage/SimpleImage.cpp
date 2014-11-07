@@ -271,44 +271,16 @@ int SimpleImage::setupCL()
 
 }
 
-int SimpleImage::checkResources(){
+int SimpleImage::checkResources(){ // Check group size against group size returned by kernel
 
-	int status = 0;
+	int numOfKernels = 3;
+	cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
+	cl_device_id devId = devices[sampleArgs->deviceId];
+	
 
-	    // Check group size against group size returned by kernel
-	getKernelWorkGroupSize(devices[sampleArgs->deviceId], colorArraysKernel, colorArraysKernelWorkGroupSize);
+	size_t minWorkGroupSize = findMinWorkGroupSize(numOfKernels, kernelNames, devId);
 
-	 // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(pixelArrayKernel,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &pixelArrayKernelWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-	 // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(outputImageKernel,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &outputImageKernelWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-    // Check group size against group size returned by kernel
-    status = clGetKernelWorkGroupInfo(kernel3D,
-                                      devices[sampleArgs->deviceId],
-                                      CL_KERNEL_WORK_GROUP_SIZE,
-                                      sizeof(size_t),
-                                      &kernel3DWorkGroupSize,
-                                      0);
-    CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
-
-    cl_uint temp = (cl_uint)min(colorArraysKernelWorkGroupSize, kernel3DWorkGroupSize);
-	temp = (cl_uint)min(outputImageKernelWorkGroupSize, temp);
-	temp = (cl_uint)min(pixelArrayKernelWorkGroupSize, temp);
-    if((blockSizeX * blockSizeY) > temp)
+    if((blockSizeX * blockSizeY) > minWorkGroupSize)
     {
         if(!sampleArgs->quiet)
         {
@@ -316,13 +288,13 @@ int SimpleImage::checkResources(){
             std::cout << "Group Size specified : "
                       << blockSizeX * blockSizeY << std::endl;
             std::cout << "Max Group Size supported on the kernel(s) : "
-                      << temp << std::endl;
-            std::cout << "Falling back to " << temp << std::endl;
+                      << minWorkGroupSize << std::endl;
+            std::cout << "Falling back to " << minWorkGroupSize << std::endl;
         }
 
-        if(blockSizeX > temp)
+        if(blockSizeX > minWorkGroupSize)
         {
-            blockSizeX = temp;
+            blockSizeX = minWorkGroupSize;
             blockSizeY = 1;
         }
     }

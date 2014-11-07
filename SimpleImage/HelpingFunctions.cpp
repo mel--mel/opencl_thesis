@@ -26,7 +26,7 @@ int compfunc(const void *pa, const void *pb){
     }
 }
 
-int getKernelWorkGroupSize(cl_device_id devId, cl_kernel kernelName, size_t workGroupSize){
+int getKernelWorkGroupSize(cl_device_id devId, cl_kernel kernelName, size_t &workGroupSize){
 
 	int status = 0;
 
@@ -41,6 +41,19 @@ int getKernelWorkGroupSize(cl_device_id devId, cl_kernel kernelName, size_t work
     CHECK_OPENCL_ERROR(status,"clGetKernelWorkGroupInfo  failed.");
 
 	return CL_SUCCESS;
+}
+
+size_t findMinWorkGroupSize(int numOfKernels, cl_kernel *kernelNames, cl_device_id devId){
+
+	size_t *kernelWorkGroupSize = (size_t*)calloc(numOfKernels, sizeof(size_t));
+	CHECK_ALLOCATION(kernelWorkGroupSize, "Failed to allocate memory! (outputImageData)");
+
+	for (int i = 0; i < numOfKernels; i++){ getKernelWorkGroupSize(devId, kernelNames[i], kernelWorkGroupSize[i]);}
+	
+	size_t tempMin = kernelWorkGroupSize[0];
+	for (int i = 1; i < numOfKernels; i++){ tempMin = min(tempMin, kernelWorkGroupSize[i]); }
+
+	return tempMin;
 }
 
 void histogramEqualization(pixelStruct *colorArray, cl_uint height, cl_uint width){

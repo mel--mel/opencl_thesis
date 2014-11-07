@@ -72,3 +72,4 @@ inline void pushArguments(cl_kernel kernel, T1* a1, T2* a2, T3* a3, T4* a4, T5* 
 	pushArgument(kernel, a6, 5);
 	pushArgument(kernel, a7, 6);
 }
+
