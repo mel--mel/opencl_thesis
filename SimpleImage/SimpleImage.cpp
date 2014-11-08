@@ -271,13 +271,10 @@ int SimpleImage::setupCL()
 
 }
 
-int SimpleImage::checkResources(){ // Check group size against group size returned by kernel
+int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Check group size against group size returned by kernel
 
-	int numOfKernels = 3;
-	cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
 	cl_device_id devId = devices[sampleArgs->deviceId];
 	
-
 	size_t minWorkGroupSize = findMinWorkGroupSize(numOfKernels, kernelNames, devId);
 
     if((blockSizeX * blockSizeY) > minWorkGroupSize)
@@ -379,7 +376,8 @@ int SimpleImage::dump(){
     kernel3D = clCreateKernel(program, "image3dCopy", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel3D)");
 
-	checkResources();
+    cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
+	checkResources(3, kernelNames);
 
     return SDK_SUCCESS;
 }

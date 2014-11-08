@@ -79,6 +79,7 @@ class SimpleImage
 		cl_kernel colorArraysKernel;
 		cl_kernel outputImageKernel;
 		cl_kernel pixelArrayKernel;
+		
 
         SDKBitMap inputBitmap;   /**< Bitmap class object */
         uchar4* pixelData;       /**< Pointer to image data */
@@ -197,7 +198,7 @@ class SimpleImage
 		/**
 		* Check if we get out of resources
 		*/
-		int checkResources();
+		int checkResources(int numOfKernels, cl_kernel *kernelNames);
 
         /**
         * Set values for kernels' arguments, enqueue calls to the kernels
