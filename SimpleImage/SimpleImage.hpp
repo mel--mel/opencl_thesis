@@ -166,7 +166,7 @@ class SimpleImage
         * Allocate image memory and Load bitmap file
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-        int setupSimpleImage();
+        int getInputImage();
 
 		/**
 		*Create opencl buffer

@@ -52,7 +52,7 @@ int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
 	return CL_SUCCESS;
 }
 
-int SimpleImage::setupSimpleImage()
+int SimpleImage::getInputImage()
 {
 	// Allocate host memoryF and read input image
     //std::string filePath = getPath() + std::string(INPUT_IMAGE);
@@ -552,7 +552,7 @@ int SimpleImage::setup()
 
 	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
 
-	CHECK_OPENCL_ERROR(setupSimpleImage(), "setupSimpleImage() failed");
+	CHECK_OPENCL_ERROR(getInputImage(), "getInputImage() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 
