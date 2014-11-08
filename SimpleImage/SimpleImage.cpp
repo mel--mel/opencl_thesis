@@ -170,30 +170,20 @@ int SimpleImage::setupCL()
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
 
-	/*
-	*find which device type is available
-	*/
-    if(sampleArgs->deviceType.compare("cpu") == 0)
-    {
-        dType = CL_DEVICE_TYPE_CPU;
-    }
-    else //deviceType = "gpu"
-    {
+	//find which device type is available
+    if(sampleArgs->deviceType.compare("cpu") == 0) {dType = CL_DEVICE_TYPE_CPU;}
+    else{  //deviceType = "gpu"
         dType = CL_DEVICE_TYPE_GPU;
-        if(sampleArgs->isThereGPU() == false)
-        {
+        if(sampleArgs->isThereGPU() == false) {
             std::cout << "GPU not found. Falling back to CPU device" << std::endl;
             dType = CL_DEVICE_TYPE_CPU;
         }
     }
 
-    /*
-     * Have a look at the available platforms and pick either
-     * the AMD one if available or a reasonable default.
-     */
+    /* Have a look at the available platforms and pick either
+    * the AMD one if available or a reasonable default.*/
     cl_platform_id platform = NULL;
-    int retValue = getPlatform(platform, sampleArgs->platformId,
-                               sampleArgs->isPlatformEnabled());
+    int retValue = getPlatform(platform, sampleArgs->platformId, sampleArgs->isPlatformEnabled());
     CHECK_OPENCL_ERROR(retValue, "getPlatform() failed");
 
     // Display available devices.
@@ -201,69 +191,34 @@ int SimpleImage::setupCL()
     CHECK_OPENCL_ERROR(retValue, "displayDevices() failed");
 
     // If we could find our platform, use it. Otherwise use just available platform.
-    cl_context_properties cps[3] =
-    {
-        CL_CONTEXT_PLATFORM,
-        (cl_context_properties)platform,
-        0
-    };
+    cl_context_properties cps[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
 
-	/*
-	*create context analoga me deviceType kai platform
-	*/
-    context = clCreateContextFromType(
-                  cps,
-                  dType,
-                  NULL,
-                  NULL,
-                  &status);
+	//create context analoga me deviceType kai platform
+    context = clCreateContextFromType(cps, dType, NULL, NULL, &status);
     CHECK_OPENCL_ERROR(status, "clCreateContextFromType failed.");
 
-    /*
-	*get device on which to run the sample
-    */
-	status = getDevices(context, &devices, sampleArgs->deviceId,
-                        sampleArgs->isDeviceIdEnabled());
+    //get device on which to run the sample
+	status = getDevices(context, &devices, sampleArgs->deviceId, sampleArgs->isDeviceIdEnabled());
     CHECK_OPENCL_ERROR(status, "getDevices() failed");
 
     status = deviceInfo.setDeviceInfo(devices[sampleArgs->deviceId]);
     CHECK_OPENCL_ERROR(status, "deviceInfo.setDeviceInfo failed");
 
-    if(!deviceInfo.imageSupport)
-    {
-        OPENCL_EXPECTED_ERROR(" Expected Error: Device does not support Images");
-    }
+	//Check whether device doesn t support images
+    if(!deviceInfo.imageSupport) { OPENCL_EXPECTED_ERROR(" Expected Error: Device does not support Images"); }
 
-    /*
-	*Create command queue
-    */
-	cl_command_queue_properties prop = 0;
-    commandQueue = clCreateCommandQueue(
-                       context,
-                       devices[sampleArgs->deviceId],
-                       prop,
-                       &status);
+	//Create command queue
+    commandQueue = clCreateCommandQueue(context, devices[sampleArgs->deviceId], 0, &status);
     CHECK_OPENCL_ERROR(status,"clCreateCommandQueue failed.");
 
-	
-    /* 
-	*create a CL program using the kernel source
-    */
+    //create a CL program using the kernel source
 	buildProgramData buildData;
     buildData.kernelName = std::string("SimpleImage_Kernels.cl");
     buildData.devices = devices;
     buildData.deviceId = sampleArgs->deviceId;
     buildData.flagsStr = std::string("");
-    if(sampleArgs->isLoadBinaryEnabled())
-    {
-        buildData.binaryName = std::string(sampleArgs->loadBinary.c_str());
-    }
-
-    if(sampleArgs->isComplierFlagsSpecified())
-    {
-        buildData.flagsFileName = std::string(sampleArgs->flags.c_str());
-    }
-
+    if(sampleArgs->isLoadBinaryEnabled()) buildData.binaryName = std::string(sampleArgs->loadBinary.c_str());
+    if(sampleArgs->isComplierFlagsSpecified()) buildData.flagsFileName = std::string(sampleArgs->flags.c_str());
     retValue = buildOpenCLProgram(program, context, buildData);
     CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
 
