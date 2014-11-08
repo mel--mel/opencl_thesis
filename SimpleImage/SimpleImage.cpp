@@ -107,25 +107,21 @@ int SimpleImage::setupBuffers()
 {
 	 // allocate memory for 2D-copy output image data
     outputImageData2D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
-    CHECK_ALLOCATION(outputImageData2D,
-                     "Failed to allocate memory! (outputImageData)");
+    CHECK_ALLOCATION(outputImageData2D, "Failed to allocate memory! (outputImageData)");
 
     // allocate memory for 3D-copy output image data
     outputImageData3D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
-    CHECK_ALLOCATION(outputImageData3D,
-                     "Failed to allocate memory! (outputImageData)");
+    CHECK_ALLOCATION(outputImageData3D, "Failed to allocate memory! (outputImageData)");
 
 	// allocate memory for 1D pixel struct array
 	redArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
-	CHECK_ALLOCATION(redArray,
-                     "Failed to allocate memory! (redArray)");
+	CHECK_ALLOCATION(redArray, "Failed to allocate memory! (redArray)");
 
 	greenArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
-	CHECK_ALLOCATION(greenArray,
-                     "Failed to allocate memory! (greenArray)");
+	CHECK_ALLOCATION(greenArray, "Failed to allocate memory! (greenArray)");
+	
 	blueArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
-	CHECK_ALLOCATION(blueArray,
-                     "Failed to allocate memory! (blueArray)");
+	CHECK_ALLOCATION(blueArray, "Failed to allocate memory! (blueArray)");
 
 	return SDK_SUCCESS;
 }
@@ -226,20 +222,14 @@ int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Ch
 	
 	size_t minWorkGroupSize = findMinWorkGroupSize(numOfKernels, kernelNames, devId);
 
-    if((blockSizeX * blockSizeY) > minWorkGroupSize)
-    {
-        if(!sampleArgs->quiet)
-        {
+    if((blockSizeX * blockSizeY) > minWorkGroupSize) {
+        if(!sampleArgs->quiet){
             std::cout << "Out of Resources!" << std::endl;
-            std::cout << "Group Size specified : "
-                      << blockSizeX * blockSizeY << std::endl;
-            std::cout << "Max Group Size supported on the kernel(s) : "
-                      << minWorkGroupSize << std::endl;
+            std::cout << "Group Size specified : "<< blockSizeX * blockSizeY << std::endl;
+            std::cout << "Max Group Size supported on the kernel(s) : "<< minWorkGroupSize << std::endl;
             std::cout << "Falling back to " << minWorkGroupSize << std::endl;
         }
-
-        if(blockSizeX > minWorkGroupSize)
-        {
+		if(blockSizeX > minWorkGroupSize){
             blockSizeX = minWorkGroupSize;
             blockSizeY = 1;
         }
@@ -461,24 +451,6 @@ int SimpleImage::runCLKernels()
 
 	/////////////////////////////////////////////////////////////////////
 
-	pushArguments(kernel3D, &inputImage3D, &outputImage3D);
-
-    status = clEnqueueNDRangeKernel(
-                 commandQueue,
-                 kernel3D,
-                 2,
-                 NULL,
-                 globalThreads,
-                 localThreads,
-                 0,
-                 NULL,
-                 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
-
-    status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.");
-
-	///////////////////////////////////////////////////////////////////////////////////////
 
     // Enqueue Read Output Image
     size_t origin[] = {0, 0, 0};
@@ -496,21 +468,8 @@ int SimpleImage::runCLKernels()
                                 0, 0, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
 
-    //3D output
-    status = clEnqueueReadImage(commandQueue,
-                                outputImage3D,
-                                1,
-                                origin,
-                                region,
-                                0,
-                                0,
-                                outputImageData3D,
-                                0, 0, 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
-
 	status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-	
 	
     return SDK_SUCCESS;
 }
@@ -607,15 +566,12 @@ int SimpleImage::cleanup()
     CHECK_OPENCL_ERROR(clReleaseProgram(program),"clReleaseProgram failed.(program)");
     CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage2D),"clReleaseMemObject failed.(inputImage2D)");
     CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage2D),"clReleaseMemObject failed.(outputImage2D)");
-    CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage3D),"clReleaseMemObject failed.(inputImage3D)");
-    CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage3D),"clReleaseMemObject failed.(outputImage3D)");
     CHECK_OPENCL_ERROR(clReleaseCommandQueue(commandQueue),"clReleaseCommandQueue failed.(commandQueue)");
     CHECK_OPENCL_ERROR(clReleaseContext(context),"clReleaseContext failed.(context)");
 
     // release program resources (input memory etc.)
     FREE(inputImageData);
     FREE(outputImageData2D);
-    FREE(outputImageData3D);
     FREE(verificationOutput);
     FREE(devices);
 
@@ -629,33 +585,14 @@ void SimpleImage::simpleImageCPUReference()
 
 int SimpleImage::verifyResults()
 {
-    if(sampleArgs->verify)
-    {
+	if(sampleArgs->verify){
         std::cout << "Verifying 2D copy result - ";
         // compare the results and see if they match
-        if(!memcmp(inputImageData, outputImageData2D, width * height * 4))
-        {
-            std::cout << "Passed!\n" << std::endl;
-        }
-        else
-        {
+        if(!memcmp(inputImageData, outputImageData2D, width * height * 4)) {std::cout << "Passed!\n" << std::endl;}
+        else{
             std::cout << "Failed\n" << std::endl;
             return SDK_FAILURE;
-        }
-
-        std::cout << "Verifying 3D copy result - ";
-
-        // compare the results and see if they match
-        if(!memcmp(inputImageData, outputImageData3D, width * height * 4))
-        {
-            std::cout << "Passed!\n" << std::endl;
-            return SDK_SUCCESS;
-        }
-        else
-        {
-            std::cout << "Failed\n" << std::endl;
-            return SDK_FAILURE;
-        }
+        }  
     }
     return SDK_SUCCESS;
 }
