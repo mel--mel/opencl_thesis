@@ -54,17 +54,14 @@ int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
 
 int SimpleImage::setupSimpleImage()
 {
-	int status = 0;
-
 	// Allocate host memoryF and read input image
     //std::string filePath = getPath() + std::string(INPUT_IMAGE);
-    status = readInputImage(INPUT_IMAGE);
-    CHECK_ERROR(status, SDK_SUCCESS, "Read Input Image failed");
+    CHECK_OPENCL_ERROR(readInputImage(INPUT_IMAGE), "Read Input Image failed");
 
 	//enable timing for this SimpleImage
 	sampleArgs->timing = 1;
 
-	return status;
+	return CL_SUCCESS;
 }
 
 int SimpleImage::readInputImage(std::string inputImageName)
@@ -74,8 +71,7 @@ int SimpleImage::readInputImage(std::string inputImageName)
     inputBitmap.load(inputImageName.c_str());
 
     // error if image did not load
-    if(!inputBitmap.isLoaded())
-    {
+    if(!inputBitmap.isLoaded()){
         error("Failed to load input image!");
         return SDK_FAILURE;
     }
@@ -87,8 +83,6 @@ int SimpleImage::readInputImage(std::string inputImageName)
     // allocate memory for input & outputimage data
     inputImageData = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
     CHECK_ALLOCATION(inputImageData,"Failed to allocate memory! (inputImageData)");
-
-   
 
     // get the pointer to pixel data
     pixelData = inputBitmap.getPixels();
