@@ -267,29 +267,6 @@ int SimpleImage::dump(){
                                   &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
 
-    // Writes to 3D images not allowed in spec currently
-    outputImage3D = clCreateImage(context,
-                                  CL_MEM_WRITE_ONLY,
-                                  &imageFormat,
-                                  &imageDesc,
-                                  0,
-                                  &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage3D)");
-
-    // Create 3D input image
-    memset(&imageDesc, '\0', sizeof(cl_image_desc));
-    imageDesc.image_type = CL_MEM_OBJECT_IMAGE3D;
-    imageDesc.image_width = width;
-    imageDesc.image_height = height / 2;
-    imageDesc.image_depth = 2;
-
-    inputImage3D = clCreateImage(context,
-                                 CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                                 &imageFormat,
-                                 &imageDesc,
-                                 inputImageData,
-                                 &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage3D)");
 
 	//Create + initialize color buffers
 	createBuffer(redBuffer, redArray);
@@ -311,9 +288,6 @@ int SimpleImage::dump(){
 
 	outputImageKernel = clCreateKernel(program, "createOutputImage", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(outputImageKernel)");
-
-    kernel3D = clCreateKernel(program, "image3dCopy", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(kernel3D)");
 
     cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
 	checkResources(3, kernelNames);
@@ -562,7 +536,6 @@ int SimpleImage::cleanup()
 
     // Releases OpenCL resources (Context, Memory etc.)
     CHECK_OPENCL_ERROR(clReleaseKernel(colorArraysKernel),"clReleaseKernel failed.(colorArraysKernel)");
-	CHECK_OPENCL_ERROR(clReleaseKernel(kernel3D),"clReleaseKernel failed.(kernel3D)");
     CHECK_OPENCL_ERROR(clReleaseProgram(program),"clReleaseProgram failed.(program)");
     CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage2D),"clReleaseMemObject failed.(inputImage2D)");
     CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage2D),"clReleaseMemObject failed.(outputImage2D)");
