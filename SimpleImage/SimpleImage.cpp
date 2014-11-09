@@ -273,21 +273,6 @@ int SimpleImage::dump(){
 	createBuffer(greenSortedBuffer, greenArray);
 	createBuffer(blueSortedBuffer, blueArray);
 
-	////////////////////////////////////////////////////////////////////////////////
-
-    // get a kernel object handle for a kernel with the given name
-    colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
-
-	pixelArrayKernel = clCreateKernel(program, "createPixelArray", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(pixelArrayKernel)");
-
-	outputImageKernel = clCreateKernel(program, "createOutputImage", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(outputImageKernel)");
-
-    cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
-	checkResources(3, kernelNames);
-
     return SDK_SUCCESS;
 }
 
@@ -300,6 +285,9 @@ int SimpleImage::runCLKernels()
     size_t localThreads[] = {blockSizeX, blockSizeY};
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
+
+	colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
 
 	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
 
@@ -388,6 +376,9 @@ int SimpleImage::runCLKernels()
 
 	///////////////////////////////////////////////////////////////////////////////////////
 
+	pixelArrayKernel = clCreateKernel(program, "createPixelArray", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(pixelArrayKernel)");
+
 	pushArguments(pixelArrayKernel, &redBuffer, &greenBuffer, &blueBuffer, 
 				&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer, &width);
 
@@ -404,6 +395,9 @@ int SimpleImage::runCLKernels()
     CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	outputImageKernel = clCreateKernel(program, "createOutputImage", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(outputImageKernel)");
 
 	pushArguments(outputImageKernel, &outputImage2D, &redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer);
 
@@ -440,6 +434,9 @@ int SimpleImage::runCLKernels()
 
 	status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
+
+	cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
+	checkResources(3, kernelNames);
 	
     return SDK_SUCCESS;
 }
