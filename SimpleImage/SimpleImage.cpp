@@ -109,10 +109,6 @@ int SimpleImage::setupBuffers()
     outputImageData2D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
     CHECK_ALLOCATION(outputImageData2D, "Failed to allocate memory! (outputImageData)");
 
-    // allocate memory for 3D-copy output image data
-    outputImageData3D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
-    CHECK_ALLOCATION(outputImageData3D, "Failed to allocate memory! (outputImageData)");
-
 	// allocate memory for 1D pixel struct array
 	redArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
 	CHECK_ALLOCATION(redArray, "Failed to allocate memory! (redArray)");
