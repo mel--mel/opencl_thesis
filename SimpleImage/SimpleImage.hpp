@@ -202,8 +202,9 @@ class SimpleImage
 		/**
 		** Makes the moves needed to run a kernel
 		*/
-		int runThisKernel(cl_kernel kernelName, size_t  *globalThreads, size_t *localThreads, 
-						cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3);
+		int runThisKernel(const char* kernelFileName, size_t  *globalThreads, size_t *localThreads, 
+						cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
+						cl_mem &imageName, cl_uchar4* imageData);
 
         /**
         * Set values for kernels' arguments, enqueue calls to the kernels

@@ -240,27 +240,31 @@ int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Ch
 	return CL_SUCCESS;
 }
 
-int SimpleImage::runThisKernel(cl_kernel kernelName, size_t *globalThreads, size_t *localThreads, 
-							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3)
+int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
+							   cl_mem &imageName, cl_uchar4* imageData)
 {
 	int status = 0;
+
+	cl_kernel kernelName;
+
+	// Create arguments
+    imageName = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageData, &status);
+    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
 
 	createBuffer(buffer1, redArray);
 	createBuffer(buffer2, greenArray);
 	createBuffer(buffer3, blueArray);
 
-	pushArguments(colorArraysKernel, &inputImage2D, &buffer1, &buffer2, &buffer3);
+	//create kernel
+	kernelName = clCreateKernel(program, kernelFileName, &status);// "createColorArrays", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
 
-	 status = clEnqueueNDRangeKernel(
-                 commandQueue,
-                 kernelName,
-                 2,
-                 NULL,
-                 globalThreads,
-                 localThreads,
-                 0,
-                 NULL,
-                 0);
+	//push arguments
+	pushArguments(kernelName, &imageName, &buffer1, &buffer2, &buffer3);
+
+	//run kernel
+	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
 	return CL_SUCCESS;
@@ -277,22 +281,11 @@ int SimpleImage::runCLKernels()
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
-	colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
-
-	// Create 2D input image
-    inputImage2D = clCreateImage(context,
-                                 CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                                 &imageFormat,
-                                 &imageDesc,
-                                 inputImageData,
-                                 &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
-
 	
 
-	status = runThisKernel(colorArraysKernel, globalThreads, localThreads, 
-		                   redBuffer, greenBuffer, blueBuffer);//, &inputImage2D, &);
+	status = runThisKernel("createColorArrays", globalThreads, localThreads, 
+		                   redBuffer, greenBuffer, blueBuffer,
+						   inputImage2D, inputImageData);//, &inputImage2D, &);
 	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
 	// Read from buffers to color arrays
@@ -439,9 +432,9 @@ int SimpleImage::runCLKernels()
 	status = clFinish(commandQueue);
     CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
 
-	cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
+	/*cl_kernel kernelNames[] = {colorArraysKernel, pixelArrayKernel, outputImageKernel};
 	checkResources(3, kernelNames);
-	
+	*/
     return SDK_SUCCESS;
 }
 
@@ -530,7 +523,7 @@ int SimpleImage::cleanup()
     }
 
     // Releases OpenCL resources (Context, Memory etc.)
-    CHECK_OPENCL_ERROR(clReleaseKernel(colorArraysKernel),"clReleaseKernel failed.(colorArraysKernel)");
+    //CHECK_OPENCL_ERROR(clReleaseKernel(colorArraysKernel),"clReleaseKernel failed.(colorArraysKernel)");
     CHECK_OPENCL_ERROR(clReleaseProgram(program),"clReleaseProgram failed.(program)");
     CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage2D),"clReleaseMemObject failed.(inputImage2D)");
     CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage2D),"clReleaseMemObject failed.(outputImage2D)");
