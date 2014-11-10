@@ -160,11 +160,7 @@ class SimpleImage
         {
         }
 
-		/*
-		* Just a test function to dump things in for a while
-		*/
-		int dump();
-
+		
         /**
         * Allocate image memory and Load bitmap file
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
@@ -202,6 +198,11 @@ class SimpleImage
 		* Check if we get out of resources
 		*/
 		int checkResources(int numOfKernels, cl_kernel *kernelNames);
+
+		/**
+		** Makes the moves needed to run a kernel
+		*/
+		int runThisKernel(cl_kernel kernelName, size_t  *globalThreads, size_t *localThreads);//, cl_mem *buffer1);
 
         /**
         * Set values for kernels' arguments, enqueue calls to the kernels

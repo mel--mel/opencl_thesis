@@ -240,6 +240,28 @@ int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Ch
 	return CL_SUCCESS;
 }
 
+int SimpleImage::runThisKernel(cl_kernel kernelName, size_t *globalThreads, size_t *localThreads)//, cl_mem *buffer1)
+{
+	int status = 0;
+
+	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
+
+	 status = clEnqueueNDRangeKernel(
+                 commandQueue,
+                 kernelName,
+                 2,
+                 NULL,
+                 globalThreads,
+                 localThreads,
+                 0,
+                 NULL,
+                 0);
+    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
+
+	return CL_SUCCESS;
+
+}
+
 int SimpleImage::runCLKernels()
 {
     cl_int status;
@@ -266,19 +288,7 @@ int SimpleImage::runCLKernels()
 	createBuffer(greenBuffer, greenArray);
 	createBuffer(blueBuffer, blueArray);
 
-	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
-
-    status = clEnqueueNDRangeKernel(
-                 commandQueue,
-                 colorArraysKernel,
-                 2,
-                 NULL,
-                 globalThreads,
-                 localThreads,
-                 0,
-                 NULL,
-                 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
+	status = runThisKernel(colorArraysKernel, globalThreads, localThreads);//, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
 
 	// Read from buffers to color arrays
 	status = clEnqueueReadBuffer(commandQueue,
