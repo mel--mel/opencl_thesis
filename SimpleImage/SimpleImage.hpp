@@ -52,10 +52,13 @@ class SimpleImage
 {
         cl_double setupTime;                /**< time taken to setup OpenCL resources and building kernel */
         cl_double kernelTime;               /**< time taken to run kernel and read result back */
-        cl_uchar4* inputImageData;          /**< Input bitmap data to device */
+        
+		cl_uchar4* inputImageData;          /**< Input bitmap data to device */
         cl_uchar4* outputImageData2D;       /**< Output from device for 2D copy*/
         cl_uchar4* outputImageData3D;       /**< Output from device for 3D copy*/
-        cl_context context;                 /**< CL context */
+        cl_image_desc imageDesc;            /**< Parameter needed for clGreateImage*/
+
+		cl_context context;                 /**< CL context */
         cl_device_id *devices;              /**< CL device list */
 
         cl_mem inputImage2D;                /**< CL image buffer for input Image*/

@@ -99,6 +99,12 @@ int SimpleImage::readInputImage(std::string inputImageName)
     //memset(verificationOutput, 0, width * height * pixelSize);
     memcpy(verificationOutput, inputImageData, width * height * pixelSize);
 
+	//parameter imageDesc needed for clGreateImage
+    memset(&imageDesc, '\0', sizeof(cl_image_desc));
+    imageDesc.image_type = CL_MEM_OBJECT_IMAGE2D;
+    imageDesc.image_width = width;
+    imageDesc.image_height = height;
+
     return SDK_SUCCESS;
 
 }
@@ -234,48 +240,6 @@ int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Ch
 	return CL_SUCCESS;
 }
 
-int SimpleImage::dump(){
-
-	int status;
-
-    // Create and initialize image objects
-    cl_image_desc imageDesc;
-    memset(&imageDesc, '\0', sizeof(cl_image_desc));
-    imageDesc.image_type = CL_MEM_OBJECT_IMAGE2D;
-    imageDesc.image_width = width;
-    imageDesc.image_height = height;
-
-    // Create 2D input image
-    inputImage2D = clCreateImage(context,
-                                 CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-                                 &imageFormat,
-                                 &imageDesc,
-                                 inputImageData,
-                                 &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
-
-    // Create 2D output image
-    outputImage2D = clCreateImage(context,
-                                  CL_MEM_WRITE_ONLY,
-                                  &imageFormat,
-                                  &imageDesc,
-                                  0,
-                                  &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
-
-
-	//Create + initialize color buffers
-	createBuffer(redBuffer, redArray);
-	createBuffer(greenBuffer, greenArray);
-	createBuffer(blueBuffer, blueArray);
-
-	createBuffer(redSortedBuffer, redArray);
-	createBuffer(greenSortedBuffer, greenArray);
-	createBuffer(blueSortedBuffer, blueArray);
-
-    return SDK_SUCCESS;
-}
-
 int SimpleImage::runCLKernels()
 {
     cl_int status;
@@ -288,6 +252,19 @@ int SimpleImage::runCLKernels()
 
 	colorArraysKernel = clCreateKernel(program, "createColorArrays", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
+
+	// Create 2D input image
+    inputImage2D = clCreateImage(context,
+                                 CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                                 &imageFormat,
+                                 &imageDesc,
+                                 inputImageData,
+                                 &status);
+    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
+
+	createBuffer(redBuffer, redArray);
+	createBuffer(greenBuffer, greenArray);
+	createBuffer(blueBuffer, blueArray);
 
 	pushArguments(colorArraysKernel, &inputImage2D, &redBuffer, &greenBuffer, &blueBuffer);
 
@@ -379,6 +356,10 @@ int SimpleImage::runCLKernels()
 	pixelArrayKernel = clCreateKernel(program, "createPixelArray", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(pixelArrayKernel)");
 
+	createBuffer(redSortedBuffer, redArray);
+	createBuffer(greenSortedBuffer, greenArray);
+	createBuffer(blueSortedBuffer, blueArray);
+
 	pushArguments(pixelArrayKernel, &redBuffer, &greenBuffer, &blueBuffer, 
 				&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer, &width);
 
@@ -398,6 +379,14 @@ int SimpleImage::runCLKernels()
 
 	outputImageKernel = clCreateKernel(program, "createOutputImage", &status);
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(outputImageKernel)");
+
+	 outputImage2D = clCreateImage(context,
+                                  CL_MEM_WRITE_ONLY,
+                                  &imageFormat,
+                                  &imageDesc,
+                                  0,
+                                  &status);
+    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
 
 	pushArguments(outputImageKernel, &outputImage2D, &redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer);
 
@@ -481,8 +470,6 @@ int SimpleImage::setup()
 	CHECK_OPENCL_ERROR(getInputImage(), "getInputImage() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
-
-	CHECK_OPENCL_ERROR(dump(), "dump() failed");
 
     sampleTimer->stopTimer(timer);
     // Compute setup time
