@@ -13,4 +13,6 @@ size_t findMinWorkGroupSize(int numOfKernels, cl_kernel *kernelNames, cl_device_
  
 int copyFromArraysToBuffers(cl_command_queue cmdQueue,  cl_uint width, cl_uint height, int numOfBuffers, cl_mem *buffers, pixelStruct **arrays);//cl_mem buffer1, pixelStruct* array1);
 
+int copyFromBuffersToArrays(cl_command_queue cmdQueue,  cl_uint width, cl_uint height, int numOfBuffers, cl_mem *buffers, pixelStruct **arrays);
+
 #endif

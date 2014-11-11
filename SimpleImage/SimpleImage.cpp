@@ -314,7 +314,10 @@ int SimpleImage::runCLKernels()
 	////////////////////////////////////////////////////////////////////////////////////
 
 	// Read from buffers to color arrays
-	status = clEnqueueReadBuffer(commandQueue,
+	cl_mem buffers[] = {redBuffer, greenBuffer, blueBuffer};
+	pixelStruct *arrays[] = {redArray, greenArray, blueArray};
+	copyFromBuffersToArrays(commandQueue,  width, height, 3, buffers, arrays);
+	/*status = clEnqueueReadBuffer(commandQueue,
  								 redBuffer,
  								 1,
  								 0,
@@ -342,7 +345,7 @@ int SimpleImage::runCLKernels()
 	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
 
 	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.");
+    CHECK_OPENCL_ERROR(status,"clFinish failed.");*/
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -353,8 +356,7 @@ int SimpleImage::runCLKernels()
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	cl_mem buffers[] = {redBuffer, greenBuffer, blueBuffer};
-	pixelStruct *arrays[] = {redArray, greenArray, blueArray};
+	
 	copyFromArraysToBuffers(commandQueue,  width, height, 3, buffers, arrays);
 
 	///////////////////////////////////////////////////////////////////////////////////////
