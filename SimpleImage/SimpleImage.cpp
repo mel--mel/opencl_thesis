@@ -297,8 +297,7 @@ int SimpleImage::runCLKernels()
     size_t globalThreads[] = {width, height};
     size_t localThreads[] = {blockSizeX, blockSizeY};
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
-
+	//Create args and run createColorArrays
 	inputImage2D = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc,  inputImageData, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
 
@@ -306,61 +305,23 @@ int SimpleImage::runCLKernels()
 	createBuffer(greenBuffer, greenArray);
 	createBuffer(blueBuffer, blueArray);
 
-	status = runThisKernel("createColorArrays", globalThreads, localThreads, 
-		                   redBuffer, greenBuffer, blueBuffer,
-						   inputImage2D);
+	status = runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, inputImage2D);
 	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
-	////////////////////////////////////////////////////////////////////////////////////
-
-	// Read from buffers to color arrays
+	//Copy from buffers to color arrays
 	cl_mem buffers[] = {redBuffer, greenBuffer, blueBuffer};
 	pixelStruct *arrays[] = {redArray, greenArray, blueArray};
 	copyFromBuffersToArrays(commandQueue,  width, height, 3, buffers, arrays);
-	/*status = clEnqueueReadBuffer(commandQueue,
- 								 redBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 redArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
 
-	status = clEnqueueReadBuffer(commandQueue,
- 								 greenBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 greenArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
-
-	status = clEnqueueReadBuffer(commandQueue,
- 								 blueBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 blueArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueReadBuffer failed.");
-
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.");*/
-
-	/////////////////////////////////////////////////////////////////////////////////////////////
-	
 	//equalize color arrays
 	histogramEqualization(redArray, height, width);
 	histogramEqualization(greenArray, height, width);
 	histogramEqualization(blueArray, height, width);
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	
+	//Copy from arrays to buffers
 	copyFromArraysToBuffers(commandQueue,  width, height, 3, buffers, arrays);
 
-	///////////////////////////////////////////////////////////////////////////////////////
-
+	//Create args and run createPixelArray
 	createBuffer(redSortedBuffer, redArray);
 	createBuffer(greenSortedBuffer, greenArray);
 	createBuffer(blueSortedBuffer, blueArray);
@@ -371,8 +332,7 @@ int SimpleImage::runCLKernels()
 						   width);
 	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	//create args and run CreateOutputImage
 	outputImage2D = clCreateImage(context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
 
@@ -381,24 +341,11 @@ int SimpleImage::runCLKernels()
 						   outputImage2D);
 	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
-
-	/////////////////////////////////////////////////////////////////////
-
-
-    // Enqueue Read Output Image
+    //Read Output Image to output data
     size_t origin[] = {0, 0, 0};
     size_t region[] = {width, height, 1};
 
-	//2D output
-    status = clEnqueueReadImage(commandQueue,
-                                outputImage2D,
-                                1,
-                                origin,
-                                region,
-                                0,
-                                0,
-                                outputImageData2D,
-                                0, 0, 0);
+    status = clEnqueueReadImage(commandQueue, outputImage2D, 1, origin, region, 0, 0, outputImageData2D, 0, 0, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
 
 	status = clFinish(commandQueue);
