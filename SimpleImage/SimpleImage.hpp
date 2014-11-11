@@ -204,7 +204,7 @@ class SimpleImage
 		*/
 		int runThisKernel(const char* kernelFileName, size_t  *globalThreads, size_t *localThreads, 
 						cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
-						cl_mem &imageName, cl_uchar4* imageData);
+						cl_mem &imageName);
 
         /**
         * Set values for kernels' arguments, enqueue calls to the kernels
