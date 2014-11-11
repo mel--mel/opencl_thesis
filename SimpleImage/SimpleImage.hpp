@@ -206,6 +206,11 @@ class SimpleImage
 						cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 						cl_mem &imageName);
 
+		int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
+							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
+							   cl_uint &width);
+
         /**
         * Set values for kernels' arguments, enqueue calls to the kernels
         * on to the command queue, wait till end of kernel execution.

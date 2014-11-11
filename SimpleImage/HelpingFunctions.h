@@ -11,4 +11,6 @@ void setZero(pixelStruct *array, cl_uint height, cl_uint width);
 
 size_t findMinWorkGroupSize(int numOfKernels, cl_kernel *kernelNames, cl_device_id devId);
  
+int copyFromArraysToBuffers(cl_command_queue cmdQueue,  cl_uint width, cl_uint height, int numOfBuffers, cl_mem *buffers, pixelStruct **arrays);//cl_mem buffer1, pixelStruct* array1);
+
 #endif

@@ -109,3 +109,27 @@ void setZero(pixelStruct *array, cl_uint height, cl_uint width)
 			array[i*width + j].pxlValue = 0;}}
 }
 
+int copyFromArraysToBuffers(cl_command_queue cmdQueue,  cl_uint width, cl_uint height, 
+							//cl_mem buffer1, pixelStruct* array1, cl_mem buffer2, pixelStruct* array2, cl_mem buffer3, pixelStruct* array3
+							int numOfBuffers, cl_mem *buffers, pixelStruct **arrays){
+
+	int status = 0;
+
+	for (int i = 0; i < numOfBuffers; i++){
+		status = clEnqueueWriteBuffer(cmdQueue,
+ 								 buffers[i],
+ 								 1,
+ 								 0,
+ 								 width * height * sizeof(pixelStruct),
+								 arrays[i],
+ 								 0, 0, 0);
+		CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (copyFromArraysToBuffers)");
+	}
+
+	status = clFinish(cmdQueue);
+    CHECK_OPENCL_ERROR(status,"clFinish failed.(cmdQueue)");
+
+	return CL_SUCCESS;
+
+}
+

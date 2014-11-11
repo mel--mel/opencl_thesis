@@ -270,3 +270,918 @@ Warning: Indexed temp could not be resolved on line 1210, instruction 840. Perfo
 Warning: Indexed temp could not be resolved on line 1212, instruction 842. Performance may be slow.
 Warning: Expression could not be reduced to literals.
 Warning: Indexed temp could not be resolved on line 1214, instruction 844. Performance may be slow.
+
+*************************************
+Log started: Tue Nov 11 15:42:32 2014
+
+
+*************************************
+
+Warning: Indexed temp could not be resolved on line 171, instruction 32. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 173, instruction 34. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 175, instruction 36. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 177, instruction 38. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 187, instruction 46. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 191, instruction 50. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 193, instruction 52. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 203, instruction 61. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 213, instruction 70. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 231, instruction 87. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 273, instruction 125. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 281, instruction 131. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 283, instruction 133. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 292, instruction 141. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 296, instruction 145. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 298, instruction 147. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 306, instruction 154. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 311, instruction 159. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 313, instruction 161. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 321, instruction 168. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 326, instruction 173. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 328, instruction 175. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 346, instruction 192. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 364, instruction 209. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 382, instruction 226. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 400, instruction 243. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 412, instruction 254. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 414, instruction 256. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 420, instruction 262. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 426, instruction 268. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 432, instruction 274. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 439, instruction 281. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 457, instruction 299. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 610, instruction 437. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 612, instruction 439. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 614, instruction 441. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 616, instruction 443. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 618, instruction 445. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 620, instruction 447. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 622, instruction 449. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 624, instruction 451. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 626, instruction 453. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 745, instruction 491. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 747, instruction 493. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 749, instruction 495. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 751, instruction 497. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 753, instruction 499. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 755, instruction 501. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 757, instruction 503. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 766, instruction 510. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 770, instruction 514. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 772, instruction 516. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 781, instruction 524. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 790, instruction 532. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 801, instruction 542. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 812, instruction 552. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 859, instruction 596. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 861, instruction 598. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 863, instruction 600. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 865, instruction 602. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 867, instruction 604. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 869, instruction 606. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 871, instruction 608. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 970, instruction 643. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 972, instruction 645. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 974, instruction 647. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 976, instruction 649. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 985, instruction 656. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 989, instruction 660. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 991, instruction 662. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1001, instruction 671. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1011, instruction 680. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1022, instruction 690. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1033, instruction 700. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1044, instruction 710. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1048, instruction 713. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1056, instruction 720. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1058, instruction 722. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1060, instruction 724. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1062, instruction 726. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1156, instruction 759. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1158, instruction 761. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1167, instruction 768. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1171, instruction 772. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1173, instruction 774. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1178, instruction 777. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1191, instruction 790. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1197, instruction 796. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1201, instruction 800. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1207, instruction 805. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1216, instruction 814. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1224, instruction 822. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1226, instruction 824. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1234, instruction 832. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1241, instruction 839. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1245, instruction 843. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1256, instruction 853. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1258, instruction 855. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1260, instruction 857. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 1262, instruction 859. Performance may be slow.
+Assert:  NULL input for a non-NULL image!
+
+***********************************
+Log ended: Tue Nov 11 15:42:37 2014
+
+
+***********************************
+
+
+*************************************
+Log started: Tue Nov 11 15:42:37 2014
+
+
+*************************************
+
+Warning: Indexed temp could not be resolved on line 171, instruction 32. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 173, instruction 34. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 175, instruction 36. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 177, instruction 38. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 187, instruction 46. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 191, instruction 50. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 193, instruction 52. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 203, instruction 61. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 213, instruction 70. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 231, instruction 87. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 273, instruction 125. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 281, instruction 131. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 283, instruction 133. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 292, instruction 141. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 296, instruction 145. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 298, instruction 147. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 306, instruction 154. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 311, instruction 159. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 313, instruction 161. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 321, instruction 168. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 326, instruction 173. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 328, instruction 175. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 346, instruction 192. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 364, instruction 209. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 382, instruction 226. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 400, instruction 243. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 412, instruction 254. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 414, instruction 256. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 420, instruction 262. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 426, instruction 268. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 432, instruction 274. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 439, instruction 281. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 457, instruction 299. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 610, instruction 437. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 612, instruction 439. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 614, instruction 441. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 616, instruction 443. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 618, instruction 445. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 620, instruction 447. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 622, instruction 449. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 624, instruction 451. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 626, instruction 453. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 745, instruction 491. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 747, instruction 493. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 749, instruction 495. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 751, instruction 497. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 753, instruction 499. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 755, instruction 501. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 757, instruction 503. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 766, instruction 510. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 770, instruction 514. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 772, instruction 516. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 781, instruction 524. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 790, instruction 532. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 801, instruction 542. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 812, instruction 552. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 859, instruction 596. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 861, instruction 598. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 863, instruction 600. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 865, instruction 602. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 867, instruction 604. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 869, instruction 606. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 871, instruction 608. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 970, instruction 643. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 972, instruction 645. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 974, instruction 647. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 976, instruction 649. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 985, instruction 656. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 989, instruction 660. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 991, instruction 662. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1001, instruction 671. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1011, instruction 680. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1022, instruction 690. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1033, instruction 700. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1044, instruction 710. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1048, instruction 713. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1056, instruction 720. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1058, instruction 722. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1060, instruction 724. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1062, instruction 726. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1156, instruction 759. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1158, instruction 761. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1167, instruction 768. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1171, instruction 772. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1173, instruction 774. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1178, instruction 777. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1191, instruction 790. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1197, instruction 796. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1201, instruction 800. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1207, instruction 805. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1216, instruction 814. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1224, instruction 822. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1226, instruction 824. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1234, instruction 832. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1241, instruction 839. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1245, instruction 843. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1256, instruction 853. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1258, instruction 855. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1260, instruction 857. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 1262, instruction 859. Performance may be slow.
+
+***********************************
+Log ended: Tue Nov 11 15:42:39 2014
+
+
+***********************************
+
+
+*************************************
+Log started: Tue Nov 11 15:42:37 2014
+
+
+*************************************
+
+Warning: Indexed temp could not be resolved on line 171, instruction 32. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 173, instruction 34. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 175, instruction 36. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 177, instruction 38. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 187, instruction 46. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 191, instruction 50. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 193, instruction 52. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 203, instruction 61. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 213, instruction 70. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 231, instruction 87. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 273, instruction 125. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 281, instruction 131. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 283, instruction 133. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 292, instruction 141. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 296, instruction 145. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 298, instruction 147. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 306, instruction 154. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 311, instruction 159. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 313, instruction 161. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 321, instruction 168. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 326, instruction 173. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 328, instruction 175. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 346, instruction 192. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 364, instruction 209. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 382, instruction 226. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 400, instruction 243. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 412, instruction 254. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 414, instruction 256. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 420, instruction 262. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 426, instruction 268. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 432, instruction 274. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 439, instruction 281. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 457, instruction 299. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 610, instruction 437. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 612, instruction 439. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 614, instruction 441. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 616, instruction 443. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 618, instruction 445. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 620, instruction 447. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 622, instruction 449. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 624, instruction 451. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 626, instruction 453. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 745, instruction 491. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 747, instruction 493. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 749, instruction 495. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 751, instruction 497. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 753, instruction 499. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 755, instruction 501. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 757, instruction 503. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 766, instruction 510. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 770, instruction 514. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 772, instruction 516. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 781, instruction 524. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 790, instruction 532. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 801, instruction 542. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 812, instruction 552. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 859, instruction 596. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 861, instruction 598. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 863, instruction 600. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 865, instruction 602. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 867, instruction 604. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 869, instruction 606. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 871, instruction 608. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 970, instruction 643. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 972, instruction 645. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 974, instruction 647. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 976, instruction 649. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 985, instruction 656. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 989, instruction 660. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 991, instruction 662. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1001, instruction 671. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1011, instruction 680. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1022, instruction 690. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1033, instruction 700. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1044, instruction 710. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1048, instruction 713. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1056, instruction 720. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1058, instruction 722. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1060, instruction 724. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1062, instruction 726. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1156, instruction 759. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1158, instruction 761. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1167, instruction 768. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1171, instruction 772. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1173, instruction 774. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1178, instruction 777. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1191, instruction 790. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1197, instruction 796. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1201, instruction 800. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1207, instruction 805. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1216, instruction 814. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1224, instruction 822. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1226, instruction 824. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1234, instruction 832. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1241, instruction 839. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1245, instruction 843. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1256, instruction 853. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1258, instruction 855. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1260, instruction 857. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 1262, instruction 859. Performance may be slow.
+Assert:  NULL input for a non-NULL image!
+
+***********************************
+Log ended: Tue Nov 11 15:42:43 2014
+
+
+***********************************
+
+
+*************************************
+Log started: Tue Nov 11 15:43:11 2014
+
+
+*************************************
+
+Warning: Indexed temp could not be resolved on line 171, instruction 32. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 173, instruction 34. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 175, instruction 36. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 177, instruction 38. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 187, instruction 46. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 191, instruction 50. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 193, instruction 52. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 203, instruction 61. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 213, instruction 70. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 231, instruction 87. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 273, instruction 125. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 281, instruction 131. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 283, instruction 133. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 292, instruction 141. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 296, instruction 145. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 298, instruction 147. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 306, instruction 154. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 311, instruction 159. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 313, instruction 161. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 321, instruction 168. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 326, instruction 173. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 328, instruction 175. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 346, instruction 192. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 364, instruction 209. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 382, instruction 226. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 400, instruction 243. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 412, instruction 254. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 414, instruction 256. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 420, instruction 262. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 426, instruction 268. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 432, instruction 274. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 439, instruction 281. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 457, instruction 299. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 610, instruction 437. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 612, instruction 439. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 614, instruction 441. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 616, instruction 443. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 618, instruction 445. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 620, instruction 447. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 622, instruction 449. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 624, instruction 451. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 626, instruction 453. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 745, instruction 491. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 747, instruction 493. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 749, instruction 495. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 751, instruction 497. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 753, instruction 499. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 755, instruction 501. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 757, instruction 503. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 766, instruction 510. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 770, instruction 514. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 772, instruction 516. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 781, instruction 524. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 790, instruction 532. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 801, instruction 542. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 812, instruction 552. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 859, instruction 596. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 861, instruction 598. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 863, instruction 600. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 865, instruction 602. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 867, instruction 604. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 869, instruction 606. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 871, instruction 608. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 970, instruction 643. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 972, instruction 645. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 974, instruction 647. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 976, instruction 649. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 985, instruction 656. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 989, instruction 660. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 991, instruction 662. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1001, instruction 671. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1011, instruction 680. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1022, instruction 690. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1033, instruction 700. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1044, instruction 710. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1048, instruction 713. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1056, instruction 720. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1058, instruction 722. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1060, instruction 724. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1062, instruction 726. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1156, instruction 759. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1158, instruction 761. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1167, instruction 768. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1171, instruction 772. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1173, instruction 774. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1178, instruction 777. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1191, instruction 790. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1197, instruction 796. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1201, instruction 800. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1207, instruction 805. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1216, instruction 814. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1224, instruction 822. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1226, instruction 824. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1234, instruction 832. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1241, instruction 839. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1245, instruction 843. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1256, instruction 853. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1258, instruction 855. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1260, instruction 857. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 1262, instruction 859. Performance may be slow.
+Assert:  NULL input for a non-NULL image!
+
+***********************************
+Log ended: Tue Nov 11 15:44:48 2014
+
+
+***********************************
+
+
+*************************************
+Log started: Tue Nov 11 15:44:48 2014
+
+
+*************************************
+
+Warning: Indexed temp could not be resolved on line 171, instruction 32. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 173, instruction 34. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 175, instruction 36. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 177, instruction 38. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 187, instruction 46. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 191, instruction 50. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 193, instruction 52. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 203, instruction 61. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 213, instruction 70. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 231, instruction 87. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 273, instruction 125. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 281, instruction 131. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 283, instruction 133. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 292, instruction 141. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 296, instruction 145. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 298, instruction 147. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 306, instruction 154. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 311, instruction 159. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 313, instruction 161. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 321, instruction 168. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 326, instruction 173. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 328, instruction 175. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 346, instruction 192. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 364, instruction 209. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 382, instruction 226. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 400, instruction 243. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 412, instruction 254. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 414, instruction 256. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 420, instruction 262. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 426, instruction 268. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 432, instruction 274. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 439, instruction 281. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 457, instruction 299. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 610, instruction 437. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 612, instruction 439. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 614, instruction 441. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 616, instruction 443. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 618, instruction 445. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 620, instruction 447. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 622, instruction 449. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 624, instruction 451. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 626, instruction 453. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 745, instruction 491. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 747, instruction 493. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 749, instruction 495. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 751, instruction 497. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 753, instruction 499. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 755, instruction 501. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 757, instruction 503. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 766, instruction 510. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 770, instruction 514. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 772, instruction 516. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 781, instruction 524. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 790, instruction 532. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 801, instruction 542. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 812, instruction 552. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 859, instruction 596. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 861, instruction 598. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 863, instruction 600. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 865, instruction 602. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 867, instruction 604. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 869, instruction 606. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 871, instruction 608. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 970, instruction 643. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 972, instruction 645. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 974, instruction 647. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 976, instruction 649. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 985, instruction 656. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 989, instruction 660. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 991, instruction 662. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1001, instruction 671. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1011, instruction 680. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1022, instruction 690. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1033, instruction 700. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1044, instruction 710. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1048, instruction 713. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1056, instruction 720. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1058, instruction 722. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1060, instruction 724. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1062, instruction 726. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1156, instruction 759. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1158, instruction 761. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1167, instruction 768. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1171, instruction 772. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1173, instruction 774. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1178, instruction 777. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1191, instruction 790. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1197, instruction 796. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1201, instruction 800. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1207, instruction 805. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1216, instruction 814. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1224, instruction 822. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1226, instruction 824. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1234, instruction 832. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1241, instruction 839. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1245, instruction 843. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1256, instruction 853. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1258, instruction 855. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1260, instruction 857. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 1262, instruction 859. Performance may be slow.
+
+***********************************
+Log ended: Tue Nov 11 15:44:51 2014
+
+
+***********************************
+
+
+*************************************
+Log started: Tue Nov 11 15:44:48 2014
+
+
+*************************************
+
+Warning: Indexed temp could not be resolved on line 171, instruction 32. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 173, instruction 34. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 175, instruction 36. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 177, instruction 38. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 187, instruction 46. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 191, instruction 50. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 193, instruction 52. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 203, instruction 61. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 213, instruction 70. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 231, instruction 87. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 273, instruction 125. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 281, instruction 131. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 283, instruction 133. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 292, instruction 141. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 296, instruction 145. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 298, instruction 147. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 306, instruction 154. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 311, instruction 159. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 313, instruction 161. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 321, instruction 168. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 326, instruction 173. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 328, instruction 175. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 346, instruction 192. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 364, instruction 209. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 382, instruction 226. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 400, instruction 243. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 412, instruction 254. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 414, instruction 256. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 420, instruction 262. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 426, instruction 268. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 432, instruction 274. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 439, instruction 281. Performance may be slow.
+Warning: Can only track across simple registers.
+Warning: Indexed temp could not be resolved on line 457, instruction 299. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 610, instruction 437. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 612, instruction 439. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 614, instruction 441. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 616, instruction 443. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 618, instruction 445. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 620, instruction 447. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 622, instruction 449. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 624, instruction 451. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 626, instruction 453. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 745, instruction 491. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 747, instruction 493. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 749, instruction 495. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 751, instruction 497. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 753, instruction 499. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 755, instruction 501. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 757, instruction 503. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 766, instruction 510. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 770, instruction 514. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 772, instruction 516. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 781, instruction 524. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 790, instruction 532. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 801, instruction 542. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 812, instruction 552. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 859, instruction 596. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 861, instruction 598. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 863, instruction 600. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 865, instruction 602. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 867, instruction 604. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 869, instruction 606. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 871, instruction 608. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 970, instruction 643. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 972, instruction 645. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 974, instruction 647. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 976, instruction 649. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 985, instruction 656. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 989, instruction 660. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 991, instruction 662. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1001, instruction 671. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1011, instruction 680. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1022, instruction 690. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1033, instruction 700. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1044, instruction 710. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1048, instruction 713. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1056, instruction 720. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1058, instruction 722. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1060, instruction 724. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1062, instruction 726. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1156, instruction 759. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1158, instruction 761. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1167, instruction 768. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1171, instruction 772. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1173, instruction 774. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1178, instruction 777. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1191, instruction 790. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1197, instruction 796. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1201, instruction 800. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1207, instruction 805. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1216, instruction 814. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1224, instruction 822. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1226, instruction 824. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1234, instruction 832. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1241, instruction 839. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1245, instruction 843. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1256, instruction 853. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1258, instruction 855. Performance may be slow.
+Warning: Indexed temp could not be resolved on line 1260, instruction 857. Performance may be slow.
+Warning: Expression could not be reduced to literals.
+Warning: Indexed temp could not be resolved on line 1262, instruction 859. Performance may be slow.
+Assert:  NULL input for a non-NULL image!

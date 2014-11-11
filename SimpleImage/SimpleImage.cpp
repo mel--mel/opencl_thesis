@@ -242,6 +242,32 @@ int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Ch
 
 int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
+							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
+							   cl_uint &parameter)
+{
+	int status = 0;
+
+	cl_kernel kernelName;
+
+	//create kernel
+	kernelName = clCreateKernel(program, kernelFileName, &status);// "createColorArrays", &status);
+    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
+
+	//push arguments
+	pushArguments(kernelName, &buffer1, &buffer2, &buffer3, &buffer4, &buffer5, &buffer6, &parameter);
+
+	//run kernel
+	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
+    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
+
+	return CL_SUCCESS;
+
+}
+
+
+
+int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &imageName)
 {
 	int status = 0;
@@ -253,7 +279,7 @@ int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads
     CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
 
 	//push arguments
-	pushArguments(kernelName, &imageName, &buffer1, &buffer2, &buffer3);
+	pushArguments(kernelName, &buffer1, &buffer2, &buffer3, &imageName);
 
 	//run kernel
 	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
@@ -327,87 +353,32 @@ int SimpleImage::runCLKernels()
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//write from equalized arrays back to buffers
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 redBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 redArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 greenBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 greenArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (greenBuffer)");
-
-	status = clEnqueueWriteBuffer(commandQueue,
- 								 blueBuffer,
- 								 1,
- 								 0,
- 								 width * height * sizeof(pixelStruct),
-								 blueArray,
- 								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (blueBuffer)");
-
-	status = clFinish(commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
+	cl_mem buffers[] = {redBuffer, greenBuffer, blueBuffer};
+	pixelStruct *arrays[] = {redArray, greenArray, blueArray};
+	copyFromArraysToBuffers(commandQueue,  width, height, 3, buffers, arrays);
 
 	///////////////////////////////////////////////////////////////////////////////////////
-
-	pixelArrayKernel = clCreateKernel(program, "createPixelArray", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(pixelArrayKernel)");
 
 	createBuffer(redSortedBuffer, redArray);
 	createBuffer(greenSortedBuffer, greenArray);
 	createBuffer(blueSortedBuffer, blueArray);
 
-	pushArguments(pixelArrayKernel, &redBuffer, &greenBuffer, &blueBuffer, 
-				&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer, &width);
-
-	status = clEnqueueNDRangeKernel(
-                 commandQueue,
-                 pixelArrayKernel,
-                 2,
-                 NULL,
-                 globalThreads,
-                 localThreads,
-                 0,
-                 NULL,
-                 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
+	status = runThisKernel("createPixelArray", globalThreads, localThreads, 
+						   redBuffer, greenBuffer, blueBuffer,
+		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
+						   width);
+	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	outputImageKernel = clCreateKernel(program, "createOutputImage", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(outputImageKernel)");
-
-	 outputImage2D = clCreateImage(context,
-                                  CL_MEM_WRITE_ONLY,
-                                  &imageFormat,
-                                  &imageDesc,
-                                  0,
-                                  &status);
+	outputImage2D = clCreateImage(context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
 
-	pushArguments(outputImageKernel, &outputImage2D, &redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer);
+	status = runThisKernel("createOutputImage", globalThreads, localThreads, 
+		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
+						   outputImage2D);
+	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
-	status = clEnqueueNDRangeKernel(
-                 commandQueue,
-                 outputImageKernel,
-                 2,
-                 NULL,
-                 globalThreads,
-                 localThreads,
-                 0,
-                 NULL,
-                 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
 
 	/////////////////////////////////////////////////////////////////////
 

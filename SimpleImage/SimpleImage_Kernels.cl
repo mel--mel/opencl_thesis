@@ -27,8 +27,8 @@ typedef struct __attribute__((packed)) pixelStruct{
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
 
 /* Copy input 2D image to output 2D image */
-__kernel void createColorArrays(__read_only image2d_t input, __global pixelStruct* red, 
-                         __global pixelStruct* green, __global pixelStruct* blue)
+__kernel void createColorArrays(__global pixelStruct* red, __global pixelStruct* green, __global pixelStruct* blue, 
+                                __read_only image2d_t input)
 {
 	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
@@ -98,8 +98,8 @@ __kernel void createPixelArray(__global pixelStruct* redIn, __global pixelStruct
 }
 
 /*create 2D output image according to color buffers)*/
-__kernel void createOutputImage(__write_only image2d_t output, 
-                                __global pixelStruct* redOut, __global pixelStruct* greenOut, __global pixelStruct* blueOut)
+__kernel void createOutputImage(__global pixelStruct* redOut, __global pixelStruct* greenOut, __global pixelStruct* blueOut, 
+                                __write_only image2d_t output)
 {
 	//get image coordinates
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
