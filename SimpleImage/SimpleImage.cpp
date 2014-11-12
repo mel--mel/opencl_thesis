@@ -425,11 +425,6 @@ int SimpleImage::run()
     sampleTimer->stopTimer(timer);
     kernelTime = (double)(sampleTimer->readTimer(timer)) / iterations;
 
-    // write the output image to bitmap file
-    CHECK_OPENCL_ERROR(writeOutputImage(OUTPUT_IMAGE), "write Output Image Failed");
-
-	//TEST print
-	//o,ti thelw
 
     return SDK_SUCCESS;
 }
@@ -509,6 +504,8 @@ int main(int argc, char * argv[])
 	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
 	CHECK_OPENCL_ERROR(clSimpleImage.run(), "run() failed");
+
+    CHECK_OPENCL_ERROR(clSimpleImage.writeOutputImage(OUTPUT_IMAGE), "write Output Image Failed");
 
 	CHECK_OPENCL_ERROR(clSimpleImage.verifyResults(), "verifyResults() failed");
 
