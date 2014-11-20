@@ -21,7 +21,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <cmath>
 #include <vector>
 
-#define INPUT_IMAGE "diplo000000-L.bmp"
 #define OUTPUT_IMAGE "L_Out.bmp"
 
 int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
@@ -52,11 +51,11 @@ int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
 	return CL_SUCCESS;
 }
 
-int SimpleImage::getInputImage(std::string imageName)
+int SimpleImage::getInputImage(std::string imageName, cl_image_desc *imageDesc)
 {
 	// Allocate host memoryF and read input image
     //std::string filePath = getPath() + std::string(INPUT_IMAGE);
-	CHECK_OPENCL_ERROR(readInputImage(imageName), "Read Input Image failed");
+	CHECK_OPENCL_ERROR(readInputImage(imageName, &imageDesc1), "Read Input Image failed");
 
 	//enable timing for this SimpleImage
 	sampleArgs->timing = 1;
@@ -64,7 +63,7 @@ int SimpleImage::getInputImage(std::string imageName)
 	return CL_SUCCESS;
 }
 
-int SimpleImage::readInputImage(std::string imageName)
+int SimpleImage::readInputImage(std::string imageName, cl_image_desc *imageDesc)
 {
 
     // load input bitmap image
@@ -100,10 +99,10 @@ int SimpleImage::readInputImage(std::string imageName)
     memcpy(verificationOutput, inputImageData, width * height * pixelSize);
 
 	//parameter imageDesc needed for clGreateImage
-    memset(&imageDesc, '\0', sizeof(cl_image_desc));
-    imageDesc.image_type = CL_MEM_OBJECT_IMAGE2D;
-    imageDesc.image_width = width;
-    imageDesc.image_height = height;
+    memset(imageDesc, '\0', sizeof(cl_image_desc));
+    imageDesc->image_type = CL_MEM_OBJECT_IMAGE2D;
+    imageDesc->image_width = width;
+    imageDesc->image_height = height;
 
     return SDK_SUCCESS;
 
@@ -302,7 +301,7 @@ int SimpleImage::runCLKernels()
     size_t localThreads[] = {blockSizeX, blockSizeY};
 
 	//Create args and run createColorArrays
-	inputImage2D = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc,  inputImageData, &status);
+	inputImage2D = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc1,  inputImageData, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
 
 	createBuffer(redBuffer, redArray);
@@ -337,7 +336,7 @@ int SimpleImage::runCLKernels()
 	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
 	//create args and run CreateOutputImage
-	outputImage2D = clCreateImage(context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
+	outputImage2D = clCreateImage(context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc1, 0, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
 
 	status = runThisKernel("createOutputImage", globalThreads, localThreads, 
@@ -398,7 +397,7 @@ int SimpleImage::setup()
 
 	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
 
-	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp"), "getInputImage() failed");
+	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1), "getInputImage() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 

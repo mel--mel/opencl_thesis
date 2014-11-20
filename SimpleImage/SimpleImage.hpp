@@ -56,8 +56,9 @@ class SimpleImage
 		cl_uchar4* inputImageData;          /**< Input bitmap data to device */
         cl_uchar4* outputImageData2D;       /**< Output from device for 2D copy*/
         cl_uchar4* outputImageData3D;       /**< Output from device for 3D copy*/
-        cl_image_desc imageDesc;            /**< Parameter needed for clGreateImage*/
-
+        cl_image_desc imageDesc1;            /**< Parameter needed for clGreateImage*/
+		cl_image_desc imageDesc2;
+		
 		cl_context context;                 /**< CL context */
         cl_device_id *devices;              /**< CL device list */
 
@@ -123,7 +124,7 @@ class SimpleImage
         * @param inputImageName name of the input file
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-        int readInputImage(std::string inputImageName);
+		int readInputImage(std::string inputImageName, cl_image_desc *imageDesc);
 
         /**
         * Write to an image file
@@ -165,7 +166,7 @@ class SimpleImage
         * Allocate image memory and Load bitmap file
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-        int getInputImage(std::string imageName);
+        int getInputImage(std::string imageName, cl_image_desc *imageDesc);
 
 		/**
 		*Create opencl buffer
