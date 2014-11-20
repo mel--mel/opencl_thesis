@@ -51,11 +51,11 @@ int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
 	return CL_SUCCESS;
 }
 
-int SimpleImage::getInputImage(std::string imageName, cl_image_desc *imageDesc)
+int SimpleImage::getInputImage(std::string imageName, cl_image_desc *imageDesc, cl_uchar4 **imageData)
 {
 	// Allocate host memoryF and read input image
     //std::string filePath = getPath() + std::string(INPUT_IMAGE);
-	CHECK_OPENCL_ERROR(readInputImage(imageName, &imageDesc1), "Read Input Image failed");
+	CHECK_OPENCL_ERROR(readInputImage(imageName, imageDesc, imageData), "Read Input Image failed");
 
 	//enable timing for this SimpleImage
 	sampleArgs->timing = 1;
@@ -63,9 +63,10 @@ int SimpleImage::getInputImage(std::string imageName, cl_image_desc *imageDesc)
 	return CL_SUCCESS;
 }
 
-int SimpleImage::readInputImage(std::string imageName, cl_image_desc *imageDesc)
+int SimpleImage::readInputImage(std::string imageName, cl_image_desc *imageDesc, cl_uchar4 **imageData)
 {
 
+	//SDKBitMap inputBitmap;
     // load input bitmap image
     inputBitmap.load(imageName.c_str());
 
@@ -80,15 +81,15 @@ int SimpleImage::readInputImage(std::string imageName, cl_image_desc *imageDesc)
     width = inputBitmap.getWidth();
 
     // allocate memory for input & outputimage data
-    inputImageData = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
-    CHECK_ALLOCATION(inputImageData,"Failed to allocate memory! (inputImageData)");
+    *imageData = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
+    CHECK_ALLOCATION(imageData,"Failed to allocate memory! (inputImageData)");
 
     // get the pointer to pixel data
     pixelData = inputBitmap.getPixels();
     CHECK_ALLOCATION(pixelData,"Failed to read pixel Data!");
 
     // Copy pixel data into inputImageData
-    memcpy(inputImageData, pixelData, width * height * pixelSize);
+    memcpy(*imageData, pixelData, width * height * pixelSize);
 
     // allocate memory for verification output
     verificationOutput = (cl_uchar*)malloc(width * height * pixelSize);
@@ -96,7 +97,7 @@ int SimpleImage::readInputImage(std::string imageName, cl_image_desc *imageDesc)
 
     // initialize the data to NULL
     //memset(verificationOutput, 0, width * height * pixelSize);
-    memcpy(verificationOutput, inputImageData, width * height * pixelSize);
+    memcpy(verificationOutput, *imageData, width * height * pixelSize);
 
 	//parameter imageDesc needed for clGreateImage
     memset(imageDesc, '\0', sizeof(cl_image_desc));
@@ -301,7 +302,7 @@ int SimpleImage::runCLKernels()
     size_t localThreads[] = {blockSizeX, blockSizeY};
 
 	//Create args and run createColorArrays
-	inputImage2D = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc1,  inputImageData, &status);
+	inputImage2D = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc1, imageData1, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
 
 	createBuffer(redBuffer, redArray);
@@ -314,7 +315,7 @@ int SimpleImage::runCLKernels()
 	//Copy from buffers to color arrays
 	cl_mem buffers[] = {redBuffer, greenBuffer, blueBuffer};
 	pixelStruct *arrays[] = {redArray, greenArray, blueArray};
-	copyFromBuffersToArrays(commandQueue,  width, height, 3, buffers, arrays);
+	copyFromBuffersToArrays(commandQueue, width, height, 3, buffers, arrays);
 
 	//equalize color arrays
 	histogramEqualization(redArray, height, width);
@@ -397,7 +398,7 @@ int SimpleImage::setup()
 
 	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
 
-	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1), "getInputImage() failed");
+	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 
@@ -448,7 +449,8 @@ int SimpleImage::cleanup()
     CHECK_OPENCL_ERROR(clReleaseContext(context),"clReleaseContext failed.(context)");
 
     // release program resources (input memory etc.)
-    FREE(inputImageData);
+    FREE(imageData1);
+	FREE(imageData2);
     FREE(outputImageData2D);
     FREE(verificationOutput);
     FREE(devices);
@@ -466,7 +468,7 @@ int SimpleImage::verifyResults()
 	if(sampleArgs->verify){
         std::cout << "Verifying 2D copy result - ";
         // compare the results and see if they match
-        if(!memcmp(inputImageData, outputImageData2D, width * height * 4)) {std::cout << "Passed!\n" << std::endl;}
+        if(!memcmp(imageData1, outputImageData2D, width * height * 4)) {std::cout << "Passed!\n" << std::endl;}
         else{
             std::cout << "Failed\n" << std::endl;
             return SDK_FAILURE;

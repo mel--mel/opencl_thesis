@@ -53,7 +53,8 @@ class SimpleImage
         cl_double setupTime;                /**< time taken to setup OpenCL resources and building kernel */
         cl_double kernelTime;               /**< time taken to run kernel and read result back */
         
-		cl_uchar4* inputImageData;          /**< Input bitmap data to device */
+		cl_uchar4* imageData1;          /**< Input bitmap data to device */
+		cl_uchar4* imageData2;          /**< Input bitmap data to device */
         cl_uchar4* outputImageData2D;       /**< Output from device for 2D copy*/
         cl_uchar4* outputImageData3D;       /**< Output from device for 3D copy*/
         cl_image_desc imageDesc1;            /**< Parameter needed for clGreateImage*/
@@ -124,7 +125,7 @@ class SimpleImage
         * @param inputImageName name of the input file
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-		int readInputImage(std::string inputImageName, cl_image_desc *imageDesc);
+		int readInputImage(std::string inputImageName, cl_image_desc *imageDesc, cl_uchar4 **imageData);
 
         /**
         * Write to an image file
@@ -138,7 +139,8 @@ class SimpleImage
         * Initialize member variables
         */
         SimpleImage()
-            : inputImageData(NULL),
+            : imageData1(NULL),
+			  imageData2(NULL),
               outputImageData2D(NULL),
               outputImageData3D(NULL),
               verificationOutput(NULL),
@@ -166,7 +168,7 @@ class SimpleImage
         * Allocate image memory and Load bitmap file
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-        int getInputImage(std::string imageName, cl_image_desc *imageDesc);
+        int getInputImage(std::string imageName, cl_image_desc *imageDesc, cl_uchar4 **imageData);
 
 		/**
 		*Create opencl buffer
