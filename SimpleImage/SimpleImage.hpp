@@ -181,7 +181,7 @@ class SimpleImage
 		*Allocate array memory
 		* @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-		int setupBuffers();
+		int createColorArrays();
 
         /**
          * Override from SDKSample, Generate binary image of given kernel

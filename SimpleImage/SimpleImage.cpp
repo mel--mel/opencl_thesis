@@ -109,12 +109,8 @@ int SimpleImage::readInputImage(std::string imageName, cl_image_desc *imageDesc,
 
 }
 
-int SimpleImage::setupBuffers()
+int SimpleImage::createColorArrays()
 {
-	 // allocate memory for 2D-copy output image data
-    outputImageData2D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
-    CHECK_ALLOCATION(outputImageData2D, "Failed to allocate memory! (outputImageData)");
-
 	// allocate memory for 1D pixel struct array
 	redArray = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
 	CHECK_ALLOCATION(redArray, "Failed to allocate memory! (redArray)");
@@ -301,9 +297,11 @@ int SimpleImage::runCLKernels()
     size_t globalThreads[] = {width, height};
     size_t localThreads[] = {blockSizeX, blockSizeY};
 
-	//Create args and run createColorArrays
+	//Create args
 	inputImage2D = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc1, imageData1, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
+
+	CHECK_OPENCL_ERROR(createColorArrays(), "createColorArrays() failed");
 
 	createBuffer(redBuffer, redArray);
 	createBuffer(greenBuffer, greenArray);
@@ -348,6 +346,10 @@ int SimpleImage::runCLKernels()
     //Read Output Image to output data
     size_t origin[] = {0, 0, 0};
     size_t region[] = {width, height, 1};
+
+	// allocate memory for 2D-copy output image data
+    outputImageData2D = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
+    CHECK_ALLOCATION(outputImageData2D, "Failed to allocate memory! (outputImageData)");
 
     status = clEnqueueReadImage(commandQueue, outputImage2D, 1, origin, region, 0, 0, outputImageData2D, 0, 0, 0);
     CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
@@ -400,8 +402,6 @@ int SimpleImage::setup()
 
 	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage1() failed");
 	CHECK_OPENCL_ERROR(getInputImage("diplo000000-R.bmp", &imageDesc2, &imageData2), "getInputImage2() failed");
-
-	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 
     sampleTimer->stopTimer(timer);
     // Compute setup time
