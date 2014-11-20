@@ -398,7 +398,8 @@ int SimpleImage::setup()
 
 	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
 
-	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage() failed");
+	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage1() failed");
+	CHECK_OPENCL_ERROR(getInputImage("diplo000000-R.bmp", &imageDesc2, &imageData2), "getInputImage2() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 
