@@ -52,11 +52,11 @@ int SimpleImage::createBuffer(cl_mem &bufferName, pixelStruct *arrayName){
 	return CL_SUCCESS;
 }
 
-int SimpleImage::getInputImage()
+int SimpleImage::getInputImage(std::string imageName)
 {
 	// Allocate host memoryF and read input image
     //std::string filePath = getPath() + std::string(INPUT_IMAGE);
-    CHECK_OPENCL_ERROR(readInputImage(INPUT_IMAGE), "Read Input Image failed");
+	CHECK_OPENCL_ERROR(readInputImage(imageName), "Read Input Image failed");
 
 	//enable timing for this SimpleImage
 	sampleArgs->timing = 1;
@@ -64,11 +64,11 @@ int SimpleImage::getInputImage()
 	return CL_SUCCESS;
 }
 
-int SimpleImage::readInputImage(std::string inputImageName)
+int SimpleImage::readInputImage(std::string imageName)
 {
 
     // load input bitmap image
-    inputBitmap.load(inputImageName.c_str());
+    inputBitmap.load(imageName.c_str());
 
     // error if image did not load
     if(!inputBitmap.isLoaded()){
@@ -162,14 +162,18 @@ int SimpleImage::setupCL()
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
 
-	//find which device type is available
-    if(sampleArgs->deviceType.compare("cpu") == 0) {dType = CL_DEVICE_TYPE_CPU;}
-    else{  //deviceType = "gpu"
-        dType = CL_DEVICE_TYPE_GPU;
+	//find device type
+    if(sampleArgs->deviceType.compare("cpu") == 0) {
+		dType = CL_DEVICE_TYPE_CPU;
+		std::cout << "Device type = CPU" << std::endl;} //deviceType = "cpu"
+    else{  
+        dType = CL_DEVICE_TYPE_GPU; //deviceType = "gpu"
         if(sampleArgs->isThereGPU() == false) {
             std::cout << "GPU not found. Falling back to CPU device" << std::endl;
             dType = CL_DEVICE_TYPE_CPU;
+			std::cout << "Device type = CPU" << std::endl; //deviceType = "cpu"
         }
+		std::cout << "Device type = GPU" << std::endl;
     }
 
     /* Have a look at the available platforms and pick either
@@ -394,7 +398,7 @@ int SimpleImage::setup()
 
 	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
 
-	CHECK_OPENCL_ERROR(getInputImage(), "getInputImage() failed");
+	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp"), "getInputImage() failed");
 
 	CHECK_OPENCL_ERROR(setupBuffers(), "setupBuffers() failed");
 
