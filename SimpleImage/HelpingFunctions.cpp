@@ -199,7 +199,7 @@ int createBuffers(cl_mem **buffers, pixelStruct **arrays, int num, cl_context co
 	return CL_SUCCESS;
 }
 
-int MyImage::open(std::string imageName){
+void MyImage::open(std::string imageName){
 
 	//SDKBitMap inputBitmap;
     // load input bitmap image
@@ -208,7 +208,7 @@ int MyImage::open(std::string imageName){
     // error if image did not load
     if(!imageBitmap.isLoaded()){
         error("Failed to load input image!");
-        return SDK_FAILURE;
+        throw "Failed to load input image!";
     }
 
     // get width and height of input image
@@ -217,14 +217,13 @@ int MyImage::open(std::string imageName){
 
     // allocate memory for input & outputimage data
     imageDataIn = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
-    CHECK_ALLOCATION(imageDataIn,"Failed to allocate memory! (inputImageData)");
+    if (imageDataIn == NULL) throw "ERROR: Failed to allocate memory! (inputImageData)";
 
     // get the pointer to pixel data
     pixelData = imageBitmap.getPixels();
-    CHECK_ALLOCATION(pixelData,"Failed to read pixel Data!");
+    if (pixelData == NULL) throw "ERROR: Failed to read pixel Data!";
 
     // Copy pixel data into inputImageData
-    //memcpy(imageData, pixelData, width * height * pixelSize);
 	memcpy(imageDataIn, pixelData, width * height * sizeof(uchar4));
 
 	//parameter imageDesc needed for clGreateImage
@@ -234,8 +233,6 @@ int MyImage::open(std::string imageName){
     imageDesc.image_height = height;
 
 	std::cout << imageName << " opened" << std::endl << std::endl;
-
-    return SDK_SUCCESS;
 
 }
 
@@ -328,7 +325,6 @@ int MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 
 int MyImage::cleanup(){
 
-	//FREE(pixelData);
     FREE(imageDataIn);
 	FREE(imageDataOut);
 	FREE(redArray);
