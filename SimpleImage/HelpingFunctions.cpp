@@ -156,8 +156,42 @@ int copyFromBuffersToArrays(cl_command_queue cmdQueue,  cl_uint width, cl_uint h
 
 }
 
-int MyImage::open(std::string inputImageName){
-	std::cout << inputImageName << " opened" << std::endl << std::endl;
+int MyImage::open(std::string imageName){
 
-	return 0;
+	//SDKBitMap inputBitmap;
+    // load input bitmap image
+    imageBitmap.load(imageName.c_str());
+
+    // error if image did not load
+    if(!imageBitmap.isLoaded()){
+        error("Failed to load input image!");
+        return SDK_FAILURE;
+    }
+
+    // get width and height of input image
+    height = imageBitmap.getHeight();
+    width = imageBitmap.getWidth();
+
+    // allocate memory for input & outputimage data
+    imageData = (cl_uchar4*)malloc(width * height * sizeof(cl_uchar4));
+    CHECK_ALLOCATION(imageData,"Failed to allocate memory! (inputImageData)");
+
+    // get the pointer to pixel data
+    pixelData = imageBitmap.getPixels();
+    CHECK_ALLOCATION(pixelData,"Failed to read pixel Data!");
+
+    // Copy pixel data into inputImageData
+    //memcpy(imageData, pixelData, width * height * pixelSize);
+	memcpy(imageData, pixelData, width * height * sizeof(uchar4));
+
+	//parameter imageDesc needed for clGreateImage
+    memset(&imageDesc, '\0', sizeof(cl_image_desc));
+    imageDesc.image_type = CL_MEM_OBJECT_IMAGE2D;
+    imageDesc.image_width = width;
+    imageDesc.image_height = height;
+
+	std::cout << imageName << " opened" << std::endl << std::endl;
+
+    return SDK_SUCCESS;
+
 }

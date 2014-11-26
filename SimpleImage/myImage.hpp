@@ -12,12 +12,18 @@ using namespace appsdk;
 
 class MyImage
 {
+	SDKBitMap imageBitmap;   /**< Bitmap class object */
+	uchar4* pixelData;       /**< Pointer to image data */
+    cl_uint width;                      /**< Width of image */
+    cl_uint height;                     /**< Height of image */
+
 	cl_uchar4* imageData;               /**< Input bitmap data to device */
 	cl_image_desc imageDesc;            /**< Parameter needed for clGreateImage*/
+	
 
 public:
 
-	int open(std::string inputImageName);  /*Open input image*/
+	int open(std::string imageName);  /*Open input image*/
 
 };
 
