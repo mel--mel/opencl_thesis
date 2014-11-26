@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 #include "SimpleImage.hpp"
+#include "myImage.hpp"
 #include "HelpingFunctions.h"
 #include "Templates.cpp"
 #include <cmath>
@@ -506,6 +507,8 @@ int main(int argc, char * argv[])
 {
     int status = 0;
     SimpleImage clSimpleImage;
+	MyImage imageL; 
+	MyImage imageR;
 
 	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	

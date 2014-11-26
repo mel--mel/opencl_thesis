@@ -227,6 +227,7 @@ copy SimpleImage_Input.bmp "$(OutDir)SimpleImage_Input.bmp" /Y
   <ItemGroup>
     <ClInclude Include="CLUtil.hpp" />
     <ClInclude Include="HelpingFunctions.h" />
+    <ClInclude Include="myImage.hpp" />
     <ClInclude Include="SDKBitMap.hpp" />
     <ClInclude Include="SDKFile.hpp" />
     <ClInclude Include="SDKUtil.hpp" />
