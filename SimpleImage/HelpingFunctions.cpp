@@ -5,6 +5,7 @@
 #include "CLUtil.hpp"
 #include "SDKBitMap.hpp"
 #include "SimpleImage.hpp"
+#include "myImage.hpp"
 
 
 using namespace appsdk;
@@ -155,3 +156,8 @@ int copyFromBuffersToArrays(cl_command_queue cmdQueue,  cl_uint width, cl_uint h
 
 }
 
+int MyImage::open(std::string inputImageName){
+	std::cout << inputImageName << " opened" << std::endl << std::endl;
+
+	return 0;
+}

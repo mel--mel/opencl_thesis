@@ -510,6 +510,9 @@ int main(int argc, char * argv[])
 	MyImage imageL; 
 	MyImage imageR;
 
+	imageL.open("diplo000000-L.bmp");
+	imageR.open("diplo000000-L.bmp");
+
 	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
 	CHECK_OPENCL_ERROR(clSimpleImage.run(), "run() failed");

@@ -12,9 +12,12 @@ using namespace appsdk;
 
 class MyImage
 {
-	cl_uchar4* imageData;                 /**< Input bitmap data to device */
+	cl_uchar4* imageData;               /**< Input bitmap data to device */
 	cl_image_desc imageDesc;            /**< Parameter needed for clGreateImage*/
 
+public:
+
+	int open(std::string inputImageName);  /*Open input image*/
 
 };
 
