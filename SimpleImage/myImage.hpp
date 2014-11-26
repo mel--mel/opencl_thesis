@@ -23,7 +23,9 @@ class MyImage
 
 public:
 
-	int open(std::string imageName);  /*Open input image*/
+	int open(std::string imageName);  /*Open (load) image*/
+
+	int save(std::string imageName);  /*Save image*/
 
 };
 

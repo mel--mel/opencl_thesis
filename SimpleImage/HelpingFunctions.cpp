@@ -195,3 +195,22 @@ int MyImage::open(std::string imageName){
     return SDK_SUCCESS;
 
 }
+
+int MyImage::save(std::string imageName){
+
+
+	// copy output image data back to original pixel data
+    memcpy(pixelData, imageData, width * height * sizeof(uchar4));
+
+    // write the output bmp file
+    if(!imageBitmap.write(imageName.c_str()))
+    {
+        std::cout << "Failed to write output image!";
+        return SDK_FAILURE;
+    }
+    
+	std::cout << imageName << " saved" << std::endl << std::endl;
+
+    return SDK_SUCCESS;
+
+}
