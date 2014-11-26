@@ -48,6 +48,8 @@ public:
 
 	int histogramEqualization(SimpleImage *clSimpleImage);
 
+	int cleanup();
+
 	MyImage()   /*Constructor*/
 		: imageDataIn(NULL),
 		  imageDataOut(NULL)

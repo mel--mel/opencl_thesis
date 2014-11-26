@@ -154,7 +154,7 @@ int SimpleImage::genBinaryImage()
     return status;
 }
 
-int SimpleImage::setupCL()
+int SimpleImage::setupCL(std::string kernelsFileName)
 {
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
@@ -206,7 +206,8 @@ int SimpleImage::setupCL()
 
     //create a CL program using the kernel source
 	buildProgramData buildData;
-    buildData.kernelName = std::string("SimpleImage_Kernels.cl");
+    //buildData.kernelName = std::string("SimpleImage_Kernels.cl");
+	buildData.kernelName = kernelsFileName;
     buildData.devices = devices;
     buildData.deviceId = sampleArgs->deviceId;
     buildData.flagsStr = std::string("");
@@ -399,10 +400,10 @@ int SimpleImage::setup()
     sampleTimer->resetTimer(timer);
     sampleTimer->startTimer(timer);
 
-	CHECK_OPENCL_ERROR(setupCL(), "setupCL() failed");
+	CHECK_OPENCL_ERROR(setupCL("SimpleImage_Kernels.cl"), "setupCL() failed");
 
-	CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage1() failed");
-	CHECK_OPENCL_ERROR(getInputImage("diplo000000-R.bmp", &imageDesc2, &imageData2), "getInputImage2() failed");
+	//CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage1() failed");
+	//CHECK_OPENCL_ERROR(getInputImage("diplo000000-R.bmp", &imageDesc2, &imageData2), "getInputImage2() failed");
 
     sampleTimer->stopTimer(timer);
     // Compute setup time
@@ -442,19 +443,9 @@ int SimpleImage::cleanup()
         return SDK_SUCCESS;
     }
 
-    // Releases OpenCL resources (Context, Memory etc.)
-    //CHECK_OPENCL_ERROR(clReleaseKernel(colorArraysKernel),"clReleaseKernel failed.(colorArraysKernel)");
     CHECK_OPENCL_ERROR(clReleaseProgram(program),"clReleaseProgram failed.(program)");
-    CHECK_OPENCL_ERROR(clReleaseMemObject(inputImage2D),"clReleaseMemObject failed.(inputImage2D)");
-    CHECK_OPENCL_ERROR(clReleaseMemObject(outputImage2D),"clReleaseMemObject failed.(outputImage2D)");
     CHECK_OPENCL_ERROR(clReleaseCommandQueue(commandQueue),"clReleaseCommandQueue failed.(commandQueue)");
     CHECK_OPENCL_ERROR(clReleaseContext(context),"clReleaseContext failed.(context)");
-
-    // release program resources (input memory etc.)
-    FREE(imageData1);
-	FREE(imageData2);
-    FREE(outputImageData2D);
-    FREE(verificationOutput);
     FREE(devices);
 
     return SDK_SUCCESS;
@@ -513,26 +504,18 @@ int main(int argc, char * argv[])
 	imageL.open("diplo000000-L.bmp");
 	imageR.open("diplo000000-R.bmp");
 
-
-
-	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
+	CHECK_OPENCL_ERROR(clSimpleImage.setupCL("SimpleImage_Kernels.cl"), "setupCL failed");
 	
 	imageL.histogramEqualization(&clSimpleImage);
 	imageR.histogramEqualization(&clSimpleImage);
 
-
 	imageL.save("myOutL.bmp");
 	imageR.save("myOutR.bmp");
 
-	CHECK_OPENCL_ERROR(clSimpleImage.run(), "run() failed");
-
-    CHECK_OPENCL_ERROR(clSimpleImage.writeOutputImage(OUTPUT_IMAGE), "write Output Image Failed");
-
-	CHECK_OPENCL_ERROR(clSimpleImage.verifyResults(), "verifyResults() failed");
-
 	CHECK_OPENCL_ERROR(clSimpleImage.cleanup(), "cleanup() failed");
 	
-    clSimpleImage.printStats();
+    imageL.cleanup();
+	imageR.cleanup();
 
     return SDK_SUCCESS;
 }

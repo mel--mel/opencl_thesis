@@ -325,3 +325,16 @@ int MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 	
 	return SDK_SUCCESS;
 }
+
+int MyImage::cleanup(){
+
+	//FREE(pixelData);
+    FREE(imageDataIn);
+	FREE(imageDataOut);
+	FREE(redArray);
+	FREE(greenArray);
+	FREE(blueArray);
+
+    return SDK_SUCCESS;
+
+}

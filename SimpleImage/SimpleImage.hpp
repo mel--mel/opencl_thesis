@@ -196,7 +196,7 @@ class SimpleImage
         * Build CL kernel program executable
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-        int setupCL();
+        int setupCL(std::string kernelsFileName);
 
 		/**
 		* Check if we get out of resources
