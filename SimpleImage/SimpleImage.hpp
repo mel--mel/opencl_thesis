@@ -60,7 +60,7 @@ class SimpleImage
         cl_image_desc imageDesc1;            /**< Parameter needed for clGreateImage*/
 		cl_image_desc imageDesc2;
 		
-		cl_context context;                 /**< CL context */
+		//cl_context context;                 /**< CL context */
         cl_device_id *devices;              /**< CL device list */
 
         cl_mem inputImage2D;                /**< CL image buffer for input Image*/
@@ -118,6 +118,7 @@ class SimpleImage
 
     public:
 
+		cl_context context;                 /**< CL context */
         CLCommandArgs   *sampleArgs;   /**< CLCommand argument class */
 
         /**

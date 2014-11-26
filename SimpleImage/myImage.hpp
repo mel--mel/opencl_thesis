@@ -12,21 +12,38 @@ using namespace appsdk;
 
 class MyImage
 {
-	SDKBitMap imageBitmap;   /**< Bitmap class object */
-	uchar4* pixelData;       /**< Pointer to image data */
+	//variables initialized in "open"
+	SDKBitMap imageBitmap;              /**< Bitmap class object */
+	uchar4* pixelData;                  /**< Pointer to image data */
+	cl_uchar4* imageData;               /**< Input bitmap data to device */
+
     cl_uint width;                      /**< Width of image */
     cl_uint height;                     /**< Height of image */
-
-	cl_uchar4* imageData;               /**< Input bitmap data to device */
-	cl_image_desc imageDesc;            /**< Parameter needed for clGreateImage*/
 	
+	cl_image_desc imageDesc;            /**< Parameter needed for clGreateImage*/
+	cl_image_format imageFormat;        /**< Image format descriptor */
 
+	//variables initialized in ____________________
+	cl_mem clImage;
+
+	pixelStruct* redArray; /**< 1D Struct to help equalization */
+	pixelStruct* greenArray; /**< 1D Struct to help equalization */
+	pixelStruct* blueArray; /**< 1D Struct to help equalization */
+	
 public:
 
 	int open(std::string imageName);  /*Open (load) image*/
 
 	int save(std::string imageName);  /*Save image*/
 
+	int histogramEqualization(cl_context context);
+
+	MyImage()   /*Constructor*/
+		: imageData(NULL)
+	{
+		 imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
+         imageFormat.image_channel_order = CL_RGBA;
+	}
 };
 
 #endif // MY_IMAGE_H_

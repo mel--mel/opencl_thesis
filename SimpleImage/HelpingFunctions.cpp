@@ -156,6 +156,17 @@ int copyFromBuffersToArrays(cl_command_queue cmdQueue,  cl_uint width, cl_uint h
 
 }
 
+int createArrays(pixelStruct** arrays, cl_uint width, cl_uint height, int num)
+{
+	// allocate memory for 1D pixel struct array
+	for (int i = 0; i < num; i++){
+		arrays[i] = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
+		CHECK_ALLOCATION(arrays[i], "Failed to allocate memory! (redArray)");
+	}
+
+	return SDK_SUCCESS;
+}
+
 int MyImage::open(std::string imageName){
 
 	//SDKBitMap inputBitmap;
@@ -213,4 +224,20 @@ int MyImage::save(std::string imageName){
 
     return SDK_SUCCESS;
 
+}
+
+int MyImage::histogramEqualization(cl_context context){
+
+	cl_int status;
+
+	size_t globalThreads[] = {width, height};
+    size_t localThreads[] = {256, 1}; /**< Work-group size in x and y direction */
+
+	clImage = clCreateImage(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageData, &status);
+    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (inputImage2D)");
+
+	pixelStruct* arrays[] = {redArray, greenArray, blueArray};
+	createArrays(arrays, width, height, 3);
+
+	return SDK_SUCCESS;
 }
