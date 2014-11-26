@@ -60,7 +60,6 @@ class SimpleImage
         cl_image_desc imageDesc1;            /**< Parameter needed for clGreateImage*/
 		cl_image_desc imageDesc2;
 		
-		//cl_context context;                 /**< CL context */
         cl_device_id *devices;              /**< CL device list */
 
         cl_mem inputImage2D;                /**< CL image buffer for input Image*/
@@ -76,7 +75,7 @@ class SimpleImage
 		cl_mem blueSortedBuffer;                  /**< CL image buffer for pixelStructArray*/
 
         cl_uchar* verificationOutput;       /**< Output array for reference implementation */
-        cl_command_queue commandQueue;      /**< CL command queue */
+       
         cl_program program;                 /**< CL program  */
 
         cl_kernel kernel2D;                 /**< CL kernel */
@@ -119,6 +118,7 @@ class SimpleImage
     public:
 
 		cl_context context;                 /**< CL context */
+		cl_command_queue commandQueue;      /**< CL command queue */
         CLCommandArgs   *sampleArgs;   /**< CLCommand argument class */
 
         /**

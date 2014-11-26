@@ -317,9 +317,9 @@ int SimpleImage::runCLKernels()
 	copyFromBuffersToArrays(commandQueue, width, height, 3, buffers, arrays);
 
 	//equalize color arrays
-	histogramEqualization(redArray, height, width);
-	histogramEqualization(greenArray, height, width);
-	histogramEqualization(blueArray, height, width);
+	histEqualization(redArray, height, width);
+	histEqualization(greenArray, height, width);
+	histEqualization(blueArray, height, width);
 
 	//Copy from arrays to buffers
 	copyFromArraysToBuffers(commandQueue,  width, height, 3, buffers, arrays);
@@ -517,7 +517,9 @@ int main(int argc, char * argv[])
 
 	CHECK_OPENCL_ERROR(clSimpleImage.setup(), "setup() failed");
 	
-	imageL.histogramEqualization(clSimpleImage.context);
+	imageL.histogramEqualization(&clSimpleImage);
+	imageR.histogramEqualization(&clSimpleImage);
+
 
 	imageL.save("myOutL.bmp");
 	imageR.save("myOutR.bmp");

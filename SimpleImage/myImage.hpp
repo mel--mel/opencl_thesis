@@ -15,7 +15,8 @@ class MyImage
 	//variables initialized in "open"
 	SDKBitMap imageBitmap;              /**< Bitmap class object */
 	uchar4* pixelData;                  /**< Pointer to image data */
-	cl_uchar4* imageData;               /**< Input bitmap data to device */
+	cl_uchar4* imageDataIn;             /**< Input bitmap data to device */
+	cl_uchar4* imageDataOut;            /**< Output bitmap data to device */
 
     cl_uint width;                      /**< Width of image */
     cl_uint height;                     /**< Height of image */
@@ -24,11 +25,20 @@ class MyImage
 	cl_image_format imageFormat;        /**< Image format descriptor */
 
 	//variables initialized in ____________________
-	cl_mem clImage;
+	cl_mem imageIn;
+	cl_mem imageOut;
 
 	pixelStruct* redArray; /**< 1D Struct to help equalization */
 	pixelStruct* greenArray; /**< 1D Struct to help equalization */
 	pixelStruct* blueArray; /**< 1D Struct to help equalization */
+
+	cl_mem redBuffer;                   /**< CL image buffer for pixelStructArray*/
+	cl_mem greenBuffer;                 /**< CL image buffer for pixelStructArray*/
+	cl_mem blueBuffer;                  /**< CL image buffer for pixelStructArray*/
+
+	cl_mem redSortedBuffer;             /**< CL image buffer for pixelStructArray*/
+	cl_mem greenSortedBuffer;           /**< CL image buffer for pixelStructArray*/
+	cl_mem blueSortedBuffer;            /**< CL image buffer for pixelStructArray*/
 	
 public:
 
@@ -36,10 +46,11 @@ public:
 
 	int save(std::string imageName);  /*Save image*/
 
-	int histogramEqualization(cl_context context);
+	int histogramEqualization(SimpleImage *clSimpleImage);
 
 	MyImage()   /*Constructor*/
-		: imageData(NULL)
+		: imageDataIn(NULL),
+		  imageDataOut(NULL)
 	{
 		 imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
          imageFormat.image_channel_order = CL_RGBA;
