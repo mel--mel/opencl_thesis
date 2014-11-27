@@ -305,7 +305,7 @@ static int displayDevices(cl_platform_id platform, cl_device_type deviceType)
                                  deviceName, NULL);
         CHECK_OPENCL_ERROR(status, "clGetDeviceInfo failed");
         std::cout << "Device " << i << " : " << deviceName
-                  <<" Device ID is "<<deviceIds[i]<< std::endl;
+                  <<" Device ID is "<<deviceIds[i]<< std::endl << std::endl;
     }
     free(deviceIds);
     return SDK_SUCCESS;

@@ -76,7 +76,6 @@ void SimpleImage::setupCL(std::string kernelsFileName)
 
     //create a CL program using the kernel source
 	buildProgramData buildData;
-    //buildData.kernelName = std::string("SimpleImage_Kernels.cl");
 	buildData.kernelName = kernelsFileName;
     buildData.devices = devices;
     buildData.deviceId = sampleArgs->deviceId;
@@ -130,24 +129,23 @@ void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThread
     if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 }
 
-
-
-int SimpleImage::setup()
+int SimpleImage::setTimer()
 {
-    // create and initialize timers
+	// create and initialize timers
     int timer = sampleTimer->createTimer();
     sampleTimer->resetTimer(timer);
     sampleTimer->startTimer(timer);
 
-
-    sampleTimer->stopTimer(timer);
-    // Compute setup time
-    setupTime = (double)(sampleTimer->readTimer(timer));
-
-    return SDK_SUCCESS;
-
+	return timer;
 }
 
+void SimpleImage::stopTimer(int timer)
+{
+	sampleTimer->stopTimer(timer);
+    cl_double time = (double)(sampleTimer->readTimer(timer));
+
+	std::cout << "Total time: " << time << " sec." << std::endl << std:: endl;
+}
 
 int SimpleImage::cleanup()
 {
@@ -164,7 +162,7 @@ int SimpleImage::cleanup()
     return SDK_SUCCESS;
 }
 
-void SimpleImage::printStats()
+/*void SimpleImage::printStats()
 {
 	if(sampleArgs->timing)
     {
@@ -186,7 +184,7 @@ void SimpleImage::printStats()
 
         printStatistics(strArray, stats, 4);
     }
-}
+}*/
 
 int main(int argc, char * argv[])
 {
@@ -196,14 +194,19 @@ int main(int argc, char * argv[])
 	    SimpleImage clSimpleImage;
 		MyImage imageL; 
 		MyImage imageR;
+		int timer;
 	
 		imageL.open("diplo000000-L.bmp");
 		imageR.open("diplo000000-R.bmp");
+
+		timer = clSimpleImage.setTimer();
 
 		clSimpleImage.setupCL("SimpleImage_Kernels.cl");
 	
 		imageL.histogramEqualization(&clSimpleImage);
 		imageR.histogramEqualization(&clSimpleImage);
+
+		clSimpleImage.stopTimer(timer);
 
 		imageL.save("myOutL.bmp");
 		imageR.save("myOutR.bmp");

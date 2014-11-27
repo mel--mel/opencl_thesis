@@ -49,69 +49,16 @@ typedef struct pixelStruct{
 */
 
 class SimpleImage
-{
-        cl_double setupTime;                /**< time taken to setup OpenCL resources and building kernel */
-        cl_double kernelTime;               /**< time taken to run kernel and read result back */
-        
-		cl_uchar4* imageData1;          /**< Input bitmap data to device */
-		cl_uchar4* imageData2;          /**< Input bitmap data to device */
-        cl_uchar4* outputImageData2D;       /**< Output from device for 2D copy*/
-        cl_uchar4* outputImageData3D;       /**< Output from device for 3D copy*/
-        cl_image_desc imageDesc1;            /**< Parameter needed for clGreateImage*/
-		cl_image_desc imageDesc2;
-		
+{       
         cl_device_id *devices;              /**< CL device list */
+        SDKDeviceInfo deviceInfo;                    /**< Structure to store device information*/
 
-        cl_mem inputImage2D;                /**< CL image buffer for input Image*/
-        cl_mem inputImage3D;                /**< CL image buffer for input Image*/
-        cl_mem outputImage2D;               /**< CL image buffer for Output Image*/
-        cl_mem outputImage3D;               /**< CL image buffer for Output Image*/
-		cl_mem pixelStructBuffer;           /**< CL image buffer for pixelStructArray*/
-		cl_mem redBuffer;                   /**< CL image buffer for pixelStructArray*/
-		cl_mem greenBuffer;                 /**< CL image buffer for pixelStructArray*/
-		cl_mem blueBuffer;                  /**< CL image buffer for pixelStructArray*/
-		cl_mem redSortedBuffer;                   /**< CL image buffer for pixelStructArray*/
-		cl_mem greenSortedBuffer;                 /**< CL image buffer for pixelStructArray*/
-		cl_mem blueSortedBuffer;                  /**< CL image buffer for pixelStructArray*/
-
-        cl_uchar* verificationOutput;       /**< Output array for reference implementation */
-       
-        cl_program program;                 /**< CL program  */
-
-        cl_kernel kernel2D;                 /**< CL kernel */
-        cl_kernel kernel3D;                 /**< CL kernel */
-		cl_kernel colorArraysKernel;
-		cl_kernel outputImageKernel;
-		cl_kernel pixelArrayKernel;
+		cl_program program;                 /**< CL program  */
 		
-
-        SDKBitMap inputBitmap;   /**< Bitmap class object */
-        uchar4* pixelData;       /**< Pointer to image data */
-        cl_uint pixelSize;                  /**< Size of a pixel in BMP format> */
-        cl_uint width;                      /**< Width of image */
-        cl_uint height;                     /**< Height of image */
         cl_bool byteRWSupport;
-		cl_uint4* pixelArray; /**< 1D Array to help image reconstruction */
-		pixelStruct* redArray; /**< 1D Struct to help equalization */
-		pixelStruct* greenArray; /**< 1D Struct to help equalization */
-		pixelStruct* blueArray; /**< 1D Struct to help equalization */
-
-        size_t kernel2DWorkGroupSize;         /**< Group Size returned by kernel */
-        size_t kernel3DWorkGroupSize;         /**< Group Size returned by kernel */
-		size_t colorArraysKernelWorkGroupSize;
-		size_t outputImageKernelWorkGroupSize;
-		size_t pixelArrayKernelWorkGroupSize;
-
-        size_t blockSizeX;                  /**< Work-group size in x-direction */
-        size_t blockSizeY;                  /**< Work-group size in y-direction */
-
-        int iterations;                     /**< Number of iterations for kernel execution */
         cl_bool imageSupport;               /**< Flag to check whether images are supported */
-        cl_image_format imageFormat;        /**< Image format descriptor */
-        SDKDeviceInfo
-        deviceInfo;                    /**< Structure to store device information*/
-        KernelWorkGroupInfo
-        kernelInfo;              /**< Structure to store kernel related info */
+		
+        KernelWorkGroupInfo kernelInfo;              /**< Structure to store kernel related info */
 
         SDKTimer    *sampleTimer;      /**< SDKTimer object */
 
@@ -121,74 +68,22 @@ class SimpleImage
 		cl_command_queue commandQueue;      /**< CL command queue */
         CLCommandArgs   *sampleArgs;   /**< CLCommand argument class */
 
-        /**
-        * Read bitmap image and allocate host memory
-        * @param inputImageName name of the input file
-        * @return SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-		int readInputImage(std::string inputImageName, cl_image_desc *imageDesc, cl_uchar4 **imageData);
-
-        /**
-        * Write to an image file
-        * @param outputImageName name of the output file
-        * @return SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-        int writeOutputImage(std::string outputImageName);
 
         /**
         * Constructor
         * Initialize member variables
         */
         SimpleImage()
-            : imageData1(NULL),
-			  imageData2(NULL),
-              outputImageData2D(NULL),
-              outputImageData3D(NULL),
-              verificationOutput(NULL),
-              byteRWSupport(true)
+            : byteRWSupport(true)
         {
-            sampleArgs = new CLCommandArgs() ;
             sampleTimer = new SDKTimer();
-            sampleArgs->sampleVerStr = SAMPLE_VERSION;
-            pixelSize = sizeof(uchar4);
-            pixelData = NULL;
-            blockSizeX = GROUP_SIZE;
-            blockSizeY = 1;
-            iterations = 1;
-            imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
-            imageFormat.image_channel_order = CL_RGBA;
-			pixelArray = NULL;
+            sampleArgs = new CLCommandArgs() ;
+			sampleArgs->sampleVerStr = SAMPLE_VERSION;
         }
 
         ~SimpleImage()
         {
         }
-
-		
-        /**
-        * Allocate image memory and Load bitmap file
-        * @return SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-        int getInputImage(std::string imageName, cl_image_desc *imageDesc, cl_uchar4 **imageData);
-
-		/**
-		*Create opencl buffer
-		* - allocate & initialize
-		*/
-		int createBuffer(cl_mem &bufferName, pixelStruct *arrayName);//(cl_mem bufferName, pixelStruct *arrayName);
-
-
-		/**
-		*Allocate array memory
-		* @return SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-		int createColorArrays();
-
-        /**
-         * Override from SDKSample, Generate binary image of given kernel
-         * and exit application
-         */
-        int genBinaryImage();
 
         /**
         * OpenCL related initialisations.
@@ -197,11 +92,6 @@ class SimpleImage
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
         void setupCL(std::string kernelsFileName);
-
-		/**
-		* Check if we get out of resources
-		*/
-		int checkResources(int numOfKernels, cl_kernel *kernelNames);
 
 		/**
 		** Makes the moves needed to run a kernel
@@ -215,19 +105,9 @@ class SimpleImage
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &width);
 
-        /**
-        * Set values for kernels' arguments, enqueue calls to the kernels
-        * on to the command queue, wait till end of kernel execution.
-        * Get kernel start and end time if timing is enabled
-        * @return  SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-        int runCLKernels();
+		int setTimer();
 
-        /**
-        * Reference CPU implementation of Binomial Option
-        * for performance comparison
-        */
-        void simpleImageCPUReference();
+		void stopTimer(int timer);
 
         /**
         * Override from SDKSample. Print sample stats.
@@ -235,38 +115,11 @@ class SimpleImage
         void printStats();
 
         /**
-        * Override from SDKSample. Initialize
-        * command line parser, add custom options
-        */
-        int initialize();
-
-        /**
-        * Override from SDKSample, adjust width and height
-        * of execution domain, perform all sample setup
-        * @return  SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-        int setup();
-
-        /**
-        * Override from SDKSample
-        * Run OpenCL SimpleImage
-        * @return  SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-        int run();
-
-        /**
         * Override from SDKSample
         * Cleanup memory allocations
         * @return  SDK_SUCCESS on success and SDK_FAILURE on failure
         */
         int cleanup();
-
-        /**
-        * Override from SDKSample
-        * Verify against reference implementation
-        * @return  SDK_SUCCESS on success and SDK_FAILURE on failure
-        */
-        int verifyResults();
 };
 
 #endif // SIMPLE_IMAGE_H_
