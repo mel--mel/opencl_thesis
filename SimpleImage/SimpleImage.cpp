@@ -24,7 +24,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define OUTPUT_IMAGE "L_Out.bmp"
 
-void giveMelOpenCL::setupCL(std::string kernelsFileName)
+void giveMelOpenCL::setupCL()
 {
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
@@ -73,8 +73,11 @@ void giveMelOpenCL::setupCL(std::string kernelsFileName)
 	//Create command queue
     commandQueue = clCreateCommandQueue(context, devices[sampleArgs->deviceId], 0, &status);
     if (status != CL_SUCCESS) throw "clCreateCommandQueue failed.";
+}
 
-    //create a CL program using the kernel source
+void giveMelOpenCL::compileKernels(std::string kernelsFileName)
+{
+	//create a CL program using the kernel source
 	buildProgramData buildData;
 	buildData.kernelName = kernelsFileName;
     buildData.devices = devices;
@@ -82,13 +85,11 @@ void giveMelOpenCL::setupCL(std::string kernelsFileName)
     buildData.flagsStr = std::string("");
     if(sampleArgs->isLoadBinaryEnabled()) buildData.binaryName = std::string(sampleArgs->loadBinary.c_str());
     if(sampleArgs->isComplierFlagsSpecified()) buildData.flagsFileName = std::string(sampleArgs->flags.c_str());
-    retValue = buildOpenCLProgram(program, context, buildData);
+    int retValue = buildOpenCLProgram(program, context, buildData);
     if (retValue != CL_SUCCESS) throw "buildOpenCLProgram() failed";
-
 }
 
-
-void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &parameter)
@@ -98,7 +99,7 @@ void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThre
 	cl_kernel kernelName;
 
 	//create kernel
-	kernelName = clCreateKernel(program, kernelFileName, &status);// "createColorArrays", &status);
+	kernelName = clCreateKernel(program, kernelNameInFile, &status);// "createColorArrays", &status);
     if (status != CL_SUCCESS) throw "clCreateKernel failed.(colorArraysKernel)";
 
 	//push arguments
@@ -110,7 +111,7 @@ void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThre
 
 }
 
-void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &imageName)
 {
@@ -118,7 +119,7 @@ void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThre
 	cl_kernel kernelName;
 
 	//create kernel
-	kernelName = clCreateKernel(program, kernelFileName, &status);// "createColorArrays", &status);
+	kernelName = clCreateKernel(program, kernelNameInFile, &status);// "createColorArrays", &status);
     if (status != CL_SUCCESS) throw "clCreateKernel failed.(colorArraysKernel)";
 
 	//push arguments
@@ -200,8 +201,9 @@ int main(int argc, char * argv[])
 
 		timer = clProvider.setTimer();
 
-		clProvider.setupCL("SimpleImage_Kernels.cl");
-	
+		clProvider.setupCL();
+		clProvider.compileKernels("SimpleImage_Kernels.cl");
+
 		imageL.histogramEqualization(&clProvider);
 		imageR.histogramEqualization(&clProvider);
 
