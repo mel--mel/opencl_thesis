@@ -24,7 +24,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define OUTPUT_IMAGE "L_Out.bmp"
 
-void SimpleImage::setupCL(std::string kernelsFileName)
+void giveMelOpenCL::setupCL(std::string kernelsFileName)
 {
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
@@ -88,7 +88,7 @@ void SimpleImage::setupCL(std::string kernelsFileName)
 }
 
 
-void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &parameter)
@@ -110,7 +110,7 @@ void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThread
 
 }
 
-void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+void giveMelOpenCL::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &imageName)
 {
@@ -129,7 +129,7 @@ void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThread
     if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 }
 
-int SimpleImage::setTimer()
+int giveMelOpenCL::setTimer()
 {
 	// create and initialize timers
     int timer = sampleTimer->createTimer();
@@ -139,7 +139,7 @@ int SimpleImage::setTimer()
 	return timer;
 }
 
-void SimpleImage::stopTimer(int timer)
+void giveMelOpenCL::stopTimer(int timer)
 {
 	sampleTimer->stopTimer(timer);
     cl_double time = (double)(sampleTimer->readTimer(timer));
@@ -147,7 +147,7 @@ void SimpleImage::stopTimer(int timer)
 	std::cout << "Total time: " << time << " sec." << std::endl << std:: endl;
 }
 
-int SimpleImage::cleanup()
+int giveMelOpenCL::cleanup()
 {
     if(!byteRWSupport)
     {
@@ -191,7 +191,7 @@ int main(int argc, char * argv[])
     try
 	{
 
-	    SimpleImage clSimpleImage;
+	    giveMelOpenCL clProvider;
 		MyImage imageL; 
 		MyImage imageR;
 		int timer;
@@ -199,19 +199,19 @@ int main(int argc, char * argv[])
 		imageL.open("diplo000000-L.bmp");
 		imageR.open("diplo000000-R.bmp");
 
-		timer = clSimpleImage.setTimer();
+		timer = clProvider.setTimer();
 
-		clSimpleImage.setupCL("SimpleImage_Kernels.cl");
+		clProvider.setupCL("SimpleImage_Kernels.cl");
 	
-		imageL.histogramEqualization(&clSimpleImage);
-		imageR.histogramEqualization(&clSimpleImage);
+		imageL.histogramEqualization(&clProvider);
+		imageR.histogramEqualization(&clProvider);
 
-		clSimpleImage.stopTimer(timer);
+		clProvider.stopTimer(timer);
 
 		imageL.save("myOutL.bmp");
 		imageR.save("myOutR.bmp");
 	
-		clSimpleImage.cleanup();
+		clProvider.cleanup();
 	    imageL.cleanup();
 		imageR.cleanup();
 	}

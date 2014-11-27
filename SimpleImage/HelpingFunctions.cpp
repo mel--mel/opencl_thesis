@@ -243,14 +243,14 @@ void MyImage::save(std::string imageName){
     }
 }
 
-void MyImage::histogramEqualization(SimpleImage *clSimpleImage){
+void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
 
 	cl_int status;
 
 	size_t globalThreads[] = {width, height};
     size_t localThreads[] = {256, 1}; /**< Work-group size in x and y direction */
 
-	imageIn = clCreateImage(clSimpleImage->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageDataIn, &status);
+	imageIn = clCreateImage(clProvider->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageDataIn, &status);
     if (status != CL_SUCCESS) throw "clCreateImage failed. (imageIn)";
 	
 	pixelStruct** arrays[] = {&redArray, &greenArray, &blueArray};
@@ -258,13 +258,13 @@ void MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 
 	cl_mem *buffers[] = {&redBuffer, &greenBuffer, &blueBuffer};
 	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
-	createBuffers(buffers, arrayPointers, 3, clSimpleImage->context, clSimpleImage->commandQueue, width, height);
+	createBuffers(buffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
 	
-	clSimpleImage->runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
+	clProvider->runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
 	
 	//Copy from buffers to color arrays
 	cl_mem bufferPointers[] = {redBuffer, greenBuffer, blueBuffer};
-	copyFromBuffersToArrays(clSimpleImage->commandQueue, width, height, 3, bufferPointers, arrayPointers);
+	copyFromBuffersToArrays(clProvider->commandQueue, width, height, 3, bufferPointers, arrayPointers);
 
 	//equalize color arrays
 	histEqualization(redArray, height, width);
@@ -272,22 +272,22 @@ void MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 	histEqualization(blueArray, height, width);
 
 	//Copy from arrays to buffers
-	copyFromArraysToBuffers(clSimpleImage->commandQueue,  width, height, 3, bufferPointers, arrayPointers);
+	copyFromArraysToBuffers(clProvider->commandQueue,  width, height, 3, bufferPointers, arrayPointers);
 	
 	//Create args and run createPixelArray
 	cl_mem *sortedBuffers[] = {&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer};
-	createBuffers(sortedBuffers, arrayPointers, 3, clSimpleImage->context, clSimpleImage->commandQueue, width, height);
+	createBuffers(sortedBuffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
 
-    clSimpleImage->runThisKernel("createPixelArray", globalThreads, localThreads, 
+    clProvider->runThisKernel("createPixelArray", globalThreads, localThreads, 
 						   redBuffer, greenBuffer, blueBuffer,
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   width);
 	
 	//create args and run CreateOutputImage
-	imageOut = clCreateImage(clSimpleImage->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
+	imageOut = clCreateImage(clProvider->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
     if (status != CL_SUCCESS) throw "clCreateImage failed. (imageOut)";
 
-	clSimpleImage->runThisKernel("createOutputImage", globalThreads, localThreads, 
+	clProvider->runThisKernel("createOutputImage", globalThreads, localThreads, 
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   imageOut);
 	
@@ -299,10 +299,10 @@ void MyImage::histogramEqualization(SimpleImage *clSimpleImage){
     imageDataOut = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
     if (imageDataOut == NULL) throw "Failed to allocate memory! (imageDataOut)";
 
-    status = clEnqueueReadImage(clSimpleImage->commandQueue, imageOut, 1, origin, region, 0, 0, imageDataOut, 0, 0, 0);
+    status = clEnqueueReadImage(clProvider->commandQueue, imageOut, 1, origin, region, 0, 0, imageDataOut, 0, 0, 0);
     if (status != CL_SUCCESS) throw "clEnqueueReadImage failed.";
 
-	status = clFinish(clSimpleImage->commandQueue);
+	status = clFinish(clProvider->commandQueue);
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
 }
 

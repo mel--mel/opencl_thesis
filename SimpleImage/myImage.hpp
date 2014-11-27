@@ -46,7 +46,7 @@ public:
 
 	void save(std::string imageName);  /*Save image*/
 
-	void histogramEqualization(SimpleImage *clSimpleImage);
+	void histogramEqualization(giveMelOpenCL *clProvider);
 
 	void cleanup();
 

@@ -48,7 +48,7 @@ typedef struct pixelStruct{
 * Class implements OpenCL Simple Image sample
 */
 
-class SimpleImage
+class giveMelOpenCL
 {       
         cl_device_id *devices;              /**< CL device list */
         SDKDeviceInfo deviceInfo;                    /**< Structure to store device information*/
@@ -73,7 +73,7 @@ class SimpleImage
         * Constructor
         * Initialize member variables
         */
-        SimpleImage()
+        giveMelOpenCL()
             : byteRWSupport(true)
         {
             sampleTimer = new SDKTimer();
@@ -81,7 +81,7 @@ class SimpleImage
 			sampleArgs->sampleVerStr = SAMPLE_VERSION;
         }
 
-        ~SimpleImage()
+        ~giveMelOpenCL()
         {
         }
 
