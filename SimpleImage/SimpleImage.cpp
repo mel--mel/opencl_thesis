@@ -190,7 +190,6 @@ int main(int argc, char * argv[])
 {
     try
 	{
-
 	    giveMelOpenCL clProvider;
 		MyImage imageL; 
 		MyImage imageR;
@@ -210,10 +209,6 @@ int main(int argc, char * argv[])
 
 		imageL.save("myOutL.bmp");
 		imageR.save("myOutR.bmp");
-	
-		clProvider.cleanup();
-	    imageL.cleanup();
-		imageR.cleanup();
 	}
 
 	catch(char* expn){

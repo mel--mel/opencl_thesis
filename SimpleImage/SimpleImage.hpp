@@ -83,6 +83,7 @@ class giveMelOpenCL
 
         ~giveMelOpenCL()
         {
+			cleanup();
         }
 
         /**

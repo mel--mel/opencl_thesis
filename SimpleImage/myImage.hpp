@@ -57,6 +57,11 @@ public:
 		 imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
          imageFormat.image_channel_order = CL_RGBA;
 	}
+
+	~MyImage()
+	{
+		cleanup();
+	}
 };
 
 #endif // MY_IMAGE_H_
