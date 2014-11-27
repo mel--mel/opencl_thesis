@@ -15,4 +15,10 @@ int copyFromArraysToBuffers(cl_command_queue cmdQueue,  cl_uint width, cl_uint h
 
 int copyFromBuffersToArrays(cl_command_queue cmdQueue,  cl_uint width, cl_uint height, int numOfBuffers, cl_mem *buffers, pixelStruct **arrays);
 
+void createArrays(pixelStruct*** arrays, cl_uint width, cl_uint height, int num);
+
+void createBuffer(cl_mem &bufferName, pixelStruct *arrayName, cl_context context, cl_command_queue commandQueue, cl_uint width, cl_uint height);
+
+void createBuffers(cl_mem **buffers, pixelStruct **arrays, int num, cl_context context, cl_command_queue commandQueue, cl_uint width, cl_uint height);
+
 #endif

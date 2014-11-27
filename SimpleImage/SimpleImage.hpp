@@ -196,7 +196,7 @@ class SimpleImage
         * Build CL kernel program executable
         * @return SDK_SUCCESS on success and SDK_FAILURE on failure
         */
-        int setupCL(std::string kernelsFileName);
+        void setupCL(std::string kernelsFileName);
 
 		/**
 		* Check if we get out of resources
@@ -206,11 +206,11 @@ class SimpleImage
 		/**
 		** Makes the moves needed to run a kernel
 		*/
-		int runThisKernel(const char* kernelFileName, size_t  *globalThreads, size_t *localThreads, 
+		void runThisKernel(const char* kernelFileName, size_t  *globalThreads, size_t *localThreads, 
 						cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 						cl_mem &imageName);
 
-		int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+		void runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &width);

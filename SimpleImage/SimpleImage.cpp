@@ -154,7 +154,7 @@ int SimpleImage::genBinaryImage()
     return status;
 }
 
-int SimpleImage::setupCL(std::string kernelsFileName)
+void SimpleImage::setupCL(std::string kernelsFileName)
 {
     cl_int status = CL_SUCCESS;
     cl_device_type dType;
@@ -177,32 +177,32 @@ int SimpleImage::setupCL(std::string kernelsFileName)
     * the AMD one if available or a reasonable default.*/
     cl_platform_id platform = NULL;
     int retValue = getPlatform(platform, sampleArgs->platformId, sampleArgs->isPlatformEnabled());
-    CHECK_OPENCL_ERROR(retValue, "getPlatform() failed");
+    if (retValue != CL_SUCCESS) throw "getPlatform() failed";
 
     // Display available devices.
     retValue = displayDevices(platform, dType);
-    CHECK_OPENCL_ERROR(retValue, "displayDevices() failed");
+	if (retValue != CL_SUCCESS) throw "displayDevices() failed";
 
     // If we could find our platform, use it. Otherwise use just available platform.
     cl_context_properties cps[3] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
 
 	//create context analoga me deviceType kai platform
     context = clCreateContextFromType(cps, dType, NULL, NULL, &status);
-    CHECK_OPENCL_ERROR(status, "clCreateContextFromType failed.");
+    if (status != CL_SUCCESS) throw "clCreateContextFromType failed.";
 
     //get device on which to run the sample
 	status = getDevices(context, &devices, sampleArgs->deviceId, sampleArgs->isDeviceIdEnabled());
-    CHECK_OPENCL_ERROR(status, "getDevices() failed");
+    if (status != CL_SUCCESS) throw "getDevices() failed";
 
     status = deviceInfo.setDeviceInfo(devices[sampleArgs->deviceId]);
-    CHECK_OPENCL_ERROR(status, "deviceInfo.setDeviceInfo failed");
+    if (status != CL_SUCCESS) throw "deviceInfo.setDeviceInfo failed";
 
 	//Check whether device doesn t support images
-    if(!deviceInfo.imageSupport) { OPENCL_EXPECTED_ERROR(" Expected Error: Device does not support Images"); }
+    if(!deviceInfo.imageSupport) throw "Expected Error: Device does not support Images";
 
 	//Create command queue
     commandQueue = clCreateCommandQueue(context, devices[sampleArgs->deviceId], 0, &status);
-    CHECK_OPENCL_ERROR(status,"clCreateCommandQueue failed.");
+    if (status != CL_SUCCESS) throw "clCreateCommandQueue failed.";
 
     //create a CL program using the kernel source
 	buildProgramData buildData;
@@ -214,9 +214,7 @@ int SimpleImage::setupCL(std::string kernelsFileName)
     if(sampleArgs->isLoadBinaryEnabled()) buildData.binaryName = std::string(sampleArgs->loadBinary.c_str());
     if(sampleArgs->isComplierFlagsSpecified()) buildData.flagsFileName = std::string(sampleArgs->flags.c_str());
     retValue = buildOpenCLProgram(program, context, buildData);
-    CHECK_ERROR(retValue, SDK_SUCCESS, "buildOpenCLProgram() failed");
-
-	return SDK_SUCCESS;
+    if (retValue != CL_SUCCESS) throw "buildOpenCLProgram() failed";
 
 }
 
@@ -242,7 +240,7 @@ int SimpleImage::checkResources(int numOfKernels, cl_kernel *kernelNames){ // Ch
 	return CL_SUCCESS;
 }
 
-int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &parameter)
@@ -253,42 +251,36 @@ int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads
 
 	//create kernel
 	kernelName = clCreateKernel(program, kernelFileName, &status);// "createColorArrays", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
+    if (status != CL_SUCCESS) throw "clCreateKernel failed.(colorArraysKernel)";
 
 	//push arguments
 	pushArguments(kernelName, &buffer1, &buffer2, &buffer3, &buffer4, &buffer5, &buffer6, &parameter);
 
 	//run kernel
 	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
-
-	return CL_SUCCESS;
+    if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 
 }
 
 
 
-int SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
+void SimpleImage::runThisKernel(const char* kernelFileName, size_t *globalThreads, size_t *localThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &imageName)
 {
-	int status = 0;
-
+	int status = CL_SUCCESS;
 	cl_kernel kernelName;
 
 	//create kernel
 	kernelName = clCreateKernel(program, kernelFileName, &status);// "createColorArrays", &status);
-    CHECK_OPENCL_ERROR(status,"clCreateKernel failed.(colorArraysKernel)");
+    if (status != CL_SUCCESS) throw "clCreateKernel failed.(colorArraysKernel)";
 
 	//push arguments
 	pushArguments(kernelName, &buffer1, &buffer2, &buffer3, &imageName);
 
 	//run kernel
 	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueNDRangeKernel failed.");
-
-	return CL_SUCCESS;
-
+    if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 }
 
 int SimpleImage::runCLKernels()
@@ -309,8 +301,7 @@ int SimpleImage::runCLKernels()
 	createBuffer(greenBuffer, greenArray);
 	createBuffer(blueBuffer, blueArray);
 
-	status = runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, inputImage2D);
-	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
+	runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, inputImage2D);
 
 	//Copy from buffers to color arrays
 	cl_mem buffers[] = {redBuffer, greenBuffer, blueBuffer};
@@ -330,20 +321,18 @@ int SimpleImage::runCLKernels()
 	createBuffer(greenSortedBuffer, greenArray);
 	createBuffer(blueSortedBuffer, blueArray);
 
-	status = runThisKernel("createPixelArray", globalThreads, localThreads, 
+	runThisKernel("createPixelArray", globalThreads, localThreads, 
 						   redBuffer, greenBuffer, blueBuffer,
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   width);
-	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
 	//create args and run CreateOutputImage
 	outputImage2D = clCreateImage(context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc1, 0, &status);
     CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
 
-	status = runThisKernel("createOutputImage", globalThreads, localThreads, 
+	runThisKernel("createOutputImage", globalThreads, localThreads, 
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   outputImage2D);
-	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 
     //Read Output Image to output data
     size_t origin[] = {0, 0, 0};
@@ -400,7 +389,7 @@ int SimpleImage::setup()
     sampleTimer->resetTimer(timer);
     sampleTimer->startTimer(timer);
 
-	CHECK_OPENCL_ERROR(setupCL("SimpleImage_Kernels.cl"), "setupCL() failed");
+	setupCL("SimpleImage_Kernels.cl");
 
 	//CHECK_OPENCL_ERROR(getInputImage("diplo000000-L.bmp", &imageDesc1, &imageData1), "getInputImage1() failed");
 	//CHECK_OPENCL_ERROR(getInputImage("diplo000000-R.bmp", &imageDesc2, &imageData2), "getInputImage2() failed");
@@ -443,9 +432,9 @@ int SimpleImage::cleanup()
         return SDK_SUCCESS;
     }
 
-    CHECK_OPENCL_ERROR(clReleaseProgram(program),"clReleaseProgram failed.(program)");
-    CHECK_OPENCL_ERROR(clReleaseCommandQueue(commandQueue),"clReleaseCommandQueue failed.(commandQueue)");
-    CHECK_OPENCL_ERROR(clReleaseContext(context),"clReleaseContext failed.(context)");
+    if (clReleaseProgram(program) != CL_SUCCESS) throw "clReleaseProgram failed.(program)";
+    if (clReleaseCommandQueue(commandQueue) != CL_SUCCESS) throw "clReleaseCommandQueue failed.(commandQueue)";
+    if (clReleaseContext(context) != CL_SUCCESS) throw "clReleaseContext failed.(context)";
     FREE(devices);
 
     return SDK_SUCCESS;
@@ -501,21 +490,27 @@ int main(int argc, char * argv[])
 	MyImage imageL; 
 	MyImage imageR;
 
-	imageL.open("diplo000000-L.bmp");
-	imageR.open("diplo000000-R.bmp");
+	try
+	{
+		imageL.open("diplo000000-L.bmp");
+		imageR.open("diplo000000-R.bmp");
 
-	CHECK_OPENCL_ERROR(clSimpleImage.setupCL("SimpleImage_Kernels.cl"), "setupCL failed");
+		clSimpleImage.setupCL("SimpleImage_Kernels.cl");
 	
-	imageL.histogramEqualization(&clSimpleImage);
-	imageR.histogramEqualization(&clSimpleImage);
+		imageL.histogramEqualization(&clSimpleImage);
+		imageR.histogramEqualization(&clSimpleImage);
 
-	imageL.save("myOutL.bmp");
-	imageR.save("myOutR.bmp");
-
-	CHECK_OPENCL_ERROR(clSimpleImage.cleanup(), "cleanup() failed");
+		imageL.save("myOutL.bmp");
+		imageR.save("myOutR.bmp");
 	
-    imageL.cleanup();
-	imageR.cleanup();
+		clSimpleImage.cleanup();
+	    imageL.cleanup();
+		imageR.cleanup();
+	}
+
+	catch(char* expn){
+		std::cout << "EXITING ERROR: " << expn << std::endl << std::endl;
+	}
 
     return SDK_SUCCESS;
 }

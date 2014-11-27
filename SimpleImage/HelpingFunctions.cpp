@@ -156,18 +156,17 @@ int copyFromBuffersToArrays(cl_command_queue cmdQueue,  cl_uint width, cl_uint h
 
 }
 
-int createArrays(pixelStruct*** arrays, cl_uint width, cl_uint height, int num)
+void createArrays(pixelStruct*** arrays, cl_uint width, cl_uint height, int num)
 {
 	// allocate memory for 1D pixel struct array
 	for (int i = 0; i < num; i++){
 		*arrays[i] = (pixelStruct*)calloc(width * height, sizeof(pixelStruct));
-		CHECK_ALLOCATION(arrays[i], "Failed to allocate memory! (redArray)");
+		if (arrays[i] == NULL) throw "Failed to allocate memory for some array!";
 	}
 
-	return SDK_SUCCESS;
 }
 
-int createBuffer(cl_mem &bufferName, pixelStruct *arrayName, cl_context context, cl_command_queue commandQueue, cl_uint width, cl_uint height){
+void createBuffer(cl_mem &bufferName, pixelStruct *arrayName, cl_context context, cl_command_queue commandQueue, cl_uint width, cl_uint height){
 
 	int status = 0;
 	
@@ -176,7 +175,7 @@ int createBuffer(cl_mem &bufferName, pixelStruct *arrayName, cl_context context,
 							   width * height * sizeof(pixelStruct), 
 							   NULL, 
 							   &status);
-	CHECK_OPENCL_ERROR(status,"clCreateBuffer failed. (redBuffer)");
+	if (status != CL_SUCCESS) throw "clCreateBuffer failed";
 
 	status = clEnqueueWriteBuffer(commandQueue,
  								 bufferName,
@@ -185,18 +184,14 @@ int createBuffer(cl_mem &bufferName, pixelStruct *arrayName, cl_context context,
  								 width * height * sizeof(pixelStruct),
 								 arrayName,
  								 0, 0, 0);
-	CHECK_OPENCL_ERROR(status,"clEnqueueWriteBuffer failed. (redBuffer)");
-
-	return CL_SUCCESS;
+	if (status != CL_SUCCESS) throw "clEnqueueWriteBuffer failed. (redBuffer)";
 }
 
-int createBuffers(cl_mem **buffers, pixelStruct **arrays, int num, cl_context context, cl_command_queue commandQueue, cl_uint width, cl_uint height){
+void createBuffers(cl_mem **buffers, pixelStruct **arrays, int num, cl_context context, cl_command_queue commandQueue, cl_uint width, cl_uint height){
 
 	for (int i = 0; i < num; i++){
 		createBuffer(*buffers[i], arrays[i], context, commandQueue, width, height);
 	}
-
-	return CL_SUCCESS;
 }
 
 void MyImage::open(std::string imageName){
@@ -236,8 +231,7 @@ void MyImage::open(std::string imageName){
 
 }
 
-int MyImage::save(std::string imageName){
-
+void MyImage::save(std::string imageName){
 
 	// copy output image data back to original pixel data
     memcpy(pixelData, imageDataOut, width * height * sizeof(uchar4));
@@ -245,17 +239,11 @@ int MyImage::save(std::string imageName){
     // write the output bmp file
     if(!imageBitmap.write(imageName.c_str()))
     {
-        std::cout << "Failed to write output image!";
-        return SDK_FAILURE;
+        throw "Failed to write output image!";
     }
-    
-	std::cout << imageName << " saved" << std::endl << std::endl;
-
-    return SDK_SUCCESS;
-
 }
 
-int MyImage::histogramEqualization(SimpleImage *clSimpleImage){
+void MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 
 	cl_int status;
 
@@ -263,17 +251,16 @@ int MyImage::histogramEqualization(SimpleImage *clSimpleImage){
     size_t localThreads[] = {256, 1}; /**< Work-group size in x and y direction */
 
 	imageIn = clCreateImage(clSimpleImage->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageDataIn, &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (imageIn)");
+    if (status != CL_SUCCESS) throw "clCreateImage failed. (imageIn)";
 	
 	pixelStruct** arrays[] = {&redArray, &greenArray, &blueArray};
-	CHECK_OPENCL_ERROR(createArrays(arrays, width, height, 3), "createArrays() failed");
+	createArrays(arrays, width, height, 3); 
 
 	cl_mem *buffers[] = {&redBuffer, &greenBuffer, &blueBuffer};
 	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
-	CHECK_OPENCL_ERROR(createBuffers(buffers, arrayPointers, 3, clSimpleImage->context, clSimpleImage->commandQueue, width, height), "createBuffers() failed");
+	createBuffers(buffers, arrayPointers, 3, clSimpleImage->context, clSimpleImage->commandQueue, width, height);
 	
-	status = clSimpleImage->runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
-	CHECK_OPENCL_ERROR(status,"runThisKernel-createColorArrays failed.");
+	clSimpleImage->runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
 	
 	//Copy from buffers to color arrays
 	cl_mem bufferPointers[] = {redBuffer, greenBuffer, blueBuffer};
@@ -289,22 +276,20 @@ int MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 	
 	//Create args and run createPixelArray
 	cl_mem *sortedBuffers[] = {&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer};
-	CHECK_OPENCL_ERROR(createBuffers(sortedBuffers, arrayPointers, 3, clSimpleImage->context, clSimpleImage->commandQueue, width, height), "createBuffers() failed");
+	createBuffers(sortedBuffers, arrayPointers, 3, clSimpleImage->context, clSimpleImage->commandQueue, width, height);
 
-	status = clSimpleImage->runThisKernel("createPixelArray", globalThreads, localThreads, 
+    clSimpleImage->runThisKernel("createPixelArray", globalThreads, localThreads, 
 						   redBuffer, greenBuffer, blueBuffer,
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   width);
-	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
-
-		//create args and run CreateOutputImage
+	
+	//create args and run CreateOutputImage
 	imageOut = clCreateImage(clSimpleImage->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
-    CHECK_OPENCL_ERROR(status,"clCreateImage failed. (outputImage2D)");
+    if (status != CL_SUCCESS) throw "clCreateImage failed. (imageOut)";
 
-	status = clSimpleImage->runThisKernel("createOutputImage", globalThreads, localThreads, 
+	clSimpleImage->runThisKernel("createOutputImage", globalThreads, localThreads, 
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   imageOut);
-	CHECK_OPENCL_ERROR(status,"runThisKernel failed.");
 	
 	//Read Output Image to output data
     size_t origin[] = {0, 0, 0};
@@ -312,25 +297,20 @@ int MyImage::histogramEqualization(SimpleImage *clSimpleImage){
 
 	// allocate memory for 2D-copy output image data
     imageDataOut = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
-    CHECK_ALLOCATION(imageDataOut, "Failed to allocate memory! (outputImageData)");
+    if (imageDataOut == NULL) throw "Failed to allocate memory! (imageDataOut)";
 
     status = clEnqueueReadImage(clSimpleImage->commandQueue, imageOut, 1, origin, region, 0, 0, imageDataOut, 0, 0, 0);
-    CHECK_OPENCL_ERROR(status,"clEnqueueReadImage failed.");
+    if (status != CL_SUCCESS) throw "clEnqueueReadImage failed.";
 
 	status = clFinish(clSimpleImage->commandQueue);
-    CHECK_OPENCL_ERROR(status,"clFinish failed.(commandQueue)");
-	
-	return SDK_SUCCESS;
+    if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
 }
 
-int MyImage::cleanup(){
+void MyImage::cleanup(){
 
     FREE(imageDataIn);
 	FREE(imageDataOut);
 	FREE(redArray);
 	FREE(greenArray);
 	FREE(blueArray);
-
-    return SDK_SUCCESS;
-
 }
