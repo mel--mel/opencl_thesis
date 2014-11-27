@@ -32,6 +32,8 @@ class MyImage
 	pixelStruct* greenArray; /**< 1D Struct to help equalization */
 	pixelStruct* blueArray; /**< 1D Struct to help equalization */
 
+public:
+
 	cl_mem redBuffer;                   /**< CL image buffer for pixelStructArray*/
 	cl_mem greenBuffer;                 /**< CL image buffer for pixelStructArray*/
 	cl_mem blueBuffer;                  /**< CL image buffer for pixelStructArray*/
@@ -39,12 +41,14 @@ class MyImage
 	cl_mem redSortedBuffer;             /**< CL image buffer for pixelStructArray*/
 	cl_mem greenSortedBuffer;           /**< CL image buffer for pixelStructArray*/
 	cl_mem blueSortedBuffer;            /**< CL image buffer for pixelStructArray*/
-	
-public:
 
 	void open(std::string imageName);  /*Open (load) image*/
 
 	void save(std::string imageName);  /*Save image*/
+
+	void imageToColorBuffers(giveMelOpenCL *clProvider);
+
+	void buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl_mem buffer2, cl_mem buffer3);
 
 	void histogramEqualization(giveMelOpenCL *clProvider);
 

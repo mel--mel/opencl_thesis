@@ -204,8 +204,14 @@ int main(int argc, char * argv[])
 		clProvider.setupCL();
 		clProvider.compileKernels("SimpleImage_Kernels.cl");
 
+		imageL.imageToColorBuffers(&clProvider);
+		imageR.imageToColorBuffers(&clProvider);
+
 		imageL.histogramEqualization(&clProvider);
 		imageR.histogramEqualization(&clProvider);
+
+		imageL.buffersToOutputImage(&clProvider, imageL.redSortedBuffer, imageL.greenSortedBuffer, imageL.blueSortedBuffer);
+		imageR.buffersToOutputImage(&clProvider, imageR.redSortedBuffer, imageR.greenSortedBuffer, imageR.blueSortedBuffer);
 
 		clProvider.stopTimer(timer);
 

@@ -243,12 +243,11 @@ void MyImage::save(std::string imageName){
     }
 }
 
-void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
+void MyImage::imageToColorBuffers(giveMelOpenCL *clProvider){
 
 	cl_int status;
-
-	size_t globalThreads[] = {width, height};
-    size_t localThreads[] = {256, 1}; /**< Work-group size in x and y direction */
+	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
+	size_t localThreads[] = {256, 1};
 
 	imageIn = clCreateImage(clProvider->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageDataIn, &status);
     if (status != CL_SUCCESS) throw "clCreateImage failed. (imageIn)";
@@ -261,8 +260,53 @@ void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
 	createBuffers(buffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
 	
 	clProvider->runThisKernel("createColorArrays", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
+
+	status = clFinish(clProvider->commandQueue);
+    if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
+
+}
+
+void MyImage::buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl_mem buffer2, cl_mem buffer3)
+{
+	int status = CL_SUCCESS;
+	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
+	size_t localThreads[] = {256, 1};
+
+	//create args and run CreateOutputImage
+	imageOut = clCreateImage(clProvider->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
+    if (status != CL_SUCCESS) throw "clCreateImage failed. (imageOut)";
+
+/*	clProvider->runThisKernel("createOutputImage", globalThreads, localThreads, 
+		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
+						   imageOut);*/
+
+	clProvider->runThisKernel("createOutputImage", globalThreads, localThreads, 
+		                   buffer1, buffer2, buffer3,
+						   imageOut);
+	
+	//Read Output Image to output data
+    size_t origin[] = {0, 0, 0};
+    size_t region[] = {width, height, 1};
+
+	// allocate memory for 2D-copy output image data
+    imageDataOut = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
+    if (imageDataOut == NULL) throw "Failed to allocate memory! (imageDataOut)";
+
+    status = clEnqueueReadImage(clProvider->commandQueue, imageOut, 1, origin, region, 0, 0, imageDataOut, 0, 0, 0);
+    if (status != CL_SUCCESS) throw "clEnqueueReadImage failed.";
+	
+	status = clFinish(clProvider->commandQueue);
+    if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
+}
+
+void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
+
+	cl_int status;
+	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
+	size_t localThreads[] = {256, 1};
 	
 	//Copy from buffers to color arrays
+	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
 	cl_mem bufferPointers[] = {redBuffer, greenBuffer, blueBuffer};
 	copyFromBuffersToArrays(clProvider->commandQueue, width, height, 3, bufferPointers, arrayPointers);
 
@@ -283,25 +327,6 @@ void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   width);
 	
-	//create args and run CreateOutputImage
-	imageOut = clCreateImage(clProvider->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
-    if (status != CL_SUCCESS) throw "clCreateImage failed. (imageOut)";
-
-	clProvider->runThisKernel("createOutputImage", globalThreads, localThreads, 
-		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
-						   imageOut);
-	
-	//Read Output Image to output data
-    size_t origin[] = {0, 0, 0};
-    size_t region[] = {width, height, 1};
-
-	// allocate memory for 2D-copy output image data
-    imageDataOut = (cl_uchar4*)calloc(width * height, sizeof(cl_uchar4));
-    if (imageDataOut == NULL) throw "Failed to allocate memory! (imageDataOut)";
-
-    status = clEnqueueReadImage(clProvider->commandQueue, imageOut, 1, origin, region, 0, 0, imageDataOut, 0, 0, 0);
-    if (status != CL_SUCCESS) throw "clEnqueueReadImage failed.";
-
 	status = clFinish(clProvider->commandQueue);
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
 }
