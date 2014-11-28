@@ -210,6 +210,8 @@ int main(int argc, char * argv[])
 		imageL.histogramEqualization(&clProvider);
 		imageR.histogramEqualization(&clProvider);
 
+		imageL.histogramMatching(&clProvider, &imageR);
+
 		imageL.buffersToOutputImage(&clProvider, imageL.redSortedBuffer, imageL.greenSortedBuffer, imageL.blueSortedBuffer);
 		imageR.buffersToOutputImage(&clProvider, imageR.redSortedBuffer, imageR.greenSortedBuffer, imageR.blueSortedBuffer);
 

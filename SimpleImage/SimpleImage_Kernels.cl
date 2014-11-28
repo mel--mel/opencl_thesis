@@ -92,9 +92,50 @@ __kernel void createPixelArray(__global pixelStruct* redIn, __global pixelStruct
 	int indexGreen = greenIn[index].indx;
 	int indexBlue = blueIn[index].indx;
 
-	redOut[indexRed].pxlValue = redIn[index].pxlValue;
-	greenOut[indexGreen].pxlValue = greenIn[index].pxlValue;
-	blueOut[indexBlue].pxlValue = blueIn[index].pxlValue;
+	redOut[indexRed] = redIn[index];
+	greenOut[indexGreen] = greenIn[index];
+	blueOut[indexBlue] = blueIn[index];
+
+}
+
+/*Match image histograms*/
+__kernel void histMatching(__global pixelStruct* red, __global pixelStruct* green, __global pixelStruct* blue, 
+                           __global pixelStruct* refRed, __global pixelStruct* refGreen, __global pixelStruct* refBlue, 
+						   uint width)
+{
+	//get image coordinates
+	int2 coord = (int2)(get_global_id(0), get_global_id(1));
+
+	//calculate buffer index
+	int index = (coord.y)*width + coord.x; 
+
+	if ((red[index].pxlValue - refRed[index].trsfrm > 0)&& (red[index].pxlValue - refRed[index].trsfrm <256)){
+            red[index].pxlValue -= refRed[index].trsfrm;
+        }else if (red[index].pxlValue - refRed[index].trsfrm <= 0){
+            red[index].pxlValue = 1;
+        }else{
+            red[index].pxlValue = 255;
+        }
+
+	if ((green[index].pxlValue - refGreen[index].trsfrm > 0)&& (green[index].pxlValue - refGreen[index].trsfrm <256)){
+            green[index].pxlValue -= refGreen[index].trsfrm;
+        }else if (green[index].pxlValue - refGreen[index].trsfrm <= 0){
+            green[index].pxlValue = 1;
+        }else{
+            green[index].pxlValue = 255;
+        }
+
+	if ((blue[index].pxlValue - refBlue[index].trsfrm > 0)&& (blue[index].pxlValue - refBlue[index].trsfrm <256)){
+            blue[index].pxlValue -= refBlue[index].trsfrm;
+        }else if (blue[index].pxlValue - refBlue[index].trsfrm <= 0){
+            blue[index].pxlValue = 1;
+        }else{
+            blue[index].pxlValue = 255;
+        }
+
+	refRed[index].pxlValue -= refRed[index].trsfrm;
+	refGreen[index].pxlValue -= refGreen[index].trsfrm;
+	refBlue[index].pxlValue -= refBlue[index].trsfrm;
 }
 
 /*create 2D output image according to color buffers)*/

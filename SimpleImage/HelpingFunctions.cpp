@@ -331,6 +331,22 @@ void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
 }
 
+void MyImage::histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef){
+
+	cl_int status;
+	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
+	size_t localThreads[] = {256, 1};
+
+	clProvider->runThisKernel("histMatching", globalThreads, localThreads, 
+		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
+						   imageRef->redSortedBuffer, imageRef->greenSortedBuffer, imageRef->blueSortedBuffer,
+						   width);
+	
+	status = clFinish(clProvider->commandQueue);
+    if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
+
+}
+
 void MyImage::cleanup(){
 
     FREE(imageDataIn);

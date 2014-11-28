@@ -52,6 +52,8 @@ public:
 
 	void histogramEqualization(giveMelOpenCL *clProvider);
 
+	void histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef);
+
 	void cleanup();
 
 	MyImage()   /*Constructor*/

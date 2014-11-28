@@ -304,7 +304,7 @@ void exact_matching(unsigned char* imit_image, unsigned char* ref_image, int **i
     //match
     histogram_matching(refpixel_struct_array, imitpixel_struct_array, rows, cols);
 
-    //change 2d array --> na to kanw function
+     //change 2d array --> na to kanw function
     for (i = 0; i < ((*rows)*(*cols)); i++){
         ref_pixel_values[refpixel_struct_array[i].row][refpixel_struct_array[i].col] = refpixel_struct_array[i].pxl_value;
         imit_pixel_values[imitpixel_struct_array[i].row][imitpixel_struct_array[i].col] = imitpixel_struct_array[i].pxl_value;
