@@ -109,21 +109,26 @@ __kernel void histMatching(__global pixelStruct* red, __global pixelStruct* gree
 	//calculate buffer index
 	int index = (coord.y)*width + coord.x; 
 
+	/*referee image*/
+	//red
 	int x = red[index].pxlValue - refRed[index].trsfrm;
 	if ((x > 0) && (x < 256)) red[index].pxlValue = x;
     else if (x <= 0) red[index].pxlValue = 1;
     else red[index].pxlValue = 255;
 
+	//green
 	x = green[index].pxlValue - refGreen[index].trsfrm;
 	if ((x > 0) && (x < 256)) green[index].pxlValue = x;
     else if (x <= 0) green[index].pxlValue = 1;
     else green[index].pxlValue = 255;
 
+	//blue
 	x = blue[index].pxlValue - refBlue[index].trsfrm;
 	if ((x > 0) && (x < 256)) blue[index].pxlValue = x;
     else if (x <= 0) blue[index].pxlValue = 1;
     else blue[index].pxlValue = 255;
 
+	/*reference image*/
 	refRed[index].pxlValue -= refRed[index].trsfrm;
 	refGreen[index].pxlValue -= refGreen[index].trsfrm;
 	refBlue[index].pxlValue -= refBlue[index].trsfrm;

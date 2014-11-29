@@ -247,7 +247,6 @@ void MyImage::imageToColorBuffers(giveMelOpenCL *clProvider){
 
 	cl_int status;
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
-	size_t localThreads[] = {256, 1};
 
 	imageIn = clCreateImage(clProvider->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &imageFormat, &imageDesc, imageDataIn, &status);
     if (status != CL_SUCCESS) throw "clCreateImage failed. (imageIn)";
@@ -259,7 +258,7 @@ void MyImage::imageToColorBuffers(giveMelOpenCL *clProvider){
 	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
 	createBuffers(buffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
 	
-	clProvider->runThisKernel("createColorBuffers", globalThreads, localThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
+	clProvider->runThisKernel("createColorBuffers", globalThreads, redBuffer, greenBuffer, blueBuffer, imageIn);
 
 	status = clFinish(clProvider->commandQueue);
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
@@ -270,14 +269,13 @@ void MyImage::putPixelsInRightPos(giveMelOpenCL *clProvider){
 
 	int status = CL_SUCCESS;
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
-	size_t localThreads[] = {256, 1};
 
 	//Create args and run createPixelArray
 	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
 	cl_mem *sortedBuffers[] = {&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer};
 	createBuffers(sortedBuffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
 
-    clProvider->runThisKernel("createPixelArray", globalThreads, localThreads, 
+    clProvider->runThisKernel("createPixelArray", globalThreads, 
 						   redBuffer, greenBuffer, blueBuffer,
 		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
 						   width);
@@ -290,19 +288,12 @@ void MyImage::buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl
 {
 	int status = CL_SUCCESS;
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
-	size_t localThreads[] = {256, 1};
 
 	//create args and run CreateOutputImage
 	imageOut = clCreateImage(clProvider->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
     if (status != CL_SUCCESS) throw "clCreateImage failed. (imageOut)";
 
-/*	clProvider->runThisKernel("createOutputImage", globalThreads, localThreads, 
-		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
-						   imageOut);*/
-
-	clProvider->runThisKernel("createOutputImage", globalThreads, localThreads, 
-		                   buffer1, buffer2, buffer3,
-						   imageOut);
+	clProvider->runThisKernel("createOutputImage", globalThreads, buffer1, buffer2, buffer3, imageOut);
 	
 	//Read Output Image to output data
     size_t origin[] = {0, 0, 0};
@@ -319,11 +310,10 @@ void MyImage::buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
 }
 
-void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
+void MyImage::histEqualizeColors(giveMelOpenCL *clProvider){
 
 	cl_int status;
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
-	size_t localThreads[] = {256, 1};
 	
 	//Copy from buffers to color arrays
 	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
@@ -338,32 +328,32 @@ void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
 	//Copy from arrays to buffers
 	copyFromArraysToBuffers(clProvider->commandQueue,  width, height, 3, bufferPointers, arrayPointers);
 
-	//Create args and run createPixelArray
-	/*cl_mem *sortedBuffers[] = {&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer};
-	createBuffers(sortedBuffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
-
-    clProvider->runThisKernel("createPixelArray", globalThreads, localThreads, 
-						   redBuffer, greenBuffer, blueBuffer,
-		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
-						   width);*/
-	
 	status = clFinish(clProvider->commandQueue);
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
 }
 
-void MyImage::histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef){
+void MyImage::matchHistograms(giveMelOpenCL *clProvider, MyImage *imageRef){
 
 	cl_int status;
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
-	size_t localThreads[] = {256, 1};
-
-	clProvider->runThisKernel("histMatching", globalThreads, localThreads, 
-		                   redBuffer, greenBuffer, blueBuffer,
-						   imageRef->redBuffer, imageRef->greenBuffer, imageRef->blueBuffer,
-						   width);
+	
+	clProvider->runThisKernel("histMatching", globalThreads, redBuffer, greenBuffer, blueBuffer,
+						   imageRef->redBuffer, imageRef->greenBuffer, imageRef->blueBuffer, width);
 	
 	status = clFinish(clProvider->commandQueue);
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
+
+}
+
+void MyImage::histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef){
+
+	histEqualizeColors(clProvider);
+	imageRef->histEqualizeColors(clProvider);
+
+	matchHistograms(clProvider, imageRef);
+
+	putPixelsInRightPos(clProvider);
+	imageRef->putPixelsInRightPos(clProvider);
 
 }
 

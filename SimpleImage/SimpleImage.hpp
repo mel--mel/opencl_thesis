@@ -99,11 +99,11 @@ class giveMelOpenCL
 		/**
 		** Makes the moves needed to run a kernel
 		*/
-		void runThisKernel(const char* kernelNameInFile, size_t  *globalThreads, size_t *localThreads, 
+		void runThisKernel(const char* kernelNameInFile, size_t  *globalThreads, 
 						cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 						cl_mem &imageName);
 
-		void runThisKernel(const char* kernelNameInFile, size_t *globalThreads, size_t *localThreads, 
+		void runThisKernel(const char* kernelNameInFile, size_t *globalThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &width);

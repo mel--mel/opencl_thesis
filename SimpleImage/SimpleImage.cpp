@@ -89,7 +89,7 @@ void giveMelOpenCL::compileKernels(std::string kernelsFileName)
     if (retValue != CL_SUCCESS) throw "buildOpenCLProgram() failed";
 }
 
-void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalThreads, size_t *localThreads, 
+void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &parameter)
@@ -106,12 +106,12 @@ void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalTh
 	pushArguments(kernelName, &buffer1, &buffer2, &buffer3, &buffer4, &buffer5, &buffer6, &parameter);
 
 	//run kernel
-	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
+	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, NULL, 0, NULL, 0);
     if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 
 }
 
-void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalThreads, size_t *localThreads, 
+void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalThreads, 
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &imageName)
 {
@@ -126,7 +126,7 @@ void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalTh
 	pushArguments(kernelName, &buffer1, &buffer2, &buffer3, &imageName);
 
 	//run kernel
-	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, localThreads, 0, NULL, 0);
+	status = clEnqueueNDRangeKernel(commandQueue, kernelName, 2, NULL, globalThreads, NULL, 0, NULL, 0);
     if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 }
 
@@ -207,13 +207,7 @@ int main(int argc, char * argv[])
 		imageL.imageToColorBuffers(&clProvider);
 		imageR.imageToColorBuffers(&clProvider);
 
-		imageL.histogramEqualization(&clProvider);
-		imageR.histogramEqualization(&clProvider);
-
 		imageL.histogramMatching(&clProvider, &imageR);
-
-		imageL.putPixelsInRightPos(&clProvider);
-		imageR.putPixelsInRightPos(&clProvider);
 
 		imageL.buffersToOutputImage(&clProvider, imageL.redSortedBuffer, imageL.greenSortedBuffer, imageL.blueSortedBuffer);
 		imageR.buffersToOutputImage(&clProvider, imageR.redSortedBuffer, imageR.greenSortedBuffer, imageR.blueSortedBuffer);
