@@ -216,6 +216,7 @@ int main(int argc, char * argv[])
 
 		imageL.save("myOutL.bmp");
 		imageR.save("myOutR.bmp");
+
 	}
 
 	catch(char* expn){

@@ -348,6 +348,14 @@ void MyImage::matchHistograms(giveMelOpenCL *clProvider, MyImage *imageRef){
 
 }
 
+void MyImage::histogramEqualization(giveMelOpenCL *clProvider){
+
+	histEqualizeColors(clProvider);
+
+	putPixelsInRightPos(clProvider);
+	
+}
+
 void MyImage::histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef){
 
 	histEqualizeColors(clProvider);
