@@ -50,7 +50,9 @@ public:
 
 	void buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl_mem buffer2, cl_mem buffer3);
 
-	void histogramEqualization(giveMelOpenCL *clProvider);
+	void histEqualizeColors(giveMelOpenCL *clProvider);
+
+	void matchHistograms(giveMelOpenCL *clProvider, MyImage *imageRef);
 
 	void histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef);
 
@@ -64,6 +66,9 @@ public:
 	{
 		 imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
          imageFormat.image_channel_order = CL_RGBA;
+		 redArray = NULL;
+	     greenArray = NULL;
+	     blueArray = NULL;
 	}
 
 	~MyImage()
