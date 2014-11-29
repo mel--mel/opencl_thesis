@@ -54,6 +54,8 @@ public:
 
 	void histogramMatching(giveMelOpenCL *clProvider, MyImage *imageRef);
 
+	void putPixelsInRightPos(giveMelOpenCL *clProvider);
+
 	void cleanup();
 
 	MyImage()   /*Constructor*/

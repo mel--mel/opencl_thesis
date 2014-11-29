@@ -212,6 +212,9 @@ int main(int argc, char * argv[])
 
 		imageL.histogramMatching(&clProvider, &imageR);
 
+		imageL.putPixelsInRightPos(&clProvider);
+		imageR.putPixelsInRightPos(&clProvider);
+
 		imageL.buffersToOutputImage(&clProvider, imageL.redSortedBuffer, imageL.greenSortedBuffer, imageL.blueSortedBuffer);
 		imageR.buffersToOutputImage(&clProvider, imageR.redSortedBuffer, imageR.greenSortedBuffer, imageR.blueSortedBuffer);
 

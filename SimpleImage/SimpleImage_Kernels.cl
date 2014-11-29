@@ -27,7 +27,7 @@ typedef struct __attribute__((packed)) pixelStruct{
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
 
 /* Copy input 2D image to output 2D image */
-__kernel void createColorArrays(__global pixelStruct* red, __global pixelStruct* green, __global pixelStruct* blue, 
+__kernel void createColorBuffers(__global pixelStruct* red, __global pixelStruct* green, __global pixelStruct* blue, 
                                 __read_only image2d_t input)
 {
 	//get image coordinates
@@ -109,29 +109,20 @@ __kernel void histMatching(__global pixelStruct* red, __global pixelStruct* gree
 	//calculate buffer index
 	int index = (coord.y)*width + coord.x; 
 
-	if ((red[index].pxlValue - refRed[index].trsfrm > 0)&& (red[index].pxlValue - refRed[index].trsfrm <256)){
-            red[index].pxlValue -= refRed[index].trsfrm;
-        }else if (red[index].pxlValue - refRed[index].trsfrm <= 0){
-            red[index].pxlValue = 1;
-        }else{
-            red[index].pxlValue = 255;
-        }
+	int x = red[index].pxlValue - refRed[index].trsfrm;
+	if ((x > 0) && (x < 256)) red[index].pxlValue = x;
+    else if (x <= 0) red[index].pxlValue = 1;
+    else red[index].pxlValue = 255;
 
-	if ((green[index].pxlValue - refGreen[index].trsfrm > 0)&& (green[index].pxlValue - refGreen[index].trsfrm <256)){
-            green[index].pxlValue -= refGreen[index].trsfrm;
-        }else if (green[index].pxlValue - refGreen[index].trsfrm <= 0){
-            green[index].pxlValue = 1;
-        }else{
-            green[index].pxlValue = 255;
-        }
+	x = green[index].pxlValue - refGreen[index].trsfrm;
+	if ((x > 0) && (x < 256)) green[index].pxlValue = x;
+    else if (x <= 0) green[index].pxlValue = 1;
+    else green[index].pxlValue = 255;
 
-	if ((blue[index].pxlValue - refBlue[index].trsfrm > 0)&& (blue[index].pxlValue - refBlue[index].trsfrm <256)){
-            blue[index].pxlValue -= refBlue[index].trsfrm;
-        }else if (blue[index].pxlValue - refBlue[index].trsfrm <= 0){
-            blue[index].pxlValue = 1;
-        }else{
-            blue[index].pxlValue = 255;
-        }
+	x = blue[index].pxlValue - refBlue[index].trsfrm;
+	if ((x > 0) && (x < 256)) blue[index].pxlValue = x;
+    else if (x <= 0) blue[index].pxlValue = 1;
+    else blue[index].pxlValue = 255;
 
 	refRed[index].pxlValue -= refRed[index].trsfrm;
 	refGreen[index].pxlValue -= refGreen[index].trsfrm;
@@ -160,17 +151,5 @@ __kernel void createOutputImage(__global pixelStruct* redOut, __global pixelStru
 	write_imageui(output, coord, pixel);
 }
 
-/* Copy input 3D image to 2D image */
-__kernel void image3dCopy(__read_only image3d_t input, __write_only image2d_t output)
-{
-	int2 coord = (int2)(get_global_id(0), get_global_id(1));
 
-	/* Read first slice into lower half */
-	uint4 temp0 = read_imageui(input, imageSampler, (int4)(coord, 0, 0));
-
-	/* Read second slice into upper half */
-	uint4 temp1 = read_imageui(input, imageSampler, (int4)((int2)(get_global_id(0), get_global_id(1) - get_global_size(1)/2), 1, 0));
-	
-	write_imageui(output, coord, temp0 + temp1);
-}
 
