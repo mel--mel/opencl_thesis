@@ -209,8 +209,8 @@ int main(int argc, char * argv[])
 
 		imageL.histogramMatching(&clProvider, &imageR);
 
-		imageL.buffersToOutputImage(&clProvider, imageL.redSortedBuffer, imageL.greenSortedBuffer, imageL.blueSortedBuffer);
-		imageR.buffersToOutputImage(&clProvider, imageR.redSortedBuffer, imageR.greenSortedBuffer, imageR.blueSortedBuffer);
+		imageL.buffersToOutputImage(&clProvider);
+		imageR.buffersToOutputImage(&clProvider);
 
 		clProvider.stopTimer(timer);
 

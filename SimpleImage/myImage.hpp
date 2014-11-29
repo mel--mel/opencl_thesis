@@ -38,17 +38,13 @@ public:
 	cl_mem greenBuffer;                 /**< CL image buffer for pixelStructArray*/
 	cl_mem blueBuffer;                  /**< CL image buffer for pixelStructArray*/
 
-	cl_mem redSortedBuffer;             /**< CL image buffer for pixelStructArray*/
-	cl_mem greenSortedBuffer;           /**< CL image buffer for pixelStructArray*/
-	cl_mem blueSortedBuffer;            /**< CL image buffer for pixelStructArray*/
-
 	void open(std::string imageName);  /*Open (load) image*/
 
 	void save(std::string imageName);  /*Save image*/
 
 	void imageToColorBuffers(giveMelOpenCL *clProvider);
 
-	void buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl_mem buffer2, cl_mem buffer3);
+	void buffersToOutputImage(giveMelOpenCL *clProvider);
 
 	void histEqualizeColors(giveMelOpenCL *clProvider);
 

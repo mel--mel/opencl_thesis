@@ -271,20 +271,23 @@ void MyImage::putPixelsInRightPos(giveMelOpenCL *clProvider){
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
 
 	//Create args and run createPixelArray
+	cl_mem _redBuffer, _greenBuffer, _blueBuffer;
 	pixelStruct* arrayPointers[] = {redArray, greenArray, blueArray};
-	cl_mem *sortedBuffers[] = {&redSortedBuffer, &greenSortedBuffer, &blueSortedBuffer};
+	cl_mem *sortedBuffers[] = {&_redBuffer, &_greenBuffer, &_blueBuffer};
 	createBuffers(sortedBuffers, arrayPointers, 3, clProvider->context, clProvider->commandQueue, width, height);
 
-    clProvider->runThisKernel("createPixelArray", globalThreads, 
-						   redBuffer, greenBuffer, blueBuffer,
-		                   redSortedBuffer, greenSortedBuffer, blueSortedBuffer,
-						   width);
+    clProvider->runThisKernel("createPixelArray", globalThreads, redBuffer, greenBuffer, blueBuffer,
+		                      _redBuffer, _greenBuffer, _blueBuffer, width);
 
 	status = clFinish(clProvider->commandQueue);
     if (status != CL_SUCCESS) throw "clFinish failed.(commandQueue)";
+
+	redBuffer = _redBuffer;
+	greenBuffer = _greenBuffer;
+	blueBuffer = _blueBuffer;
 }
 
-void MyImage::buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl_mem buffer2, cl_mem buffer3)
+void MyImage::buffersToOutputImage(giveMelOpenCL *clProvider)
 {
 	int status = CL_SUCCESS;
 	size_t globalThreads[] = {width, height}; /**< Work-group size in x and y direction */
@@ -293,7 +296,7 @@ void MyImage::buffersToOutputImage(giveMelOpenCL *clProvider, cl_mem buffer1, cl
 	imageOut = clCreateImage(clProvider->context, CL_MEM_WRITE_ONLY, &imageFormat, &imageDesc, 0, &status);
     if (status != CL_SUCCESS) throw "clCreateImage failed. (imageOut)";
 
-	clProvider->runThisKernel("createOutputImage", globalThreads, buffer1, buffer2, buffer3, imageOut);
+	clProvider->runThisKernel("createOutputImage", globalThreads, redBuffer, greenBuffer, blueBuffer, imageOut);
 	
 	//Read Output Image to output data
     size_t origin[] = {0, 0, 0};
