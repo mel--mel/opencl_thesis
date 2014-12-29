@@ -21,6 +21,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "Templates.cpp"
 #include <cmath>
 #include <vector>
+#include "opencv2\ocl\ocl.hpp"
 
 #define OUTPUT_IMAGE "L_Out.bmp"
 

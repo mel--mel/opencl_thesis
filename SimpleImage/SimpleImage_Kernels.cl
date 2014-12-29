@@ -26,7 +26,7 @@ typedef struct __attribute__((packed)) pixelStruct{
 
 __constant sampler_t imageSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST; 
 
-/* Copy input 2D image to output 2D image */
+/* According to the input image create 3 color buffers */
 __kernel void createColorBuffers(__global pixelStruct* red, __global pixelStruct* green, __global pixelStruct* blue, 
                                 __read_only image2d_t input)
 {
@@ -77,7 +77,7 @@ __kernel void createColorBuffers(__global pixelStruct* red, __global pixelStruct
 	write_imageui(output, coord, temp);*/
 }
 
-/*create pixel array according to color buffers)*/
+/*create a pixel buffer according to color buffers)*/
 __kernel void createPixelArray(__global pixelStruct* redIn, __global pixelStruct* greenIn, __global pixelStruct* blueIn, 
                                __global pixelStruct* redOut, __global pixelStruct* greenOut, __global pixelStruct* blueOut, 
 							   uint width)
