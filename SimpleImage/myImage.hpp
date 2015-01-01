@@ -75,4 +75,8 @@ public:
 	}
 };
 
+/*class mySDKBitMap: public SDKBitMap{
+	 bool myWrite(const char * filename);     
+};*/
+
 #endif // MY_IMAGE_H_

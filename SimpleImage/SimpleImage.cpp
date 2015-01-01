@@ -22,6 +22,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <cmath>
 #include <vector>
 #include "opencv2\ocl\ocl.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+
 
 #define OUTPUT_IMAGE "L_Out.bmp"
 
@@ -188,36 +191,54 @@ int giveMelOpenCL::cleanup()
     }
 }*/
 
+void cvTest()
+{
+	cv::Mat A = cv::imread("myOutL.bmp");
+	cv::ocl::oclMat B;
+	B.upload(A);
+
+
+
+}
+
+void matching()
+{
+	giveMelOpenCL clProvider;
+	MyImage imageL; 
+	MyImage imageR;
+	int timer;
+	
+	imageL.open("diplo000000-L.bmp");
+	imageR.open("diplo000000-R.bmp");
+
+	timer = clProvider.setTimer();
+
+	clProvider.setupCL();
+	clProvider.compileKernels("SimpleImage_Kernels.cl");
+
+	imageL.imageToColorBuffers(&clProvider);
+	imageR.imageToColorBuffers(&clProvider);
+
+	imageL.histogramMatching(&clProvider, &imageR);
+
+	imageL.buffersToOutputImage(&clProvider);
+	imageR.buffersToOutputImage(&clProvider);
+
+	clProvider.stopTimer(timer);
+
+	imageL.save("myOutL.bmp");//("equalizedL.bmp");//
+	imageR.save("myOutR.bmp");//("equalizedR.bmp");//
+
+}
+
 int main(int argc, char * argv[])
 {
     try
 	{
-	    giveMelOpenCL clProvider;
-		MyImage imageL; 
-		MyImage imageR;
-		int timer;
-	
-		imageL.open("diplo000000-L.bmp");
-		imageR.open("diplo000000-R.bmp");
+	    matching();
 
-		timer = clProvider.setTimer();
-
-		clProvider.setupCL();
-		clProvider.compileKernels("SimpleImage_Kernels.cl");
-
-		imageL.imageToColorBuffers(&clProvider);
-		imageR.imageToColorBuffers(&clProvider);
-
-		imageL.histogramMatching(&clProvider, &imageR);
-
-		imageL.buffersToOutputImage(&clProvider);
-		imageR.buffersToOutputImage(&clProvider);
-
-		clProvider.stopTimer(timer);
-
-		imageL.save("myOutL.bmp");
-		imageR.save("myOutR.bmp");
-
+		cvTest();
+		
 	}
 
 	catch(char* expn){

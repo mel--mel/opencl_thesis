@@ -196,7 +196,6 @@ void createBuffers(cl_mem **buffers, pixelStruct **arrays, int num, cl_context c
 
 void MyImage::open(std::string imageName){
 
-	//SDKBitMap inputBitmap;
     // load input bitmap image
     imageBitmap.load(imageName.c_str());
 
@@ -241,6 +240,8 @@ void MyImage::save(std::string imageName){
     {
         throw "Failed to write output image!";
     }
+
+	fcloseall();
 }
 
 void MyImage::imageToColorBuffers(giveMelOpenCL *clProvider){
@@ -376,3 +377,82 @@ void MyImage::cleanup(){
 	FREE(greenArray);
 	FREE(blueArray);
 }
+
+/*bool mySDKBitMap::myWrite(const char * filename){
+            if (!isLoaded_)
+            {
+                return false;
+            }
+            // Open BMP file
+            FILE * fd = fopen(filename, "wb");
+            //FILE * fd;
+            //fopen_s(&fd, filename, "wb");
+            // Opened OK
+            if (fd != NULL)
+            {
+                // Write header
+                fwrite((BitMapHeader *)this, sizeof(BitMapHeader), 1, fd);
+                // Failed to write header
+                if (ferror(fd))
+                {
+                    fclose(fd);
+                    return false;
+                }
+                // Write map info header
+                fwrite((BitMapInfoHeader *)this, sizeof(BitMapInfoHeader), 1, fd);
+                // Failed to write map info header
+                if (ferror(fd))
+                {
+                    fclose(fd);
+                    return false;
+                }
+                // Write palate for 8 bits per pixel
+                if(bitsPerPixel == 8)
+                {
+                    fwrite(
+                        (char *)colors_,
+                        numColors_ * sizeof(ColorPalette),
+                        1,
+                        fd);
+                    // Failed to write colors
+                    if (ferror(fd))
+                    {
+                        fclose(fd);
+                        return false;
+                    }
+                }
+                for(int y = 0; y < height; y++)
+                {
+                    for(int x = 0; x < width; x++)
+                    {
+                        // Read RGB values
+                        if (bitsPerPixel == 8)
+                        {
+                            fputc(
+                                colorIndex(
+                                    pixels_[(y * width + x)]),
+                                fd);
+                        }
+                        else   // 24 bit
+                        {
+                            fputc(pixels_[(y * width + x)].z, fd);
+                            fputc(pixels_[(y * width + x)].y, fd);
+                            fputc(pixels_[(y * width + x)].x, fd);
+                            if (ferror(fd))
+                            {
+                                fclose(fd);
+                                return false;
+                            }
+                        }
+                    }
+                    // Add padding
+                    for(int x = 0; x < (4 - (3 * width) % 4) % 4; x++)
+                    {
+                        fputc(0, fd);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+		*/
