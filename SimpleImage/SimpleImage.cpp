@@ -196,71 +196,103 @@ int giveMelOpenCL::cleanup()
     }
 }*/
 
-void cvTest()
+void oclTest()
 {
 	cv::initModule_nonfree();
 
-	cv::Mat L, greyscaleL, R, greyscaleR;
-	cv::ocl::oclMat clL, edgesL, clR, edgesR;
+	cv::Mat L, R, leftImageGrey, rightImageGrey;
 
 	L = cv::imread("myOutL.bmp");
 	R = cv::imread("myOutR.bmp");
 	
-	cv::cvtColor(L, greyscaleL, CV_RGB2GRAY);
-	cv::cvtColor(R, greyscaleR, CV_RGB2GRAY);
+	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
+	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
 
-	clL.upload(greyscaleL);
-	clR.upload(greyscaleR);
+	cv::ocl::oclMat clL, edgesL, clR, edgesR;
 
-	/*cv::ocl::Canny(clL, edgesL, 10, 150, 3, false);
+	clL.upload(leftImageGrey);
+	clR.upload(rightImageGrey);
+
+	cv::ocl::Canny(clL, edgesL, 10, 150, 3, false);
 	cv::ocl::Canny(clR, edgesR, 10, 150, 3, false);
 
-	edgesL.download(greyscaleL);
-	edgesR.download(greyscaleR);
-
-	cv::imwrite("edgesL.bmp", greyscaleL);
-	cv::imwrite("edgesR.bmp", greyscaleR);
-
-	cv::imshow("left bmp", greyscaleL);
-	cv::imshow("right bmp", greyscaleR);
-
-	cv::waitKey(0);*/
-
-	////////////////////////////////
-	/*
 	std::vector<cv::DMatch> matches;
-	const cv::ocl::oclMat mask;
-
 	cv::ocl::BruteForceMatcher_OCL_base matcher;
-		
-	matcher.match(edgesL, edgesR, matches, mask);
+	matcher.match(edgesL, edgesR, matches);
+
+	for (size_t i = 0; i < int(matches.size()); ++i){
+		cv::Point from = matches[i].queryIdx;
+		cv::Point to = matches[i].trainIdx;
+
+		//calculate local distance for each possible match
+		double dist = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
+		//double dist = abs(from.x-to.x);
+
+		cv::circle(L, from, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
+
+
+	//cv::Rect roi(30, 0,  L.size().width);
+	cv::Rect roi(33, 0, L.size().width-35, L.size().height);
+	cv::Mat croppedDepthMap = L(roi);
+
+	cv::imshow("depthmap", croppedDepthMap);
+    cv::waitKey(0);
+
+	/*edgesL.download(leftImageGrey);
+	edgesR.download(rightImageGrey);
+
+	cv::imwrite("edgesL.bmp", leftImageGrey);
+	cv::imwrite("edgesR.bmp", rightImageGrey);
+
+	cv::imshow("left bmp", leftImageGrey);
+	cv::imshow("right bmp", rightImageGrey);
+
+	cv::waitKey(0);
 	*/
-	///////////////////////////////////
+}
 
-	cv::Mat leftImageGrey, rightImageGrey;
-	std::vector<cv::KeyPoint> keypoints_1, keypoints_2; 
-	cv::Mat descriptors_1, descriptors_2;
+void createDepthMap()
+{
+	cv::initModule_nonfree();
+
+	cv::Mat L, R, leftImageGrey, rightImageGrey;
+
+	L = cv::imread("myOutL.bmp");
+	R = cv::imread("myOutR.bmp");
+	
+	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
+	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
+
+	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
+	cv::Mat descriptors1, descriptors2;
 	const cv::Mat mask;
-
-	leftImageGrey = greyscaleL;
-	rightImageGrey = greyscaleR;
 
 	//anixneyw ta features (FAST)
 	cv::Ptr<cv::FeatureDetector> detector;
 	detector = new cv::DynamicAdaptedFeatureDetector ( new cv::FastAdjuster(10,true), 5000, 10000, 10);
-	detector->detect(leftImageGrey, keypoints_1);
-	detector->detect(rightImageGrey, keypoints_2);
+	detector->detect(leftImageGrey, keypoints1);
+	detector->detect(rightImageGrey, keypoints2);
 
 	//briskw descriptors gia ta features (SIFT)
 	cv::Ptr<cv::DescriptorExtractor> extractor;
 	extractor = cv::DescriptorExtractor::create("SIFT");
-	extractor->compute( leftImageGrey, keypoints_1, descriptors_1);
-	extractor->compute( rightImageGrey, keypoints_2, descriptors_2);
+	extractor->compute( leftImageGrey, keypoints1, descriptors1);
+	extractor->compute( rightImageGrey, keypoints2, descriptors2);
 
 	//antistoixw toyw descriptors twn features
-	std::vector <std::vector <cv::DMatch>> matches;
+	/*std::vector <std::vector <cv::DMatch>> matches;
 	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce");
-    matcher->knnMatch(descriptors_1, descriptors_2, matches, 500);
+    matcher->knnMatch(descriptors_1, descriptors_2, matches, 500);*/
+
+	cv::ocl::oclMat oclDescriptors1, oclDescriptors2;
+
+	oclDescriptors1.upload(descriptors1);
+	oclDescriptors2.upload(descriptors2);
+
+	//std::vector<cv::DMatch> matches;
+	std::vector <std::vector <cv::DMatch>> matches;
+	cv::ocl::BruteForceMatcher_OCL_base matcher;
+	matcher.knnMatch(oclDescriptors1, oclDescriptors2, matches, 500);
 
 	//look whether the match is inside a defined area of the image
 	//only 25% of maximum of possible distance
@@ -270,8 +302,8 @@ void cvTest()
 	good_matches2.reserve(matches.size());
 	for (size_t i = 0; i < int(matches.size()); ++i){
 		for (int j = 0; j < int(matches[i].size()); j++){
-			cv::Point2f from = keypoints_1[matches[i][j].queryIdx].pt;
-			cv::Point2f to = keypoints_2[matches[i][j].trainIdx].pt;
+			cv::Point2f from = keypoints1[matches[i][j].queryIdx].pt;
+			cv::Point2f to = keypoints2[matches[i][j].trainIdx].pt;
 
 	        //calculate local distance for each possible match
 		    double dist = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
@@ -280,19 +312,8 @@ void cvTest()
 	        if (dist < tresholdDist && abs(from.y-to.y)<8 && abs(from.x-to.x)<30){
 	            good_matches2.push_back(matches[i][j]);
 	            j = matches[i].size();}
-
 		}}
 
-//	for (size_t i = 0; i < int(good_matches2.size()); ++i){
-/*	for (size_t i = 0; i < int(good_matches2.size()); i+=15){
-		//cv::line(L, keypoints_1[good_matches2[i].queryIdx].pt, keypoints_2[good_matches2[i].trainIdx].pt, cv::Scalar(0, 255, 0));
-		cv::circle(L, keypoints_1[good_matches2[i].queryIdx].pt, 2, cv::Scalar(255, 0, 0));
-		cv::circle(R, keypoints_2[good_matches2[i].trainIdx].pt, 2, cv::Scalar(0, 0, 255));}
-
-	cv::imshow("L", L);
-	cv::imshow("R", R);
-	cv::waitKey(0);
-*/
 	//combine2images
 	cv::Size sz1 = L.size();
     cv::Size sz2 = R.size();
@@ -305,11 +326,11 @@ void cvTest()
 	cv::Point2f rightPoint;
 	//for (size_t i = 0; i < int(good_matches2.size()); ++i){
 	for (size_t i = 0; i < int(good_matches2.size()); i+=15){
-		rightPoint = keypoints_2[good_matches2[i].trainIdx].pt;
+		rightPoint = keypoints2[good_matches2[i].trainIdx].pt;
 		rightPoint.x += sz1.width;
-		cv::circle(showMatches, keypoints_1[good_matches2[i].queryIdx].pt, 2, cv::Scalar(255, 0, 0));
+		cv::circle(showMatches, keypoints1[good_matches2[i].queryIdx].pt, 2, cv::Scalar(255, 0, 0));
 		cv::circle(showMatches, rightPoint, 2, cv::Scalar(0, 0, 255));
-		cv::line(showMatches, keypoints_1[good_matches2[i].queryIdx].pt,rightPoint, cv::Scalar((i*20)%255, (i*50)%255, (i*130)%255));}
+		cv::line(showMatches, keypoints1[good_matches2[i].queryIdx].pt,rightPoint, cv::Scalar((i*20)%255, (i*50)%255, (i*130)%255));}
 
     cv::imshow("matches", showMatches);
     cv::waitKey(0);
@@ -317,14 +338,14 @@ void cvTest()
 	cv::imwrite("matches.bmp", showMatches);
 
 	for (size_t i = 0; i < int(good_matches2.size()); ++i){
-		cv::Point2f from = keypoints_1[good_matches2[i].queryIdx].pt;
-		cv::Point2f to = keypoints_2[good_matches2[i].trainIdx].pt;
+		cv::Point2f from = keypoints1[good_matches2[i].queryIdx].pt;
+		cv::Point2f to = keypoints2[good_matches2[i].trainIdx].pt;
 
 		//calculate local distance for each possible match
 		double dist = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 		//double dist = abs(from.x-to.x);
 
-		cv::circle(L, keypoints_1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
+		cv::circle(L, keypoints1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
 
 
 	//cv::Rect roi(30, 0,  L.size().width);
@@ -337,7 +358,7 @@ void cvTest()
 	cv::imwrite("myDepthmap.bmp", croppedDepthMap);
 }
 
-void matching()
+void matchImageColors()
 {
 	giveMelOpenCL clProvider;
 	MyImage imageL; 
@@ -371,10 +392,9 @@ int main(int argc, char * argv[])
 {
     try
 	{
-	    matching();
-
-		cvTest();
-		
+	    matchImageColors();
+		createDepthMap();	
+		//oclTest();
 	}
 
 	catch(char* expn){
