@@ -197,6 +197,70 @@ int giveMelOpenCL::cleanup()
     }
 }*/
 
+cv::Mat combineTwoImages(cv::Mat L, cv::Mat R){
+	cv::Size sz1 = L.size();
+    cv::Size sz2 = R.size();
+	cv::Mat showMatches(sz1.height, sz1.width+sz2.width, L.type());
+    cv::Mat leftHalf(showMatches, cv::Rect(0, 0, sz1.width, sz1.height));
+    L.copyTo(leftHalf);
+    cv::Mat rightHalf(showMatches, cv::Rect(sz1.width, 0, sz2.width, sz2.height));
+    R.copyTo(rightHalf);
+
+	return showMatches;
+}
+
+cv::Mat drawLinesAcrossMatches(cv::Mat L, cv::Mat showMatches, std::vector <cv::DMatch> good_matches2, 
+								std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2)
+{
+	cv::Point2f rightPoint;
+	for (size_t i = 0; i < int(good_matches2.size()); i+=15){
+		rightPoint = keypoints2[good_matches2[i].trainIdx].pt;
+		rightPoint.x += L.size().width;
+		cv::circle(showMatches, keypoints1[good_matches2[i].queryIdx].pt, 2, cv::Scalar(255, 0, 0));
+		cv::circle(showMatches, rightPoint, 2, cv::Scalar(0, 0, 255));
+		cv::line(showMatches, keypoints1[good_matches2[i].queryIdx].pt,rightPoint, cv::Scalar((i*20)%255, (i*50)%255, (i*130)%255));}
+
+	return showMatches;
+}
+
+void showMatches(cv::Mat L, cv::Mat R, std::vector <cv::DMatch> good_matches2, 
+				 std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2,
+				 std::string matchesImageName){
+
+	cv::Mat showMatches = combineTwoImages(L, R);
+	showMatches = drawLinesAcrossMatches(L, showMatches, good_matches2, keypoints1, keypoints2);
+
+    cv::imshow("matches", showMatches);
+    cv::waitKey(0);
+
+	cv::imwrite(matchesImageName, showMatches);
+}
+
+void createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2, 
+				 std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2,
+				 std::string depthmapImageName)
+{
+	for (size_t i = 0; i < int(good_matches2.size()); ++i){
+		cv::Point2f from = keypoints1[good_matches2[i].queryIdx].pt;
+		cv::Point2f to = keypoints2[good_matches2[i].trainIdx].pt;
+
+		//calculate local distance for each possible match
+		double dist = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
+
+		cv::circle(L, keypoints1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
+
+
+	//cv::Rect roi(30, 0,  L.size().width);
+	cv::Rect roi(33, 0, L.size().width-35, L.size().height);
+	cv::Mat croppedDepthMap = L(roi);
+
+	cv::imshow("depthmap", croppedDepthMap);
+    cv::waitKey(0);
+
+	cv::imwrite(depthmapImageName, croppedDepthMap);
+
+}
+
 void depthMapMeth3()
 {
 	cv::initModule_nonfree();
@@ -240,46 +304,9 @@ void depthMapMeth3()
 		if (abs(from.y-to.y)<8 && abs(from.x-to.x)<30) {good_matches2.push_back(matches[i]);}
 	}
 
-	//combine2images
-	cv::Size sz1 = L.size();
-    cv::Size sz2 = R.size();
-	cv::Mat showMatches(sz1.height, sz1.width+sz2.width, L.type());
-    cv::Mat leftHalf(showMatches, cv::Rect(0, 0, sz1.width, sz1.height));
-    L.copyTo(leftHalf);
-    cv::Mat rightHalf(showMatches, cv::Rect(sz1.width, 0, sz2.width, sz2.height));
-    R.copyTo(rightHalf);
+	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method3.bmp");
 
-	cv::Point2f rightPoint;
-	for (size_t i = 0; i < int(good_matches2.size()); i+=15){
-		rightPoint = keypoints2[good_matches2[i].trainIdx].pt;
-		rightPoint.x += sz1.width;
-		cv::circle(showMatches, keypoints1[good_matches2[i].queryIdx].pt, 2, cv::Scalar(255, 0, 0));
-		cv::circle(showMatches, rightPoint, 2, cv::Scalar(0, 0, 255));
-		cv::line(showMatches, keypoints1[good_matches2[i].queryIdx].pt,rightPoint, cv::Scalar((i*20)%255, (i*50)%255, (i*130)%255));}
-
-    cv::imshow("matches", showMatches);
-    cv::waitKey(0);
-
-	cv::imwrite("matches_method3.bmp", showMatches);
-
-	for (size_t i = 0; i < int(good_matches2.size()); ++i){
-		cv::Point2f from = keypoints1[good_matches2[i].queryIdx].pt;
-		cv::Point2f to = keypoints2[good_matches2[i].trainIdx].pt;
-
-		//calculate local distance for each possible match
-		double dist = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
-
-		cv::circle(L, keypoints1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
-
-
-	//cv::Rect roi(30, 0,  L.size().width);
-	cv::Rect roi(33, 0, L.size().width-35, L.size().height);
-	cv::Mat croppedDepthMap = L(roi);
-
-	cv::imshow("depthmap", croppedDepthMap);
-    cv::waitKey(0);
-
-	cv::imwrite("depthmap_method3.bmp", croppedDepthMap);
+	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method3.bmp");
 
 }
 
@@ -336,7 +363,11 @@ void depthMapMeth2(){
 	            j = matches[i].size();}
 		}}
 
-	//combine2images
+	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method2.bmp");
+
+	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method2.bmp");
+
+	/*//combine2images
 	cv::Size sz1 = L.size();
     cv::Size sz2 = R.size();
 	cv::Mat showMatches(sz1.height, sz1.width+sz2.width, L.type());
@@ -377,7 +408,7 @@ void depthMapMeth2(){
 	cv::imshow("depthmap", croppedDepthMap);
     cv::waitKey(0);
 
-	cv::imwrite("depthmap_method2.bmp", croppedDepthMap);
+	cv::imwrite("depthmap_method2.bmp", croppedDepthMap);*/
 }
 
 void depthMapMeth1()
@@ -428,7 +459,11 @@ void depthMapMeth1()
 		if (abs(from.y-to.y)<8 && abs(from.x-to.x)<30) {good_matches2.push_back(matches[i]);}
 	}
 
-	//combine2images
+	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method1.bmp");
+
+	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method1.bmp");
+
+	/*//combine2images
 	cv::Size sz1 = L.size();
     cv::Size sz2 = R.size();
 	cv::Mat showMatches(sz1.height, sz1.width+sz2.width, L.type());
@@ -467,7 +502,7 @@ void depthMapMeth1()
 	cv::imshow("depthmap", croppedDepthMap);
     cv::waitKey(0);
 
-	cv::imwrite("depthmap_method1.bmp", croppedDepthMap);
+	cv::imwrite("depthmap_method1.bmp", croppedDepthMap);*/
 }
 
 void matchImageColors()
@@ -505,9 +540,9 @@ int main(int argc, char * argv[])
     try
 	{
 	    matchImageColors();
-		//depthMapMeth1();	
+		depthMapMeth1();	
 		//depthMapMeth2();
-		depthMapMeth3();
+		//depthMapMeth3();
 	}
 
 	catch(char* expn){
