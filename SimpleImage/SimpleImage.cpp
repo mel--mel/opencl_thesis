@@ -517,10 +517,25 @@ int main(int argc, char * argv[])
     try
 	{
 	    matchImageColors();
-		//depthMapMeth1();	
-		//depthMapMeth2();
-		depthMapMeth3();
-		//depthMapMeth4();	
+
+		int method;
+		std::cout << "Which depthmap creation method do you prefer to use?";
+		std::cin >> method;
+		switch (method) 
+		{
+			case 1:
+				depthMapMeth1();
+				break;
+			case 2:
+				depthMapMeth2();
+				break;
+			case 3:
+				depthMapMeth3();
+				break;
+			default:
+				depthMapMeth4();	
+				break;
+		}
 	}
 
 	catch(char* expn){
