@@ -140,22 +140,22 @@ void giveMelOpenCL::runThisKernel(const char* kernelNameInFile, size_t *globalTh
     if (status != CL_SUCCESS) throw "clEnqueueNDRangeKernel failed.";
 }
 
-int giveMelOpenCL::setTimer()
+int setTimer(SDKTimer *sampleTimer)
 {
 	// create and initialize timers
-    int timer = sampleTimer->createTimer();
+	int timer = sampleTimer->createTimer();
     sampleTimer->resetTimer(timer);
     sampleTimer->startTimer(timer);
 
 	return timer;
 }
 
-void giveMelOpenCL::stopTimer(int timer)
+void stopTimer(SDKTimer *sampleTimer, int timer, std::string message)
 {
 	sampleTimer->stopTimer(timer);
     cl_double time = (double)(sampleTimer->readTimer(timer));
 
-	std::cout << "Total time: " << time << " sec." << std::endl << std:: endl;
+	std::cout << message << time << " sec." << std::endl << std:: endl;
 }
 
 int giveMelOpenCL::cleanup()
@@ -223,7 +223,7 @@ cv::Mat drawLinesAcrossMatches(cv::Mat L, cv::Mat showMatches, std::vector <cv::
 	return showMatches;
 }
 
-void showMatches(cv::Mat L, cv::Mat R, std::vector <cv::DMatch> good_matches2, 
+void showSaveMatches(cv::Mat L, cv::Mat R, std::vector <cv::DMatch> good_matches2, 
 				 std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2,
 				 std::string matchesImageName){
 
@@ -236,9 +236,20 @@ void showMatches(cv::Mat L, cv::Mat R, std::vector <cv::DMatch> good_matches2,
 	cv::imwrite(matchesImageName, showMatches);
 }
 
-void createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2, 
-				 std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2,
-				 std::string depthmapImageName)
+void showSaveDepthMap(cv::Mat depthMap, std::string depthmapImageName)
+{
+	//cv::Rect roi(30, 0,  L.size().width);
+	cv::Rect roi(33, 0, depthMap.size().width-35, depthMap.size().height);
+	cv::Mat croppedDepthMap =  depthMap(roi);
+
+	cv::imshow("depthmap", croppedDepthMap);
+    cv::waitKey(0);
+
+	cv::imwrite(depthmapImageName, croppedDepthMap);
+}
+
+cv::Mat createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2, 
+				 std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2)
 {
 	for (size_t i = 0; i < int(good_matches2.size()); ++i){
 		cv::Point2f from = keypoints1[good_matches2[i].queryIdx].pt;
@@ -249,16 +260,7 @@ void createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2,
 
 		cv::circle(L, keypoints1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
 
-
-	//cv::Rect roi(30, 0,  L.size().width);
-	cv::Rect roi(33, 0, L.size().width-35, L.size().height);
-	cv::Mat croppedDepthMap = L(roi);
-
-	cv::imshow("depthmap", croppedDepthMap);
-    cv::waitKey(0);
-
-	cv::imwrite(depthmapImageName, croppedDepthMap);
-
+	return L;
 }
 
 //oclbruteforcematcher
@@ -272,13 +274,13 @@ void depthMapMeth4()
 
 	L = cv::imread("myOutL.bmp");
 	R = cv::imread("myOutR.bmp");
-	
-	//leftImageGrey = cv::imread("myOutL.bmp");
-	//rightImageGrey = cv::imread("myOutR.bmp");
 
 	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
 	cv::Mat descriptors1, descriptors2;
 	const cv::Mat mask;
+
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
 
 	//anixneyw ta features (FAST)
 	cv::Ptr<cv::FeatureDetector> detector;
@@ -312,9 +314,11 @@ void depthMapMeth4()
 		if (abs(from.y-to.y)<8 && abs(from.x-to.x)<30) {good_matches2.push_back(matches[i]);}
 	}
 
-	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method4.bmp");
+	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 4) : ");
 
-	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method4.bmp");
+	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method4.bmp");
+	showSaveDepthMap(depthMap, "depthmap_method4.bmp");
 }
 
 //ocl SURF detector and extractor
@@ -331,7 +335,10 @@ void depthMapMeth3()
 	cv::ocl::oclMat clL, clR, clDescriptors1, clDescriptors2;
 	cv::Mat descriptors1, descriptors2;
 	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
-	
+
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
+
 	clL.upload(L);
 	clR.upload(R);
 
@@ -359,10 +366,11 @@ void depthMapMeth3()
 		if (abs(from.y-to.y)<8 && abs(from.x-to.x)<30) {good_matches2.push_back(matches[i]);}
 	}
 
-	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method3.bmp");
+	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 3) : ");
 
-	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method3.bmp");
-
+	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method3.bmp");
+	showSaveDepthMap(depthMap, "depthmap_method3.bmp");
 }
 
 //opencv knnMatch bruteforcematcher
@@ -376,12 +384,14 @@ void depthMapMeth2(){
 	L = cv::imread("myOutL.bmp");
 	R = cv::imread("myOutR.bmp");
 	
-	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
-	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
-
 	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
 	cv::Mat descriptors1, descriptors2;
-	const cv::Mat mask;
+
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
+
+	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
+	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
 
 	//anixneyw ta features (FAST)
 	cv::Ptr<cv::FeatureDetector> detector;
@@ -421,9 +431,11 @@ void depthMapMeth2(){
 	            j = matches[i].size();}
 		}}
 
-	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method2.bmp");
+	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 2) : ");
 
-	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method2.bmp");
+	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method2.bmp");
+	showSaveDepthMap(depthMap, "depthmap_method2.bmp");
 }
 
 //oclbruteforcematcher
@@ -434,16 +446,17 @@ void depthMapMeth1()
 	cv::initModule_nonfree();
 
 	cv::Mat L, R, leftImageGrey, rightImageGrey;
+	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
+	cv::Mat descriptors1, descriptors2;
 
 	L = cv::imread("myOutL.bmp");
 	R = cv::imread("myOutR.bmp");
 	
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
+
 	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
 	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
-
-	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
-	cv::Mat descriptors1, descriptors2;
-	const cv::Mat mask;
 
 	//anixneyw ta features (FAST)
 	cv::Ptr<cv::FeatureDetector> detector;
@@ -477,9 +490,11 @@ void depthMapMeth1()
 		if (abs(from.y-to.y)<8 && abs(from.x-to.x)<30) {good_matches2.push_back(matches[i]);}
 	}
 
-	showMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method1.bmp");
+	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 1) : ");
 
-	createDepthMap(L, good_matches2, keypoints1, keypoints2, "depthmap_method1.bmp");
+	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method1.bmp");
+	showSaveDepthMap(depthMap, "depthmap_method1.bmp");
 }
 
 void matchImageColors()
@@ -487,13 +502,14 @@ void matchImageColors()
 	giveMelOpenCL clProvider;
 	MyImage imageL; 
 	MyImage imageR;
-	int timer;
+	
 	
 	imageL.open("diplo000000-L.bmp");//imageL.open("cemeteryL.bmp");//
 	imageR.open("diplo000000-R.bmp");//imageR.open("cemeteryR.bmp");//
 	
-	timer = clProvider.setTimer();
-
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
+	
 	clProvider.setupCL();
 	clProvider.compileKernels("SimpleImage_Kernels.cl");
 
@@ -505,10 +521,10 @@ void matchImageColors()
 	imageL.buffersToOutputImage(&clProvider);
 	imageR.buffersToOutputImage(&clProvider);
 
-	clProvider.stopTimer(timer);
+	stopTimer(sampleTimer, timer, "Exact color matching time : ");
 
-	imageL.save("myOutL.bmp");//("equalizedL.bmp");//
-	imageR.save("myOutR.bmp");//("equalizedR.bmp");//
+	imageL.save("colorMatchedL.bmp");
+	imageR.save("colorMatchedR.bmp");
 
 }
 
@@ -521,6 +537,7 @@ int main(int argc, char * argv[])
 		int method;
 		std::cout << "Which depthmap creation method do you prefer to use?";
 		std::cin >> method;
+		std::cout << std::endl;
 		switch (method) 
 		{
 			case 1:

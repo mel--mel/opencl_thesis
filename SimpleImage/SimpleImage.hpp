@@ -60,8 +60,6 @@ class giveMelOpenCL
 		
         KernelWorkGroupInfo kernelInfo;              /**< Structure to store kernel related info */
 
-        SDKTimer    *sampleTimer;      /**< SDKTimer object */
-
     public:
 
 		cl_context context;                 /**< CL context */
@@ -76,7 +74,6 @@ class giveMelOpenCL
         giveMelOpenCL()
             : byteRWSupport(true)
         {
-            sampleTimer = new SDKTimer();
             sampleArgs = new CLCommandArgs() ;
 			sampleArgs->sampleVerStr = SAMPLE_VERSION;
         }
@@ -107,10 +104,6 @@ class giveMelOpenCL
 							   cl_mem &buffer1, cl_mem &buffer2, cl_mem &buffer3,
 							   cl_mem &buffer4, cl_mem &buffer5, cl_mem &buffer6,
 							   cl_uint &width);
-
-		int setTimer();
-
-		void stopTimer(int timer);
 
         /**
         * Override from SDKSample. Print sample stats.
