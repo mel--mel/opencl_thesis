@@ -263,6 +263,43 @@ cv::Mat createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2,
 	return L;
 }
 
+//ocl::stereoBM_OCL
+void depthMapMeth5()
+{
+	cv::initModule_nonfree();
+
+	cv::Mat srcL, srcR, L, R, disparities, eqDisparities, depthmap;
+	cv::ocl::oclMat clL, clR, clDisparities, clDepthmap;
+
+	srcL = cv::imread("myOutL.bmp");
+	srcR = cv::imread("myOutR.bmp");
+
+	cv::cvtColor(srcL, L, CV_RGB2GRAY);
+	cv::cvtColor(srcR, R, CV_RGB2GRAY);
+
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
+
+	clL.upload(L);
+	clR.upload(R);
+
+	cv::ocl::StereoBM_OCL bm;
+	bm(clL, clR, clDisparities);
+
+	cv::ocl::equalizeHist(clDisparities, clDepthmap);
+
+	clDepthmap.download(depthmap);
+
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 5) : ");
+
+	//cv::putText(depthmap, "iluasgkdhasl", cv::Point(5, 25), 1, 1.0, cv::Scalar::all(255));
+	cv::imshow("disparities", depthmap);
+	cv::waitKey(0);
+	
+	cv::imwrite("depthmap_method5.bmp", depthmap);
+
+}
+
 //oclbruteforcematcher
 //opencv FAST detector, SIFT extractor
 //full color input image
@@ -549,8 +586,10 @@ int main(int argc, char * argv[])
 			case 3:
 				depthMapMeth3();
 				break;
+			case 4:
+				depthMapMeth4();
 			default:
-				depthMapMeth4();	
+				depthMapMeth5();	
 				break;
 		}
 	}
