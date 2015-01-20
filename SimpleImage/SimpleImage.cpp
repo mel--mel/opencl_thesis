@@ -251,6 +251,7 @@ void showSaveDepthMap(cv::Mat depthMap, std::string depthmapImageName)
 cv::Mat createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2, 
 				 std::vector<cv::KeyPoint> keypoints1, std::vector<cv::KeyPoint> keypoints2)
 {
+	cv::Mat depthMap = L.clone();
 	for (size_t i = 0; i < int(good_matches2.size()); ++i){
 		cv::Point2f from = keypoints1[good_matches2[i].queryIdx].pt;
 		cv::Point2f to = keypoints2[good_matches2[i].trainIdx].pt;
@@ -258,10 +259,65 @@ cv::Mat createDepthMap(cv::Mat L, std::vector <cv::DMatch> good_matches2,
 		//calculate local distance for each possible match
 		double dist = sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 
-		cv::circle(L, keypoints1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
+		cv::circle(depthMap, keypoints1[good_matches2[i].queryIdx].pt, 1, cv::Scalar(255-(dist*8), 0, dist*8), -1);}
 
-	return L;
+	return depthMap;
 }
+
+
+//opencv match bruteforcematcher
+//opencv FAST detector, SIFT extractor
+//greyscale input image
+void depthMapMeth6(){
+	cv::initModule_nonfree();
+
+	cv::Mat L, R;
+	L = cv::imread("myOutL.bmp");
+	R = cv::imread("myOutR.bmp");
+	
+	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
+	cv::Mat descriptors1, descriptors2;
+
+	SDKTimer *sampleTimer = new SDKTimer();;
+	int timer = setTimer(sampleTimer);
+
+	cv::Mat leftImageGrey, rightImageGrey;
+	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
+	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
+
+	//anixneyw ta features (FAST)
+	cv::Ptr<cv::FeatureDetector> detector;
+	detector = new cv::DynamicAdaptedFeatureDetector ( new cv::FastAdjuster(10,true), 5000, 10000, 10);
+	detector->detect(leftImageGrey, keypoints1);
+	detector->detect(rightImageGrey, keypoints2);
+
+	//briskw descriptors gia ta features (SIFT)
+	cv::Ptr<cv::DescriptorExtractor> extractor;
+	extractor = cv::DescriptorExtractor::create("SIFT");
+	extractor->compute( leftImageGrey, keypoints1, descriptors1);
+	extractor->compute( rightImageGrey, keypoints2, descriptors2);
+
+	//antistoixw toys descriptors twn features
+	std::vector <cv::DMatch> matches;
+	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce");
+    matcher->match(descriptors1, descriptors2, matches);
+
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 6) : ");
+
+	std::vector <cv::DMatch> good_matches2;
+	good_matches2.reserve(matches.size());
+	for (size_t i = 0; i < int(matches.size()); ++i){
+		cv::Point2f from = keypoints1[matches[i].queryIdx].pt;
+		cv::Point2f to = keypoints2[matches[i].trainIdx].pt;
+		if (abs(from.y-to.y)<8 && abs(from.x-to.x)<30) {good_matches2.push_back(matches[i]);}
+	}
+
+	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
+
+	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method6.bmp");
+	showSaveDepthMap(depthMap, "depthmap_method6.bmp");
+}
+
 
 //ocl::stereoBM_OCL
 void depthMapMeth5()
@@ -338,9 +394,10 @@ void depthMapMeth4()
 	oclDescriptors2.upload(descriptors2);
 
 	std::vector<cv::DMatch> matches;
-	//std::vector <std::vector <cv::DMatch>> matches;
 	cv::ocl::BruteForceMatcher_OCL_base matcher;
-	matcher.match(oclDescriptors1, oclDescriptors2, matches);//, 500);
+	matcher.match(oclDescriptors1, oclDescriptors2, matches);
+
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 4) : ");
 
 	//look whether the match is inside a defined area of the image
 	std::vector <cv::DMatch> good_matches2;
@@ -352,8 +409,7 @@ void depthMapMeth4()
 	}
 
 	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
-	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 4) : ");
-
+	
 	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method4.bmp");
 	showSaveDepthMap(depthMap, "depthmap_method4.bmp");
 }
@@ -369,30 +425,28 @@ void depthMapMeth3()
 	L = cv::imread("myOutL.bmp");
 	R = cv::imread("myOutR.bmp");
 
-	cv::ocl::oclMat clL, clR, clDescriptors1, clDescriptors2;
-	cv::Mat descriptors1, descriptors2;
-	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
-
 	SDKTimer *sampleTimer = new SDKTimer();;
 	int timer = setTimer(sampleTimer);
 
-	clL.upload(L);
-	clR.upload(R);
+	cv::Mat leftImageGrey, rightImageGrey;
+	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
+	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
 
+	cv::ocl::oclMat clL, clR, mask;
+	clL.upload(leftImageGrey);
+	clR.upload(rightImageGrey);
+
+	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
+	cv::ocl::oclMat clDescriptors1, clDescriptors2;
 	cv::ocl::SURF_OCL detector;
-	detector.detect(clL, keypoints1);
-	detector.detect(clR, keypoints2);
-
-	cv::ocl::SURF_OCL extractor;
-	extractor.compute(clL, keypoints1, descriptors1);
-	extractor.compute(clR, keypoints2, descriptors2);
-
-	clDescriptors1.upload(descriptors1);
-	clDescriptors2.upload(descriptors2);
+	detector(clL, mask, keypoints1, clDescriptors1);
+	detector(clR, mask, keypoints2, clDescriptors2);
 
 	std::vector <cv::DMatch> matches;
 	cv::ocl::BruteForceMatcher_OCL_base matcher;
 	matcher.match(clDescriptors1, clDescriptors2, matches);
+
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 3) : ");
 
 	//look whether the match is inside a defined area of the image
 	std::vector <cv::DMatch> good_matches2;
@@ -404,7 +458,6 @@ void depthMapMeth3()
 	}
 
 	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
-	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 3) : ");
 
 	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method3.bmp");
 	showSaveDepthMap(depthMap, "depthmap_method3.bmp");
@@ -416,8 +469,7 @@ void depthMapMeth3()
 void depthMapMeth2(){
 	cv::initModule_nonfree();
 
-	cv::Mat L, R, leftImageGrey, rightImageGrey;
-
+	cv::Mat L, R;
 	L = cv::imread("myOutL.bmp");
 	R = cv::imread("myOutR.bmp");
 	
@@ -427,6 +479,7 @@ void depthMapMeth2(){
 	SDKTimer *sampleTimer = new SDKTimer();;
 	int timer = setTimer(sampleTimer);
 
+	cv::Mat leftImageGrey, rightImageGrey;
 	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
 	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
 
@@ -442,11 +495,12 @@ void depthMapMeth2(){
 	extractor->compute( leftImageGrey, keypoints1, descriptors1);
 	extractor->compute( rightImageGrey, keypoints2, descriptors2);
 
-	//antistoixw toyw descriptors twn features
+	//antistoixw toys descriptors twn features
 	std::vector <std::vector <cv::DMatch>> matches;
 	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce");
     matcher->knnMatch(descriptors1, descriptors2, matches, 500);
 
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 2) : ");
 
 	//look whether the match is inside a defined area of the image
 	//only 25% of maximum of possible distance
@@ -469,7 +523,6 @@ void depthMapMeth2(){
 		}}
 
 	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
-	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 2) : ");
 
 	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method2.bmp");
 	showSaveDepthMap(depthMap, "depthmap_method2.bmp");
@@ -482,26 +535,25 @@ void depthMapMeth1()
 {
 	cv::initModule_nonfree();
 
-	cv::Mat L, R, leftImageGrey, rightImageGrey;
-	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
-	cv::Mat descriptors1, descriptors2;
-
-	L = cv::imread("myOutL.bmp");
-	R = cv::imread("myOutR.bmp");
+	cv::Mat L = cv::imread("myOutL.bmp");
+	cv::Mat R = cv::imread("myOutR.bmp");
 	
 	SDKTimer *sampleTimer = new SDKTimer();;
 	int timer = setTimer(sampleTimer);
 
+	cv::Mat leftImageGrey, rightImageGrey;
 	cv::cvtColor(L, leftImageGrey, CV_RGB2GRAY);
 	cv::cvtColor(R, rightImageGrey, CV_RGB2GRAY);
 
 	//anixneyw ta features (FAST)
+	std::vector<cv::KeyPoint> keypoints1, keypoints2; 
 	cv::Ptr<cv::FeatureDetector> detector;
 	detector = new cv::DynamicAdaptedFeatureDetector ( new cv::FastAdjuster(10,true), 5000, 10000, 10);
 	detector->detect(leftImageGrey, keypoints1);
 	detector->detect(rightImageGrey, keypoints2);
 
 	//briskw descriptors gia ta features (SIFT)
+	cv::Mat descriptors1, descriptors2;
 	cv::Ptr<cv::DescriptorExtractor> extractor;
 	extractor = cv::DescriptorExtractor::create("SIFT");
 	extractor->compute( leftImageGrey, keypoints1, descriptors1);
@@ -509,14 +561,15 @@ void depthMapMeth1()
 
 	//antistoixw toyw descriptors twn features
 	cv::ocl::oclMat oclDescriptors1, oclDescriptors2;
-
 	oclDescriptors1.upload(descriptors1);
 	oclDescriptors2.upload(descriptors2);
 
+	//match
 	std::vector<cv::DMatch> matches;
-	//std::vector <std::vector <cv::DMatch>> matches;
 	cv::ocl::BruteForceMatcher_OCL_base matcher;
-	matcher.match(oclDescriptors1, oclDescriptors2, matches);//, 500);
+	matcher.match(oclDescriptors1, oclDescriptors2, matches);
+
+	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 1) : ");
 
 	//look whether the match is inside a defined area of the image
 	std::vector <cv::DMatch> good_matches2;
@@ -528,7 +581,6 @@ void depthMapMeth1()
 	}
 
 	cv::Mat depthMap = createDepthMap(L, good_matches2, keypoints1, keypoints2);
-	stopTimer(sampleTimer, timer, "Depthmap creation time (using method 1) : ");
 
 	showSaveMatches(L, R, good_matches2, keypoints1, keypoints2, "matches_method1.bmp");
 	showSaveDepthMap(depthMap, "depthmap_method1.bmp");
@@ -588,8 +640,15 @@ int main(int argc, char * argv[])
 				break;
 			case 4:
 				depthMapMeth4();
+				break;
+			case 5:
+				depthMapMeth5();
+				break;
+			case 6:
+				depthMapMeth6();
+				break;
 			default:
-				depthMapMeth5();	
+				std::cout << "No such method found. Exiting program." << std::endl << std::endl;	
 				break;
 		}
 	}
